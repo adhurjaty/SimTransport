@@ -3,6 +3,7 @@ import Intersection from "./intersection";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import { intersectionGrouping, segmentsIntersect } from "../util";
+import ICoord from "../interfaces/ICoord";
 
 const fillValue: number = -1;
 
@@ -23,22 +24,25 @@ export default class RoadNetwork {
         for (let i = 0; i < this.map.roads.length; i++) {
             let road = this.map.roads[i];
             for (const otherRoad of this.map.roads.slice(i+1)) {
-                if(this.intersects(road, otherRoad)) {
-                    this.intersections.push(new Intersection([road, otherRoad]));
+                let coord: Coord = this.intersects(road, otherRoad);
+                if(coord != undefined) {
+                    this.intersections.push(new Intersection([road, otherRoad], coord));
                 }
             }
         }
     }
 
-    intersects(road: Road, otherRoad: Road): boolean {
+    intersects(road: Road, otherRoad: Road): Coord {
         for (const seg of intersectionGrouping(road.path, 2)) {
             for (const other of intersectionGrouping(otherRoad.path, 2)) {
-                if(segmentsIntersect(seg as [Coord, Coord], other as [Coord, Coord])) {
-                    return true;
+                let coord: ICoord = segmentsIntersect(seg as [Coord, Coord],
+                    other as [Coord, Coord]) 
+                if(coord != undefined) {
+                    return new Coord(coord.x, coord.y);
                 }
             }
         }
 
-        return false;
+        return undefined;
     }
 }
