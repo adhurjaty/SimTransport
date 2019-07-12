@@ -6,6 +6,12 @@
   "scripts": {
     "test": "jest"
   },
+  "jest": {
+    "scriptPreprocessor": "./node_modules/ts-jest/preprocessor.js",
+    "globals": {
+      "__TS_CONFIG__": "tsconfig.json"
+    }
+  },
   "author": "Anil Dhurjaty",
   "license": "ISC",
   "devDependencies": {
