@@ -7,7 +7,7 @@ const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
 let roadID: number = 0;
 
-test('generate simple network', () => {
+test('intersection network size', () => {
     let map: RoadMap = createMap();
     let network: RoadNetwork = new RoadNetwork(map);
     expect(network.intersections.length).toBe(25);
