@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance } from "../simulator/helpers";
+import { getRoadDistance } from "../simulator/simulator_helpers";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;

@@ -5,6 +5,7 @@ import Coord from "../models/coord";
 import { intersectionGrouping, segmentsIntersect } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
+import { getConnectingRoad, getRoadDistance } from "./simulator_helpers";
 
 const fillValue: number = -1;
 
@@ -63,10 +64,10 @@ export default class RoadNetwork {
                 let fromInt: Intersection = this.intersections[i];
                 let toInt: Intersection = this.intersections[j];
                 
-                let connectingRoad: Road = this.getConnectingRoad(fromInt, toInt);
+                let connectingRoad: Road = getConnectingRoad(fromInt, toInt);
                 if(connectingRoad != undefined) {
-                    this.connections[i][j] = connectingRoad.getDistance(fromInt.location,
-                        toInt.location);
+                    this.connections[i][j] = getRoadDistance(connectingRoad, 
+                        fromInt.location, toInt.location);
                 }
             }
             
