@@ -1,6 +1,6 @@
-import Coords from "./coord";
+import Coord from "./coord";
 
 export default class Road {
-    constructor(public id: number, public path: Coords[], public charmLanes: number, 
+    constructor(public id: number, public path: Coord[], public charmLanes: number, 
         public strangeLanes: number) {}
 }

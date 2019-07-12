@@ -1,13 +1,16 @@
 import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
+import RoadNetwork from "../simulator/road_network";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
 let roadID: number = 0;
 
-test('generate_simple_network', () => {
+test('generate simple network', () => {
     let map: RoadMap = createMap();
+    let network: RoadNetwork = new RoadNetwork(map);
+    expect(network.intersections.length).toBe(25);
     
 });
 
