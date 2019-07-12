@@ -1,6 +1,7 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadMap from "../models/road_map";
+import Car from "../models/car";
 
 test('simple coord test', () => {
     let coord: Coord = new Coord(4, 7);
@@ -23,7 +24,13 @@ test('simple map test', () => {
     expect(map.roads[2].path[0].y).toBe(2);
 });
 
-function* generate_roads(n: number) {
+test('simple car test', () => {
+    let car: Car = new Car(4, .01, 3);
+    expect(car.accel).toBe(.01);
+    expect(car.size).toBe(4);
+});
+
+function* generate_roads(n: number): IterableIterator<Road> {
     let xSpacing = 10;
     let ySpacing = 1;
     for (let i = 0; i < n; i++) {
