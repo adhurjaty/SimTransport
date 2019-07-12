@@ -15,6 +15,18 @@
             "sourceMapPathOverrides": {
                 "../*": "${webRoot}/*"
             }
+        },
+        {
+            "name": "Debug Jest Tests",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/.bin/jest",
+            "args": [
+                "--runInBand", 
+                "--config=${workspaceFolder}/jest.config.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
