@@ -1,0 +1,16 @@
+{
+  "name": "sim-transport",
+  "version": "1.0.0",
+  "description": "Simulated road network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anil Dhurjaty",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.4",
+    "typescript": "^3.5.3"
+  }
+}
