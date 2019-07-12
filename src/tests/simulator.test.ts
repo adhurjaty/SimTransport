@@ -2,6 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
+import { getRoadDistance } from "../simulator/helpers";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -17,6 +18,15 @@ test('intersection network size', () => {
 test('get intersection locations', () => {
     expect(network.intersections.map(x => x.location)).toContainEqual({x: .2, y: .2});
     expect(network.intersections.map(x => x.location)).toContainEqual({x: .1, y: .4});
+});
+
+test('find simple road distance', () => {
+    let road: Road = map.roads[2];
+    let fromCoord: Coord = new Coord(.02, .2);
+    let toCoord: Coord = new Coord(1.5, .2);
+
+    let result: number = getRoadDistance(road, fromCoord, toCoord);
+    expect(result).toBe(1.48);
 });
 
 function createMap(): RoadMap {

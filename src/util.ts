@@ -1,4 +1,5 @@
 import ICoord from "./interfaces/ICoord";
+import { LineSegment } from "./interfaces/LineSegment";
 
 export function* intersectionGrouping<T>(lst: T[], size: number): 
     IterableIterator<T[]> 
@@ -12,15 +13,8 @@ export function* intersectionGrouping<T>(lst: T[], size: number):
     }
 }
 
-export function segmentsIntersect(seg: [ICoord, ICoord], 
-    other: [ICoord, ICoord]): ICoord
+export function segmentsIntersect(seg: LineSegment, other: LineSegment): ICoord
 {
-    let determinant: (a: [number, number], b: [number, number]) => 
-        number = (a, b) => 
-    {
-        return a[0] * b[1] - b[0] * a[1];
-    }
-
     let xdiff: [number, number] = [seg[0].x - seg[1].x, other[0].x - other[1].x];
     let ydiff: [number, number] = [seg[0].y - seg[1].y, other[0].y - other[1].y];
     let div: number = determinant(xdiff, ydiff);
@@ -35,6 +29,36 @@ export function segmentsIntersect(seg: [ICoord, ICoord],
     let x: number = determinant(d, xdiff) / div;
     let y: number = determinant(d, ydiff) / div;
     return {x: x, y: y};
+}
+
+export function isPointOnLine(seg: LineSegment, p: ICoord): boolean {
+    let vector: [number, number] = toTuple(makeOriginVector(seg));
+    let transPoint: [number, number] = toTuple(makeOriginVector([seg[0], p]));
+    let cross: number = determinant(vector, transPoint);
+    if(Math.abs(cross) > .0001) {
+        return false;
+    }
+
+    let projection: number = dotProduct(vector, transPoint);
+    return projection < getDistance(seg) ** 2;
+}
+
+export function getDistance(seg: LineSegment): number {
+    let vector: ICoord = makeOriginVector(seg);
+    return Math.sqrt(vector.x ** 2 + vector.y ** 2);
+} 
+
+function determinant(a: [number, number], b: [number, number]) {
+    return a[0] * b[1] - b[0] * a[1];
+}
+
+function dotProduct(a: [number, number], b: [number, number]) {
+    return a[0] * b[0] + a[1] * b[1];
+}
+
+
+function makeOriginVector(seg: LineSegment): ICoord {
+    return {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
 }
 
 function toTuple(coord: ICoord): [number, number] {

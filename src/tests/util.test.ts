@@ -1,5 +1,6 @@
-import { intersectionGrouping, segmentsIntersect } from "../util";
+import { intersectionGrouping, segmentsIntersect, isPointOnLine } from "../util";
 import ICoord from "../interfaces/ICoord";
+import { LineSegment } from "../interfaces/LineSegment";
 
 
 
@@ -18,11 +19,11 @@ test('intersection grouping 3', () => {
 });
 
 test('origin intersects', () => {
-    let seg: [ICoord, ICoord] = [
+    let seg: LineSegment = [
         {x: 0, y: 0},
         {x: 2, y: 0}
     ];
-    let other: [ICoord, ICoord] = [
+    let other: LineSegment = [
         {x: 0, y: 0},
         {x: 0, y: 2}
     ];
@@ -32,15 +33,55 @@ test('origin intersects', () => {
 });
 
 test('no intersection', () => {
-    let seg: [ICoord, ICoord] = [
+    let seg: LineSegment = [
         {x: 0, y: 0},
         {x: 2, y: 0}
     ];
-    let other: [ICoord, ICoord] = [
+    let other: LineSegment = [
         {x: 0, y: .3},
         {x: 4, y: .3}
     ];
 
     let result: ICoord = segmentsIntersect(seg, other);
     expect(result).toBeUndefined();    
+});
+
+test('point on line', () => {
+    let seg: LineSegment = [
+        {x: 0, y: 0},
+        {x: 2, y: 0}
+    ];
+    let p: ICoord = {x: .3, y: 0};
+
+    expect(isPointOnLine(seg, p)).toBeTruthy();
+});
+
+test('point not on line', () => {
+    let seg: LineSegment = [
+        {x: 0, y: 0},
+        {x: 2, y: 0}
+    ];
+    let p: ICoord = {x: .3, y: .01};
+
+    expect(isPointOnLine(seg, p)).toBeFalsy();
+});
+
+test('point on diagonal line', () => {
+    let seg: LineSegment = [
+        {x: 1, y: 2},
+        {x: 3, y: 6}
+    ];
+    let p: ICoord = {x: 2.5, y: 5};
+
+    expect(isPointOnLine(seg, p)).toBeTruthy();
+});
+
+test('point on line but not segment', () => {
+    let seg: LineSegment = [
+        {x: 0, y: 0},
+        {x: 2, y: 0}
+    ];
+    let p: ICoord = {x: 3, y: 0};
+
+    expect(isPointOnLine(seg, p)).toBeFalsy();
 });
