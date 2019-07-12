@@ -11,7 +11,7 @@ test('generate simple network', () => {
     let map: RoadMap = createMap();
     let network: RoadNetwork = new RoadNetwork(map);
     expect(network.intersections.length).toBe(25);
-    
+
 });
 
 function createMap(): RoadMap {
