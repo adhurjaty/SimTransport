@@ -27,6 +27,20 @@ test('origin intersects', () => {
         {x: 0, y: 2}
     ];
 
-    let result: boolean = segmentsIntersect(seg, other);
+    let result: ICoord = segmentsIntersect(seg, other);
     expect(result).toBeTruthy();
+});
+
+test('no intersection', () => {
+    let seg: [ICoord, ICoord] = [
+        {x: 0, y: 0},
+        {x: 2, y: 0}
+    ];
+    let other: [ICoord, ICoord] = [
+        {x: 0, y: .3},
+        {x: 4, y: .3}
+    ];
+
+    let result: ICoord = segmentsIntersect(seg, other);
+    expect(result).toBeUndefined();    
 });

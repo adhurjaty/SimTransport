@@ -13,14 +13,30 @@ export function* intersectionGrouping<T>(lst: T[], size: number):
 }
 
 export function segmentsIntersect(seg: [ICoord, ICoord], 
-    other: [ICoord, ICoord])
+    other: [ICoord, ICoord]): ICoord
 {
-    let ccw: (a: ICoord, b: ICoord, c: ICoord) => boolean = (a, b, c) => {
-        let s1: number = (b.y - a.y) * (c.x - a.x);
-        let s2: number = (c.y - a.y) * (b.x - a.x);
-        return (s1 < s2) || (s1 === 0 && s2 === 0);
+    let determinant: (a: [number, number], b: [number, number]) => 
+        number = (a, b) => 
+    {
+        return a[0] * b[1] - b[0] * a[1];
     }
 
-    return ccw(seg[0], other[0], other[1]) != ccw(seg[1], other[0], other[1])
-        && ccw(seg[0], seg[1], other[0]) != ccw(seg[0], seg[1], other[1]);
+    let xdiff: [number, number] = [seg[0].x - seg[1].x, other[0].x - other[1].x];
+    let ydiff: [number, number] = [seg[0].y - seg[1].y, other[0].y - other[1].y];
+    let div: number = determinant(xdiff, ydiff);
+
+    if(div === 0) {
+        return undefined;
+    }
+
+    let d: [number, number] = [determinant(toTuple(seg[0]), toTuple(seg[1])),
+        determinant(toTuple(other[0]), toTuple(other[1]))];
+    
+    let x: number = determinant(d, xdiff) / div;
+    let y: number = determinant(d, ydiff) / div;
+    return {x: x, y: y};
+}
+
+function toTuple(coord: ICoord): [number, number] {
+    return [coord.x, coord.y];
 }
