@@ -2,7 +2,8 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad } from "../simulator/simulator_helpers";
+import Intersection from "../simulator/intersection";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -43,6 +44,36 @@ test('find complex road distance', () => {
     let expected: number = 5.076
     let distance: number = getRoadDistance(road, ...points)
     expect(distance).toBeCloseTo(expected, 3); 
+});
+
+test('get connecting road', () => {
+    let firstInt: Intersection = network.getIntersection(1, 6);
+    let secondInt: Intersection = network.getIntersection(1, 8);
+
+    let road: Road = getConnectingRoad(firstInt, secondInt);
+    expect(road.id).toBe(1);
+});
+
+test('get non-connecting intersection road', () => {
+    let firstInt: Intersection = network.getIntersection(1, 6);
+    let secondInt: Intersection = network.getIntersection(2, 8);
+
+    let road: Road = getConnectingRoad(firstInt, secondInt);
+    expect(road).toBeUndefined();
+});
+
+test('get connecting road against one-way', () => {
+    let r1: Road = new Road(0, [new Coord(0, .2), new Coord(2, .2)], 1, 0);
+    let r2: Road = new Road(1, [new Coord(.5, 0), new Coord(.5, 2)], 1, 1);
+    let r3: Road = new Road(2, [new Coord(1.5, 0), new Coord(1.5, 2)], 1, 1);
+    let m: RoadMap = new RoadMap([r1, r2, r3]);
+    let net: RoadNetwork = new RoadNetwork(m);
+
+    let fromInt: Intersection = net.getIntersection(0, 2);
+    let toInt: Intersection = net.getIntersection(0, 1);
+
+    let connRoad: Road = getConnectingRoad(fromInt, toInt);
+    expect(connRoad).toBeUndefined();
 })
 
 function createMap(): RoadMap {

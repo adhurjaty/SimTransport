@@ -10,7 +10,19 @@ export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
 }
 
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {
-    return undefined;
+    let road: Road = fromInt.roads.find(r => 
+        toInt.roads.map(t => t.id).indexOf(r.id) != -1);
+    
+    if(!road) {
+        return undefined;
+    }
+
+    let isCharm: boolean = getRoadDistance(road, road.path[0], fromInt.location) <
+        getRoadDistance(road, road.path[0], toInt.location);
+    if((isCharm && road.charmLanes == 0) || (!isCharm && road.strangeLanes == 0)) {
+        return undefined
+    }
+    return road;
 }
 
 class RoadDistanceFinder {

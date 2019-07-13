@@ -73,4 +73,11 @@ export default class RoadNetwork {
             
         }
     }
+
+    getIntersection(roadID: number, otherID: number): Intersection {
+        let hasRoad: (id: number, int: Intersection) => boolean = (id, int) => {
+            return int.roads.find(x => x.id == id) != undefined;
+        } 
+        return this.intersections.find(x => hasRoad(roadID, x) && hasRoad(otherID, x));
+    }
 }
