@@ -1,7 +1,7 @@
 import ICoord from "./interfaces/ICoord";
 import { LineSegment } from "./interfaces/LineSegment";
 
-export function* intersectionGrouping<T>(lst: T[], size: number): 
+export function* tipTailGrouping<T>(lst: T[], size: number): 
     IterableIterator<T[]> 
 {
     if(size <= 1) {

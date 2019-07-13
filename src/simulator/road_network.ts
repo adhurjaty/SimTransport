@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Intersection from "./intersection";
 import Road from "../models/road";
 import Coord from "../models/coord";
-import { intersectionGrouping, segmentsIntersect } from "../util";
+import { tipTailGrouping, segmentsIntersect } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 import { getConnectingRoad, getRoadDistance } from "./simulator_helpers";
@@ -36,8 +36,8 @@ export default class RoadNetwork {
     }
 
     intersects(road: Road, otherRoad: Road): Coord {
-        for (const seg of intersectionGrouping(road.path, 2)) {
-            for (const other of intersectionGrouping(otherRoad.path, 2)) {
+        for (const seg of tipTailGrouping(road.path, 2)) {
+            for (const other of tipTailGrouping(otherRoad.path, 2)) {
                 let coord: ICoord = segmentsIntersect(seg as [Coord, Coord],
                     other as [Coord, Coord]) 
                 if(coord != undefined) {

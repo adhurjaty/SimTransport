@@ -29,6 +29,22 @@ test('find simple road distance', () => {
     expect(result).toBe(1.48);
 });
 
+test('find complex road distance', () => {
+    let coords: Coord[] = [
+        new Coord(0, 0),
+        new Coord(2, 2),
+        new Coord(3, 5),
+        new Coord(3, 4)
+    ];
+
+    let road: Road = new Road(0, coords, 1, 1);
+    let points: [Coord, Coord] = [new Coord(1, 1), new Coord(3, 4.5)];
+
+    let expected: number = 5.076
+    let distance: number = getRoadDistance(road, ...points)
+    expect(distance).toBeCloseTo(expected, 3); 
+})
+
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);
