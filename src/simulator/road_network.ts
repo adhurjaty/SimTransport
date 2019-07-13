@@ -4,14 +4,13 @@ import Road from "../models/road";
 import Coord from "../models/coord";
 import { tipTailGrouping, segmentsIntersect } from "../util";
 import ICoord from "../interfaces/ICoord";
-import { LineSegment } from "../interfaces/LineSegment";
 import { getConnectingRoad, getRoadDistance } from "./simulator_helpers";
 
 const fillValue: number = -1;
 
 export default class RoadNetwork {
     public intersections: Intersection[];
-    private connections: number[][];
+    public connections: number[][];
 
     constructor(public map: RoadMap) {
         this.initialize();
@@ -52,25 +51,28 @@ export default class RoadNetwork {
     createNetwork() {
         // network is a 2-D array of road lengths from intersection to intersection
         // y-axis is the 'from' intersection and x is the 'to' intersection
-        this.connections = Array(this.intersections.length).fill(
+        this.connections = Array.from(Array(this.intersections.length), _ => 
             Array(this.intersections.length).fill(fillValue));
 
-        for (let i = 0; i < this.intersections.length; i++) {
-            for (let j = i; j < this.intersections.length; j++) {
-                if(i == j) {
-                    this.connections[i][j] = 0;
+        for (let y = 0; y < this.intersections.length; y++) {
+            for (let x = y; x < this.intersections.length; x++) {
+                if(y == x) {
+                    this.connections[y][x] = 0;
                     continue;
                 }
-                let fromInt: Intersection = this.intersections[i];
-                let toInt: Intersection = this.intersections[j];
-                
-                let connectingRoad: Road = getConnectingRoad(fromInt, toInt);
-                if(connectingRoad != undefined) {
-                    this.connections[i][j] = getRoadDistance(connectingRoad, 
-                        fromInt.location, toInt.location);
-                }
+                let fromInt: Intersection = this.intersections[y];
+                let toInt: Intersection = this.intersections[x];
+                this.addConnection(fromInt, toInt, x, y);
+                this.addConnection(toInt, fromInt, y, x);
             }
-            
+        }
+    }
+
+    addConnection(fromInt: Intersection, toInt: Intersection, x: number, y: number) {
+        let connectingRoad: Road = getConnectingRoad(fromInt, toInt);
+        if(connectingRoad != undefined) {
+            this.connections[y][x] = getRoadDistance(connectingRoad, 
+                fromInt.location, toInt.location);
         }
     }
 

@@ -74,7 +74,27 @@ test('get connecting road against one-way', () => {
 
     let connRoad: Road = getConnectingRoad(fromInt, toInt);
     expect(connRoad).toBeUndefined();
-})
+});
+
+test('get simple network', () => {
+    let roads: Road[] = [
+        new Road(0, [new Coord(0, .5), new Coord(2, .5)], 1, 0),
+        new Road(1, [new Coord(.5, 0), new Coord(.5, 2)], 1, 1),
+        new Road(2, [new Coord(1.5, 0), new Coord(1.5, 2)], 1, 1),
+        new Road(3, [new Coord(0, 1.5), new Coord(2, 1.5)], 1, 1)
+    ];
+    let m: RoadMap = new RoadMap(roads);
+    let net: RoadNetwork = new RoadNetwork(m);
+
+    let expected: number[][] = [
+        [0, 1, 1, -1],
+        [-1, 0, -1, 1],
+        [1, -1, 0, 1],
+        [-1, 1, 1, 0]
+    ];
+
+    expect(net.connections).toEqual(expected);
+});
 
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
