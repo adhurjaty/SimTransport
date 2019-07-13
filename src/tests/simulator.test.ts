@@ -4,6 +4,10 @@ import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
 import { getRoadDistance, getConnectingRoad } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
+import WorldBuilder from "../simulator/world_builder";
+import Car from "../models/car";
+import World from "../simulator/world";
+import DrivingCar from "../simulator/driving_car";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -94,6 +98,21 @@ test('get simple network', () => {
     ];
 
     expect(net.connections).toEqual(expected);
+});
+
+test('build simple world', () => {
+    let cars: Car[] = [
+        new Car(.01, 1, 1),
+        new Car(.01, 1, 1),
+        new Car(.01, 1, 1),
+        new Car(.01, 1, 1)
+    ];
+
+    let builder: WorldBuilder = new WorldBuilder(map, cars);
+    let world: World = builder.build();
+
+    expect(world.map.roads.length).toBe(10);
+    expect(world.cars.length).toBe(4);
 });
 
 function createMap(): RoadMap {
