@@ -13,7 +13,8 @@ export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
         if(idx > -1) {
             pointsToCheck = pointsToCheck.splice(idx, 1);
         }
-        if(pointsToCheck.length == 0) {
+        // HACK: magic number
+        if(pointsToCheck.length == 0 || idx == 2) {
             return distance;
         }
     }
@@ -28,8 +29,14 @@ export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
 function getSegmentDistance(seg: LineSegment, pointsToCheck: Coord[]): [number, number] {
     for (let i = 0; i < pointsToCheck.length; i++) {
         const p = pointsToCheck[i];
-        if(isPointOnLine(seg as [Coord, Coord], p)) {
+        const line = seg as [Coord, Coord];
+        if(isPointOnLine(line, p)) {
             if(pointsToCheck.length == 2) {
+                let otherPoint: Coord = pointsToCheck[Number(i == 0)];
+                if(isPointOnLine(line, otherPoint)) {
+                    // HACK: magic number
+                    return [getDistance([p, otherPoint]), 2];
+                }
                 return [getDistance([seg[0], p]), i];
             }
             return [getDistance([p, seg[1]]), i];
