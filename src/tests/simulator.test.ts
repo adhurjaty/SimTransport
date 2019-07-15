@@ -25,6 +25,17 @@ test('get intersection locations', () => {
     expect(network.intersections.map(x => x.location)).toContainEqual({x: .1, y: .4});
 });
 
+test('get intersection at corner', () => {
+    let cornerMap: RoadMap = new RoadMap([
+        new Road(0, [new Coord(0, 1), new Coord(1, 1), new Coord(2, 2)], 1, 1),
+        new Road(0, [new Coord(1, 0), new Coord(1, 2)], 1, 1)
+    ]);
+    let simpleNetwork: RoadNetwork = new RoadNetwork(cornerMap);
+
+    expect(simpleNetwork.intersections.length).toBe(1);
+    expect(simpleNetwork.intersections[0].location.toTuple()).toEqual([1, 1]);
+});
+
 test('find simple road distance', () => {
     let road: Road = map.roads[2];
     let fromCoord: Coord = new Coord(.02, .2);

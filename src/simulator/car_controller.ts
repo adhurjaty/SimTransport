@@ -5,4 +5,6 @@ export default class CarController {
     constructor(private car: DrivingCar, private world: World) {
 
     }
+
+    
 }
