@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -255,6 +255,16 @@ test('find straight path', () => {
 
     expect(path.length).toBe(1);
     expect(path[0].road.id).toBe(8);
+});
+
+test('get coord from address', () => {
+    let road: Road = new Road(0, 
+        [new Coord(0, 1), new Coord(1, 1), new Coord(2, 2)], 1, 1);
+    let address: Address = new Address(road, 2);
+    let coord: Coord = getCoord(address);
+
+    expect(coord.x).toBeCloseTo(1.707);
+    expect(coord.y).toBeCloseTo(1.707);
 });
 
 function createMap(): RoadMap {

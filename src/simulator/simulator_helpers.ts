@@ -1,10 +1,11 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, getDistance, PriorityQueue } from "../util";
+import { isPointOnLine, getDistance, PriorityQueue, scaleSegment } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection } from "../enums";
+import ICoord from "../interfaces/ICoord";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -43,6 +44,21 @@ export function getAddress(network: RoadNetwork, location: Coord): Address {
     return new Address(road, distance);
 }
 
+export function getCoord(address: Address): Coord {
+    let distance = address.distance;
+    for (const seg of address.road.toLineSegments()) {
+        let segLength: number = getDistance(seg);
+        if(segLength >= distance) {
+            let result: ICoord = scaleSegment(seg as [Coord, Coord], 
+                distance / segLength)[1];
+            return new Coord(result.x, result.y);
+        }
+        distance -= segLength;
+    }
+
+    throw new Error("distance exceeds road length");
+}
+
 class RoadDistanceFinder {
     private pointsToCheck: Coord[];
     constructor(private road: Road, from: Coord, to: Coord) {
@@ -61,7 +77,7 @@ class RoadDistanceFinder {
         throw new Error("One or both points are not on the road");
     }
 
-    getSegmentDistance(line: [Coord, Coord]): number {
+    private getSegmentDistance(line: [Coord, Coord]): number {
         for (let i = 0; i < this.pointsToCheck.length; i++) {
             const p = this.pointsToCheck[i];
 
@@ -77,11 +93,11 @@ class RoadDistanceFinder {
         return this.shouldAccumDistance() ? getDistance(line) : 0;
     }
 
-    shouldAccumDistance(): boolean {
+    private shouldAccumDistance(): boolean {
         return this.pointsToCheck.length <= 1;
     }
 
-    isPathDone(): boolean {
+    private isPathDone(): boolean {
         return this.pointsToCheck.length == 0;
     }
 }

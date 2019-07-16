@@ -60,6 +60,15 @@ function makeOriginVector(seg: LineSegment): ICoord {
     return {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
 }
 
+export function scaleSegment(seg: LineSegment, scale: number): LineSegment {
+    let base: ICoord = seg[0];
+    let newCoord: ICoord = {
+        x: base.x + (seg[1].x - base.x) * scale,
+        y: base.y + (seg[1].y - base.y) * scale
+    };
+    return [base, newCoord]; 
+}
+
 function toTuple(coord: ICoord): [number, number] {
     return [coord.x, coord.y];
 }
