@@ -146,7 +146,7 @@ export default class RoadNetwork {
         return results;
     }
 
-    private *getIntersectionsOnRoad(road: Road): IterableIterator<Intersection> {
+    *getIntersectionsOnRoad(road: Road): IterableIterator<Intersection> {
         let firstInt: Intersection = this.intersections.find(x => 
             x.roads.map(y => y.id).indexOf(road.id) != -1);
         for(const int of this.getConnectedIntersections(firstInt)) {
@@ -156,7 +156,7 @@ export default class RoadNetwork {
         }
     }
 
-    private *getConnectedIntersections(intersection: Intersection, keepSelf: boolean = true): 
+    *getConnectedIntersections(intersection: Intersection, keepSelf: boolean = true): 
         IterableIterator<Intersection> 
     {
         let id: number = intersection.id;

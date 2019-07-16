@@ -77,6 +77,10 @@ export function getSortedSignChangeIndices(lst: number[]): [number, number] {
     return [lst.length - 1, -1];
 }
 
+export function last<T>(lst: T[]): T {
+    return lst[lst.length - 1];
+}
+
 export class PriorityQueue<T> {
     private elements: T[] = [];
 

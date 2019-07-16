@@ -232,9 +232,9 @@ test('find simple path', () => {
     let path: PathInstruction[] = pathFinder.getPath(location, dest);
 
     let expectedPath: PathInstruction[] = [
-        new PathInstruction(map.roads[8], RoadDirection.Strange, .34, new Coord(.3, .1)),
-        new PathInstruction(map.roads[1], RoadDirection.Strange, .2, new Coord(.1, .1)),
-        new PathInstruction(map.roads[6], RoadDirection.Strange, .07, dest),
+        new PathInstruction(map.roads[8], RoadDirection.Strange, .04, new Coord(.3, .4)),
+        new PathInstruction(map.roads[4], RoadDirection.Strange, .1, new Coord(.1, .4)),
+        new PathInstruction(map.roads[6], RoadDirection.Strange, .37, dest),
     ]
 
     expect(path.length).toBe(3);
