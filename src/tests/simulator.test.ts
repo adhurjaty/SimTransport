@@ -246,6 +246,17 @@ test('find simple path', () => {
     }
 });
 
+test('find straight path', () => {
+    let location: Coord = new Coord(.3, .44);
+    let dest: Coord = new Coord(.3, .03);
+
+    let pathFinder: PathFinder = new PathFinder(network);
+    let path: PathInstruction[] = pathFinder.getPath(location, dest);
+
+    expect(path.length).toBe(1);
+    expect(path[0].road.id).toBe(8);
+});
+
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);
