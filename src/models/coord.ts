@@ -6,4 +6,8 @@ export default class Coord {
     toTuple(): [number, number] {
         return [this.x, this.y];
     }
+
+    distance(other: Coord): number {
+        return Math.sqrt((this.x - other.x)**2 + (this.y - other.y)**2);
+    }
 }

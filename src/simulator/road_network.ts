@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Intersection from "./intersection";
 import Road from "../models/road";
 import Coord from "../models/coord";
-import { segmentsIntersect } from "../util";
+import { segmentsIntersect, isPointOnLine } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { getConnectingRoad, getRoadDistance } from "./simulator_helpers";
 
@@ -36,7 +36,7 @@ export default class RoadNetwork {
 
     intersects(road: Road, otherRoad: Road): Coord {
         for (const seg of road.toLineSegments()) {
-            for (const other of road.toLineSegments()) {
+            for (const other of otherRoad.toLineSegments()) {
                 let coord: ICoord = segmentsIntersect(seg as [Coord, Coord],
                     other as [Coord, Coord]) 
                 if(coord != undefined) {
@@ -85,7 +85,13 @@ export default class RoadNetwork {
 
     getRoad(location: Coord): Road {
         for (const road of this.map.roads) {
-            
+            for (const seg of road.toLineSegments()) {
+                if(isPointOnLine(seg, location)) {
+                    return road;
+                }
+            }
         }
+
+        throw new Error("Point is not on any road");
     }
 }

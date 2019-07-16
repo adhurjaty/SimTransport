@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, findPath } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -113,6 +113,14 @@ test('get simple network', () => {
     expect(net.connections).toEqual(expected);
 });
 
+test('get road from coord', () => {
+    let coord: Coord = new Coord(.22, .1);
+
+    let road: Road = network.getRoad(coord);
+
+    expect(road.id).toBe(1);
+})
+
 test('build simple world', () => {
     let cars: Car[] = [
         new Car(.01, 1, 1),
@@ -142,8 +150,17 @@ test('find simple path', () => {
     let location: Coord = new Coord(0.3, .44);
     let dest: Coord = new Coord(.1, .03);
 
-    let startRoad: Road = map.roads[8];
+    let path: NavPath = findPath(network, location, dest);
 
+    let startAddr: Address = getAddress(network, location);
+    let endAddr: Address = getAddress(network, dest);
+    let intCoords: [number, number][] = [[.1, .4], [.3, .4]];
+
+    expect(path.startAddress.road.id).toBe(startAddr.road.id);
+    expect(path.startAddress.distance).toBeCloseTo(startAddr.distance);
+    expect(path.endAddress.road.id).toBe(endAddr.road.id);
+    expect(path.endAddress.distance).toBeCloseTo(endAddr.distance);
+    expect(path.intersections.map(x => x.location.toTuple())).toEqual(intCoords);
 });
 
 function createMap(): RoadMap {

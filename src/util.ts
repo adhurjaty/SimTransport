@@ -56,11 +56,47 @@ function dotProduct(a: [number, number], b: [number, number]) {
     return a[0] * b[0] + a[1] * b[1];
 }
 
-
 function makeOriginVector(seg: LineSegment): ICoord {
     return {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
 }
 
 function toTuple(coord: ICoord): [number, number] {
     return [coord.x, coord.y];
+}
+
+export class PriorityQueue<T> {
+    private elements: T[] = [];
+
+    constructor(private hashFn: (a: T) => number) {
+
+    }
+
+    peek(): T {
+        if(this.elements.length == 0) {
+            return undefined;
+        }
+        return this.elements[0];
+    }
+
+    pop(): T {
+        if(this.elements.length == 0) {
+            return undefined;
+        }
+        return this.elements.splice(0, 1)[0];
+    }
+
+    push(el: T): void {
+        for (let i = 0; i < this.elements.length; i++) {
+            const existing = this.elements[i];
+            if(this.hashFn(el) < this.hashFn(existing)) {
+                this.elements.splice(i, 0, el);
+                return;
+            }
+        }
+        this.elements.push(el);
+    }
+
+    empty(): boolean {
+        return this.elements.length == 0;
+    }
 }

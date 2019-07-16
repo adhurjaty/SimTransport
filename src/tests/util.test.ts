@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -85,3 +85,26 @@ test('point on line but not segment', () => {
 
     expect(isPointOnLine(seg, p)).toBeFalsy();
 });
+
+test('insert number in priority queue', () => {
+    let q: PriorityQueue<number> = new PriorityQueue<number>((a) => a);
+    q.push(5);
+    q.push(2);
+    q.push(7);
+
+    expect(q.pop()).toBe(2);
+    expect(q.pop()).toBe(5);
+    expect(q.pop()).toBe(7);
+});
+
+test('insert tuple in priority queue', () => {
+    let q: PriorityQueue<[number, string]> = new PriorityQueue<[number, string]>(
+        (a) => a[0]);
+    q.push([5, 'second']);
+    q.push([2, 'first']);
+    q.push([7, 'third']);
+
+    expect(q.pop()[1]).toEqual('first');
+    expect(q.pop()[1]).toEqual('second');
+    expect(q.pop()[1]).toEqual('third');
+})

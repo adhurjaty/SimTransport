@@ -1,9 +1,11 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, getDistance } from "../util";
+import { isPointOnLine, getDistance, PriorityQueue } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
+import NavPath from "./nav_path";
+import { number } from "prop-types";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -28,6 +30,49 @@ export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): R
 
 export function getAddress(network: RoadNetwork, location: Coord): Address {
     let road: Road = network.getRoad(location);
+    let distance: number = getRoadDistance(road, road.path[0], location);
+    return new Address(road, distance);
+}
+
+export function findPath(network: RoadNetwork, source: Coord, dest: Coord): NavPath {
+    let startAddr: Address = getAddress(network, source);
+    let endAddr: Address = getAddress(network, dest);
+
+    let frontier: PriorityQueue<AStarNodeElement> = 
+        new PriorityQueue<AStarNodeElement>((a) => a.value);
+    let intersectionCost: Map<number, number> = new Map<number, number>();
+    let startIntersections: Intersection[] = network.getNearestIntersections(source);
+
+    for (const int of startIntersections) {
+        let d: number = getRoadDistance(startAddr.road, source, int.location);
+        let h: number = distHeuristic(source, dest);
+        frontier.push(new AStarNodeElement(d + h, d, [int], startAddr.road));
+        intersectionCost.set(network.getIntersectionID(int), d);
+    }
+
+    while(!frontier.empty()) {
+        let curNode: AStarNodeElement = frontier.pop();
+        let curIntersection: Intersection = curNode.path[curNode.path.length - 1];
+
+        let neighbors: Intersection[] = network.getNearestIntersections(curIntersection);
+        for (const neighbor of neighbors) {
+            let d: number = getRoadDistance(curNode.road, curIntersection.location,
+                neighbor.location) + curNode.cost;
+            let neighborID: number = network.getIntersectionID(neighbor)
+            if(d < (intersectionCost.get(neighborID) || Infinity))
+            {
+                intersectionCost.set(neighborID, d);
+                
+                frontier.push(new AStarNodeElement())
+            }
+        }
+    }
+
+    throw new Error('No path from source to destination');
+}
+
+function distHeuristic(source: Coord, dest: Coord) {
+    return source.distance(dest);
 }
 
 class RoadDistanceFinder {
@@ -70,5 +115,13 @@ class RoadDistanceFinder {
 
     isPathDone(): boolean {
         return this.pointsToCheck.length == 0;
+    }
+}
+
+class AStarNodeElement {
+    constructor(public value: number, public cost: number, public path: Intersection[], 
+        public road: Road) 
+    {
+
     }
 }
