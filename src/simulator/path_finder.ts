@@ -73,12 +73,12 @@ export default class PathFinder {
         let path: PathInstruction[] = curNode ? curNode.path.concat([instruction]) 
             : [instruction];
 
-        let intID: number = this.network.getIntersectionID(node);
+        let intID: number = node.id;
         if(totalDistance < (this.intersectionCost.get(intID) || Infinity)) {
             let h: number = this.distHeuristic(source);
             this.frontier.push(new AStarNodeElement(totalDistance + h, totalDistance,
                 path, node));
-            this.intersectionCost.set(this.network.getIntersectionID(node), 
+            this.intersectionCost.set(node.id, 
                 totalDistance);
         }
     }

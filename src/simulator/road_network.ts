@@ -24,12 +24,15 @@ export default class RoadNetwork {
 
     createIntersections() {
         this.intersections = [];
+        let id: number = 0;
         for (let i = 0; i < this.map.roads.length; i++) {
             let road = this.map.roads[i];
             for (const otherRoad of this.map.roads.slice(i+1)) {
                 let coord: Coord = this.intersects(road, otherRoad);
                 if(coord != undefined) {
-                    this.intersections.push(new Intersection([road, otherRoad], coord));
+                    this.intersections.push(new Intersection(id, [road, otherRoad],
+                        coord));
+                    id++;
                 }
             }
         }
@@ -156,7 +159,7 @@ export default class RoadNetwork {
     private *getConnectedIntersections(intersection: Intersection, keepSelf: boolean = true): 
         IterableIterator<Intersection> 
     {
-        let id: number = this.getIntersectionID(intersection);
+        let id: number = intersection.id;
         let row: number[] = this.connections[id];
 
         for (let i = 0; i < row.length; i++) {
@@ -166,16 +169,5 @@ export default class RoadNetwork {
                 yield this.intersections[i];
             }
         }
-    }
-
-    getIntersectionID(intersection: Intersection): number {
-        for (let i = 0; i < this.intersections.length; i++) {
-            const int = this.intersections[i];
-            if(int.equals(intersection)) {
-                return i;
-            }
-        }
-
-        throw new Error("Intersection not in network");
     }
 }

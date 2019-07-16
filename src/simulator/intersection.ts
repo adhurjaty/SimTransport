@@ -4,7 +4,7 @@ import Coord from "../models/coord";
 
 export default class Intersection {
     public light: TrafficLight;
-    constructor(public roads: [Road, Road], public location: Coord) {
+    constructor(public id: number, public roads: [Road, Road], public location: Coord) {
         this.light = new TrafficLight(this);
     }
 

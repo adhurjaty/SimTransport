@@ -150,7 +150,7 @@ test('get address from coord', () => {
 
 test('intersections are same', () => {
     let int1: Intersection = network.intersections[12];
-    let int2: Intersection = new Intersection([map.roads[2], map.roads[7]], 
+    let int2: Intersection = new Intersection(0, [map.roads[2], map.roads[7]], 
         new Coord(.2, .2));
     
     expect(int1.equals(int2)).toBeTruthy();
@@ -158,16 +158,10 @@ test('intersections are same', () => {
 
 test('intersections same place different road order', () => {
     let int1: Intersection = network.intersections[12];
-    let int2: Intersection = new Intersection([map.roads[7], map.roads[2]], 
+    let int2: Intersection = new Intersection(0, [map.roads[7], map.roads[2]], 
         new Coord(.2, .2));
     
     expect(int1.equals(int2)).toBeFalsy();
-});
-
-test('get intersection ID', () => {
-    let int: Intersection = new Intersection([map.roads[2], map.roads[7]], 
-        new Coord(.2, .2));
-    expect(network.getIntersectionID(int)).toBe(12);
 });
 
 test('get intersections from road midpoint', () => {
@@ -224,7 +218,7 @@ test('get intersections from intersection', () => {
     let int: Intersection = network.intersections[6];
     let neighbors: Intersection[] = network.getNearestIntersections(int);
 
-    let resultIds = neighbors.map(x => network.getIntersectionID(x)).sort((a, b) => a - b);
+    let resultIds = neighbors.map(x => x.id).sort((a, b) => a - b);
     let expectedIds = [1, 5, 7, 11];
     
     expect(resultIds).toEqual(expectedIds);
