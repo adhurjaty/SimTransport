@@ -9,8 +9,9 @@ import Car from "../models/car";
 import World from "../simulator/world";
 import DrivingCar from "../simulator/driving_car";
 import Address from "../simulator/address";
-import NavPath from "../simulator/nav_path";
 import PathFinder from "../simulator/path_finder";
+import PathInstruction from "../simulator/path_instruction";
+import { RoadDirection } from "../enums";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -234,17 +235,21 @@ test('find simple path', () => {
     let dest: Coord = new Coord(.1, .03);
 
     let pathFinder: PathFinder = new PathFinder(network);
-    let path: NavPath = pathFinder.getPath(location, dest);
+    let path: PathInstruction[] = pathFinder.getPath(location, dest);
 
-    let startAddr: Address = getAddress(network, location);
-    let endAddr: Address = getAddress(network, dest);
-    let intCoords: [number, number][] = [[.1, .4], [.3, .4]];
+    let expectedPath: PathInstruction[] = [
+        new PathInstruction(map.roads[8], RoadDirection.Strange, .34, new Coord(.3, .1)),
+        new PathInstruction(map.roads[1], RoadDirection.Strange, .2, new Coord(.1, .1)),
+        new PathInstruction(map.roads[6], RoadDirection.Strange, .07, dest),
+    ]
 
-    expect(path.startAddress.road.id).toBe(startAddr.road.id);
-    expect(path.startAddress.distance).toBeCloseTo(startAddr.distance);
-    expect(path.endAddress.road.id).toBe(endAddr.road.id);
-    expect(path.endAddress.distance).toBeCloseTo(endAddr.distance);
-    expect(path.intersections.map(x => x.location.toTuple())).toEqual(intCoords);
+    expect(path.length).toBe(3);
+    for (let i = 0; i < path.length; i++) {
+        const instruction = path[i];
+        const expected = expectedPath[i];
+        expect(instruction.road.id).toBe(expected.road.id);
+        expect(instruction.direction).toBe(expected.direction);
+    }
 });
 
 function createMap(): RoadMap {

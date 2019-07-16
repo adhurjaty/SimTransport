@@ -4,11 +4,21 @@ import Intersection from "./intersection";
 import { isPointOnLine, getDistance, PriorityQueue } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
-import NavPath from "./nav_path";
+import { RoadDirection } from "../enums";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
     return distanceFinder.getRoadDistance();
+}
+
+export function getRoadDirection(road: Road, from: Coord, to: Coord): RoadDirection {
+    if(getRoadDistance(road, road.path[0], from) < 
+        getRoadDistance(road, road.path[0], to))
+    {
+        return RoadDirection.Charm;
+    }
+
+    return RoadDirection.Strange;
 }
 
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {
