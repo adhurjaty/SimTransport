@@ -10,4 +10,8 @@ export default class Coord {
     distance(other: Coord): number {
         return Math.sqrt((this.x - other.x)**2 + (this.y - other.y)**2);
     }
+
+    equals(other: Coord): boolean {
+        return this.x == other.x && this.y == other.y;
+    }
 }

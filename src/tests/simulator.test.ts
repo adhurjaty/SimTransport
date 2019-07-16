@@ -163,6 +163,83 @@ test('find simple path', () => {
     expect(path.intersections.map(x => x.location.toTuple())).toEqual(intCoords);
 });
 
+test('intersections are same', () => {
+    let int1: Intersection = network.intersections[12];
+    let int2: Intersection = new Intersection([map.roads[2], map.roads[7]], 
+        new Coord(.2, .2));
+    
+    expect(int1.equals(int2)).toBeTruthy();
+});
+
+test('intersections same place different road order', () => {
+    let int1: Intersection = network.intersections[12];
+    let int2: Intersection = new Intersection([map.roads[7], map.roads[2]], 
+        new Coord(.2, .2));
+    
+    expect(int1.equals(int2)).toBeFalsy();
+});
+
+test('get intersection ID', () => {
+    let int: Intersection = new Intersection([map.roads[2], map.roads[7]], 
+        new Coord(.2, .2));
+    expect(network.getIntersectionID(int)).toBe(12);
+});
+
+test('get intersections from road midpoint', () => {
+    let location: Coord = new Coord(.25, .2);
+
+    let intersections: Intersection[] = network.getNearestIntersections(location);
+
+    let expected: Intersection[] = [network.intersections[12], network.intersections[13]];
+    expect(intersections).toEqual(expected);
+});
+
+test('get intersection at beginning', () => {
+    let simpleMap: RoadMap = new RoadMap([
+        new Road(0, [new Coord(0, 1), new Coord(2, 1)], 1, 1),
+        new Road(1, [new Coord(.5, 0), new Coord(.5, 2)], 1, 1),
+        new Road(2, [new Coord(1.5, 0), new Coord(1.5, 2)], 1, 1)
+    ]);
+    let simpleNetwork: RoadNetwork = new RoadNetwork(simpleMap);
+    let location: Coord = new Coord(.2, 1);
+    let intersections: Intersection[] = simpleNetwork.getNearestIntersections(location);
+
+    expect(intersections.length).toBe(1);
+    expect(intersections[0].location.toTuple()).toEqual([.5, 1]);
+});
+
+test('get intersection at end', () => {
+    let simpleMap: RoadMap = new RoadMap([
+        new Road(0, [new Coord(0, 1), new Coord(2, 1)], 1, 1),
+        new Road(1, [new Coord(.5, 0), new Coord(.5, 2)], 1, 1),
+        new Road(2, [new Coord(1.5, 0), new Coord(1.5, 2)], 1, 1)
+    ]);
+    let simpleNetwork: RoadNetwork = new RoadNetwork(simpleMap);
+    let location: Coord = new Coord(1.7, 1);
+    let intersections: Intersection[] = simpleNetwork.getNearestIntersections(location);
+
+    expect(intersections.length).toBe(1);
+    expect(intersections[0].location.toTuple()).toEqual([1.5, 1]);
+});
+
+test('get no intersections on one-way', () => {
+    let simpleMap: RoadMap = new RoadMap([
+        new Road(0, [new Coord(0, 1), new Coord(2, 1)], 1, 0),
+        new Road(1, [new Coord(.5, 0), new Coord(.5, 2)], 1, 1),
+        new Road(2, [new Coord(1.5, 0), new Coord(1.5, 2)], 1, 1)
+    ]);
+    let location: Coord = new Coord(1.7, 1);
+    let simpleNetwork: RoadNetwork = new RoadNetwork(simpleMap);
+    let intersections: Intersection[] = simpleNetwork.getNearestIntersections(location);
+
+    expect(intersections.length).toBe(0);
+});
+
+test('get intersections from intersection', () => {
+
+    expect(true).toBeFalsy();
+});
+
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);

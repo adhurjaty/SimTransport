@@ -64,6 +64,19 @@ function toTuple(coord: ICoord): [number, number] {
     return [coord.x, coord.y];
 }
 
+// returns indices of the values closest to 0 both positive and negative
+// input list must be ordered least to greatest
+export function getSortedSignChangeIndices(lst: number[]): [number, number] {
+    for (let i = 0; i < lst.length; i++) {
+        const el = lst[i];
+        if(el > 0) {
+            return (i > 0) ? [i - 1, i] : [-1, 0]
+        }
+    }
+
+    return [lst.length - 1, -1];
+}
+
 export class PriorityQueue<T> {
     private elements: T[] = [];
 

@@ -4,7 +4,8 @@ import Road from "../models/road";
 import Coord from "../models/coord";
 import { segmentsIntersect, isPointOnLine } from "../util";
 import ICoord from "../interfaces/ICoord";
-import { getConnectingRoad, getRoadDistance } from "./simulator_helpers";
+import { getConnectingRoad, getRoadDistance, getAddress } from "./simulator_helpers";
+import Address from "./address";
 
 const fillValue: number = -1;
 
@@ -93,5 +94,73 @@ export default class RoadNetwork {
         }
 
         throw new Error("Point is not on any road");
+    }
+
+    getNearestIntersections(loc: Coord | Intersection): Intersection[] {
+        if((loc as Intersection).location == undefined) {
+            let location: Coord = <Coord>loc;
+            let address: Address = getAddress(this, location);
+            let intersections: Intersection[] = 
+                Array.from(this.getIntersectionsOnRoad(address.road));
+            let diffs: number[] = intersections.map(x => 
+                getRoadDistance(address.road, address.road.path[0], x.location) 
+                - address.distance);
+            
+            let results: Intersection[] = [];
+            for (let i = 0; i < diffs.length; i++) {
+                const diff = diffs[i];
+                if(diff > 0) {
+                    if(i > 0 && address.road.strangeLanes > 0) {
+                        results.push(intersections[i - 1]);
+                    }
+                    if(address.road.charmLanes > 0) {
+                        results.push(intersections[i]);
+                    }
+                    return results;
+                }
+            }
+
+            if(address.road.strangeLanes > 0) {
+                return [intersections[intersections.length - 1]];
+            }
+            return []
+        } else {
+
+        }
+    }
+
+    private *getIntersectionsOnRoad(road: Road): IterableIterator<Intersection> {
+        let firstInt: Intersection = this.intersections.find(x => 
+            x.roads.map(y => y.id).indexOf(road.id) != -1);
+        for(const int of this.getConnectedIntersections(firstInt)) {
+            if(int.hasRoad(road)) {
+                yield int;
+            }
+        }
+    }
+
+    private *getConnectedIntersections(intersection: Intersection): 
+        IterableIterator<Intersection> 
+    {
+        let id: number = this.getIntersectionID(intersection);
+        let row: number[] = this.connections[id];
+
+        for (let i = 0; i < row.length; i++) {
+            const conn = row[i];
+            if(conn != fillValue) {
+                yield this.intersections[i];
+            }
+        }
+    }
+
+    getIntersectionID(intersection: Intersection): number {
+        for (let i = 0; i < this.intersections.length; i++) {
+            const int = this.intersections[i];
+            if(int.equals(intersection)) {
+                return i;
+            }
+        }
+
+        throw new Error("Intersection not in network");
     }
 }

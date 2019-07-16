@@ -42,6 +42,7 @@ export function findPath(network: RoadNetwork, source: Coord, dest: Coord): NavP
         new PriorityQueue<AStarNodeElement>((a) => a.value);
     let intersectionCost: Map<number, number> = new Map<number, number>();
     let startIntersections: Intersection[] = network.getNearestIntersections(source);
+    let endIntersections: Intersection[] = network.getNearestIntersections(dest);
 
     for (const int of startIntersections) {
         let d: number = getRoadDistance(startAddr.road, source, int.location);
@@ -54,6 +55,13 @@ export function findPath(network: RoadNetwork, source: Coord, dest: Coord): NavP
         let curNode: AStarNodeElement = frontier.pop();
         let curIntersection: Intersection = curNode.path[curNode.path.length - 1];
 
+        for(const int of endIntersections) {
+            if(curIntersection.equals(int)) {
+                let path: Intersection[] = curNode.path;
+                return new NavPath(startAddr, path, endAddr);
+            }
+        }
+
         let neighbors: Intersection[] = network.getNearestIntersections(curIntersection);
         for (const neighbor of neighbors) {
             let d: number = getRoadDistance(curNode.road, curIntersection.location,
@@ -62,8 +70,10 @@ export function findPath(network: RoadNetwork, source: Coord, dest: Coord): NavP
             if(d < (intersectionCost.get(neighborID) || Infinity))
             {
                 intersectionCost.set(neighborID, d);
-                
-                frontier.push(new AStarNodeElement())
+                let h: number = distHeuristic(neighbor.location, dest);
+                let newPath: Intersection[] = curNode.path.concat([neighbor]);
+                let newRoad: Road = getConnectingRoad(curIntersection, neighbor);
+                frontier.push(new AStarNodeElement(d + h, d, newPath, newRoad));
             }
         }
     }

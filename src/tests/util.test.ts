@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -107,4 +107,25 @@ test('insert tuple in priority queue', () => {
     expect(q.pop()[1]).toEqual('first');
     expect(q.pop()[1]).toEqual('second');
     expect(q.pop()[1]).toEqual('third');
-})
+});
+
+test('get sign change indices', () => {
+    let lst: number[] = [-1, -.5, .1, 1.4];
+    let result: [number, number] = getSortedSignChangeIndices(lst);
+
+    expect(result).toEqual([1, 2]);
+});
+
+test('get sign change indices all neg', () => {
+    let lst: number[] = [-2, -1.5, -1.1, -.4];
+    let result: [number, number] = getSortedSignChangeIndices(lst);
+
+    expect(result).toEqual([3, -1]);
+});
+
+test('get sign change indices all pos', () => {
+    let lst: number[] = [1, 1.5, 2.1, 3.4];
+    let result: [number, number] = getSortedSignChangeIndices(lst);
+
+    expect(result).toEqual([-1, 0]);
+});
