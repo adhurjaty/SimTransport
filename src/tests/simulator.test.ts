@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, findPath } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -10,6 +10,7 @@ import World from "../simulator/world";
 import DrivingCar from "../simulator/driving_car";
 import Address from "../simulator/address";
 import NavPath from "../simulator/nav_path";
+import PathFinder from "../simulator/path_finder";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -146,23 +147,6 @@ test('get address from coord', () => {
     expect(address.distance).toEqual(.44);
 });
 
-test('find simple path', () => {
-    let location: Coord = new Coord(0.3, .44);
-    let dest: Coord = new Coord(.1, .03);
-
-    let path: NavPath = findPath(network, location, dest);
-
-    let startAddr: Address = getAddress(network, location);
-    let endAddr: Address = getAddress(network, dest);
-    let intCoords: [number, number][] = [[.1, .4], [.3, .4]];
-
-    expect(path.startAddress.road.id).toBe(startAddr.road.id);
-    expect(path.startAddress.distance).toBeCloseTo(startAddr.distance);
-    expect(path.endAddress.road.id).toBe(endAddr.road.id);
-    expect(path.endAddress.distance).toBeCloseTo(endAddr.distance);
-    expect(path.intersections.map(x => x.location.toTuple())).toEqual(intCoords);
-});
-
 test('intersections are same', () => {
     let int1: Intersection = network.intersections[12];
     let int2: Intersection = new Intersection([map.roads[2], map.roads[7]], 
@@ -236,8 +220,31 @@ test('get no intersections on one-way', () => {
 });
 
 test('get intersections from intersection', () => {
+    let int: Intersection = network.intersections[6];
+    let neighbors: Intersection[] = network.getNearestIntersections(int);
 
-    expect(true).toBeFalsy();
+    let resultIds = neighbors.map(x => network.getIntersectionID(x)).sort((a, b) => a - b);
+    let expectedIds = [1, 5, 7, 11];
+    
+    expect(resultIds).toEqual(expectedIds);
+});
+
+test('find simple path', () => {
+    let location: Coord = new Coord(.3, .44);
+    let dest: Coord = new Coord(.1, .03);
+
+    let pathFinder: PathFinder = new PathFinder(network);
+    let path: NavPath = pathFinder.getPath(location, dest);
+
+    let startAddr: Address = getAddress(network, location);
+    let endAddr: Address = getAddress(network, dest);
+    let intCoords: [number, number][] = [[.1, .4], [.3, .4]];
+
+    expect(path.startAddress.road.id).toBe(startAddr.road.id);
+    expect(path.startAddress.distance).toBeCloseTo(startAddr.distance);
+    expect(path.endAddress.road.id).toBe(endAddr.road.id);
+    expect(path.endAddress.distance).toBeCloseTo(endAddr.distance);
+    expect(path.intersections.map(x => x.location.toTuple())).toEqual(intCoords);
 });
 
 function createMap(): RoadMap {
