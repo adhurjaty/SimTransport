@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Intersection from "./intersection";
 import Road from "../models/road";
 import Coord from "../models/coord";
-import { segmentsIntersect, isPointOnLine } from "../util";
+import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { getConnectingRoad, getRoadDistance, getAddress } from "./simulator_helpers";
 import Address from "./address";
@@ -98,35 +98,49 @@ export default class RoadNetwork {
 
     getNearestIntersections(loc: Coord | Intersection): Intersection[] {
         if((loc as Intersection).location == undefined) {
-            let location: Coord = <Coord>loc;
-            let address: Address = getAddress(this, location);
-            let intersections: Intersection[] = 
-                Array.from(this.getIntersectionsOnRoad(address.road));
-            let diffs: number[] = intersections.map(x => 
-                getRoadDistance(address.road, address.road.path[0], x.location) 
-                - address.distance);
+            return this.getNearestIntOnRoad(<Coord>loc);
+        } else {
+            return this.getNearestIntsFromInt(<Intersection>loc);
+        }
+    }
+
+    private getNearestIntOnRoad(location: Coord): Intersection[] {
+        let address: Address = getAddress(this, location);
+        let intersections: Intersection[] = 
+            Array.from(this.getIntersectionsOnRoad(address.road));
+
+        return this.getNearestIntsOnRoads([address.road], intersections, location);
+    }
+
+    private getNearestIntsFromInt(int: Intersection): Intersection[] {
+        let intersections: Intersection[] = Array.from(
+            this.getConnectedIntersections(int, false));
+
+        return this.getNearestIntsOnRoads(int.roads, intersections, int.location);
+    }
+
+    private getNearestIntsOnRoads(roads: Road[], intersections: Intersection[],
+        location: Coord)
+    {
+        let results: Intersection[] = [];
+        for(const road of roads) {
+            let dist: number = getRoadDistance(road, road.path[0], location);
+            let roadInts: Intersection[] = intersections.filter(x => x.hasRoad(road));
+            let diffs: number[] = roadInts.map(x => 
+                getRoadDistance(road, road.path[0], x.location) - dist);
+    
+            let indices: [number, number] = getSortedSignChangeIndices(diffs);
             
-            let results: Intersection[] = [];
-            for (let i = 0; i < diffs.length; i++) {
-                const diff = diffs[i];
-                if(diff > 0) {
-                    if(i > 0 && address.road.strangeLanes > 0) {
-                        results.push(intersections[i - 1]);
-                    }
-                    if(address.road.charmLanes > 0) {
-                        results.push(intersections[i]);
-                    }
-                    return results;
+            let lanes: [number, number] = [road.strangeLanes, road.charmLanes];
+            for (let i = 0; i < indices.length; i++) {
+                const idx = indices[i];
+                if(idx != -1 && lanes[i] > 0) {
+                    results.push(roadInts[idx]);
                 }
             }
-
-            if(address.road.strangeLanes > 0) {
-                return [intersections[intersections.length - 1]];
-            }
-            return []
-        } else {
-
         }
+
+        return results;
     }
 
     private *getIntersectionsOnRoad(road: Road): IterableIterator<Intersection> {
@@ -139,7 +153,7 @@ export default class RoadNetwork {
         }
     }
 
-    private *getConnectedIntersections(intersection: Intersection): 
+    private *getConnectedIntersections(intersection: Intersection, keepSelf: boolean = true): 
         IterableIterator<Intersection> 
     {
         let id: number = this.getIntersectionID(intersection);
@@ -147,7 +161,8 @@ export default class RoadNetwork {
 
         for (let i = 0; i < row.length; i++) {
             const conn = row[i];
-            if(conn != fillValue) {
+            let isMatch: boolean = conn != fillValue && (keepSelf || conn != 0)
+            if(isMatch) {
                 yield this.intersections[i];
             }
         }
