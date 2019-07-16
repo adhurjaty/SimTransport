@@ -12,4 +12,8 @@ export default class DrivingCar extends Car {
     drive() {
         
     }
+
+    setDestination(addr: Address) {
+        this.controller.setDestination(addr);
+    }
 }

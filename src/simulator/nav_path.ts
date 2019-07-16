@@ -5,6 +5,6 @@ export default class NavPath {
     constructor(public startAddress: Address, public intersections: Intersection[], 
         public endAddress: Address)
     {
-        
+
     }
 }

@@ -2,6 +2,7 @@ import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadMap from "../models/road_map";
 import Car from "../models/car";
+import { LineSegment } from "../interfaces/LineSegment";
 
 test('simple coord test', () => {
     let coord: Coord = new Coord(4, 7);
@@ -28,6 +29,15 @@ test('simple car test', () => {
     let car: Car = new Car(4, .01, 3);
     expect(car.accel).toBe(.01);
     expect(car.size).toBe(4);
+});
+
+test('road to line segments', () => {
+    let road: Road = new Road(0, [
+        new Coord(0, 0), new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)
+    ], 1, 1);
+
+    let arr: LineSegment[] = Array.from(road.toLineSegments());
+    expect(arr.length).toBe(3);
 });
 
 function* generate_roads(n: number): IterableIterator<Road> {

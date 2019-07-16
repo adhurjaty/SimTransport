@@ -2,12 +2,14 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
 import World from "../simulator/world";
 import DrivingCar from "../simulator/driving_car";
+import Address from "../simulator/address";
+import NavPath from "../simulator/nav_path";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -124,6 +126,24 @@ test('build simple world', () => {
 
     expect(world.map.roads.length).toBe(10);
     expect(world.cars.length).toBe(4);
+});
+
+test('get address from coord', () => {
+    let location: Coord = new Coord(0.3, .44);
+
+    let address: Address = getAddress(network, location);
+
+    let road: Road = map.roads[8];
+    expect(address.road.id).toBe(road.id);
+    expect(address.distance).toEqual(.44);
+});
+
+test('find simple path', () => {
+    let location: Coord = new Coord(0.3, .44);
+    let dest: Coord = new Coord(.1, .03);
+
+    let startRoad: Road = map.roads[8];
+
 });
 
 function createMap(): RoadMap {

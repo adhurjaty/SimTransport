@@ -1,8 +1,9 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, tipTailGrouping, getDistance } from "../util";
-import { LineSegment } from "../interfaces/LineSegment"
+import { isPointOnLine, getDistance } from "../util";
+import Address from "./address";
+import RoadNetwork from "./road_network";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -25,6 +26,10 @@ export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): R
     return road;
 }
 
+export function getAddress(network: RoadNetwork, location: Coord): Address {
+    let road: Road = network.getRoad(location);
+}
+
 class RoadDistanceFinder {
     private pointsToCheck: Coord[];
     constructor(private road: Road, from: Coord, to: Coord) {
@@ -33,7 +38,7 @@ class RoadDistanceFinder {
 
     getRoadDistance(): number {
         let distance: number = 0;
-        for (const seg of tipTailGrouping(this.road.path, 2)) {
+        for (const seg of this.road.toLineSegments()) {
             let d: number = this.getSegmentDistance(seg as [Coord, Coord]);
             distance += d;
             if(this.isPathDone()) {
