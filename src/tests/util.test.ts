@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, isVectorLeft } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -128,4 +128,18 @@ test('get sign change indices all pos', () => {
     let result: [number, number] = getSortedSignChangeIndices(lst);
 
     expect(result).toEqual([-1, 0]);
+});
+
+test('get right vector', () => {
+    let v1: ICoord = {x: 1, y: 1};
+    let v2: ICoord = {x: 3, y: 0};
+
+    expect(isVectorLeft(v1, v2)).toBeFalsy();
+});
+
+test('get left vector', () => {
+    let v1: ICoord = {x: 1, y: 1};
+    let v2: ICoord = {x: -3, y: 0};
+
+    expect(isVectorLeft(v1, v2)).toBeTruthy();
 });

@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, getCoord } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord, isLeftTurn } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -265,6 +265,28 @@ test('get coord from address', () => {
 
     expect(coord.x).toBeCloseTo(1.707);
     expect(coord.y).toBeCloseTo(1.707);
+});
+
+test('right turn going up', () => {
+    let path: PathInstruction[] = [
+        new PathInstruction(map.roads[7], RoadDirection.Charm, .15, 
+            new Coord(.2, .3)),
+        new PathInstruction(map.roads[3], RoadDirection.Charm, .1, 
+            new Coord(.3, .3))
+    ];
+
+    expect(isLeftTurn(path[1], path[0])).toBeFalsy();
+});
+
+test('left turn going left', () => {
+    let path: PathInstruction[] = [
+        new PathInstruction(map.roads[2], RoadDirection.Strange, .15, 
+            new Coord(.2, .2)),
+        new PathInstruction(map.roads[7], RoadDirection.Strange, .1, 
+            new Coord(.2, .1))
+    ];
+
+    expect(isLeftTurn(path[1], path[0])).toBeTruthy();
 });
 
 function createMap(): RoadMap {

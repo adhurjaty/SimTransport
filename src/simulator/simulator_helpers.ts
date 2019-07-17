@@ -1,11 +1,12 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, getDistance, scaleSegment } from "../util";
+import { isPointOnLine, getDistance, scaleSegment, isVectorLeft } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection } from "../enums";
 import ICoord from "../interfaces/ICoord";
+import PathInstruction from "./path_instruction";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -40,6 +41,10 @@ export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): R
 
 export function getAddress(network: RoadNetwork, location: Coord): Address {
     let road: Road = network.getRoad(location);
+    return getAddressOnRoad(road, location);
+}
+
+function getAddressOnRoad(road: Road, location: Coord): Address {
     let distance: number = getRoadDistance(road, road.path[0], location);
     return new Address(road, distance);
 }
@@ -57,6 +62,21 @@ export function getCoord(address: Address): Coord {
     }
 
     throw new Error("distance exceeds road length");
+}
+
+export function isLeftTurn(inst: PathInstruction, prevInst: PathInstruction): boolean
+{
+    let intAddr: Address = getAddressOnRoad(prevInst.road, prevInst.location);
+    let prevStartDist: number = intAddr.distance - (prevInst.distance * 
+        (prevInst.direction == RoadDirection.Charm ? 1 : -1));
+    let prevStartAddr: Address = new Address(intAddr.road, prevStartDist);
+    let prevStartCoord: Coord = getCoord(prevStartAddr);
+    let prevVec: Coord = new Coord(prevInst.location.x - prevStartCoord.x,
+        prevInst.location.y - prevStartCoord.y);
+    let curVec: Coord = new Coord(inst.location.x - prevInst.location.x,
+        inst.location.y - prevInst.location.y);
+
+    return isVectorLeft(prevVec, curVec);
 }
 
 class RoadDistanceFinder {

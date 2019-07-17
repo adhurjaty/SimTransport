@@ -43,6 +43,10 @@ export function isPointOnLine(seg: LineSegment, p: ICoord): boolean {
     return projection < getDistance(seg) ** 2;
 }
 
+function toTuple(coord: ICoord): [number, number] {
+    return [coord.x, coord.y];
+}
+
 export function getDistance(seg: LineSegment): number {
     let vector: ICoord = makeOriginVector(seg);
     return Math.sqrt(vector.x ** 2 + vector.y ** 2);
@@ -69,8 +73,18 @@ export function scaleSegment(seg: LineSegment, scale: number): LineSegment {
     return [base, newCoord]; 
 }
 
-function toTuple(coord: ICoord): [number, number] {
-    return [coord.x, coord.y];
+export function isVectorLeft(base: ICoord, other: ICoord): boolean {
+    let rot90CCW: ICoord = {x: -other.y, y: other.x};
+    let res: number = dotProduct(toTuple(base), toTuple(rot90CCW));
+    if(res > 0) {
+        return false;
+    }
+
+    if(res < 0) {
+        return true;
+    }
+
+    throw new Error("Vectors are parallel");
 }
 
 // returns indices of the values closest to 0 both positive and negative
