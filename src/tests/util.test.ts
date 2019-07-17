@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, isVectorLeft } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -134,12 +134,12 @@ test('get right vector', () => {
     let v1: ICoord = {x: 1, y: 1};
     let v2: ICoord = {x: 3, y: 0};
 
-    expect(isVectorLeft(v1, v2)).toBeFalsy();
+    expect(dotProduct90CCW(v1, v2) < 0).toBeFalsy();
 });
 
 test('get left vector', () => {
     let v1: ICoord = {x: 1, y: 1};
     let v2: ICoord = {x: -3, y: 0};
 
-    expect(isVectorLeft(v1, v2)).toBeTruthy();
+    expect(dotProduct90CCW(v1, v2) < 0).toBeTruthy();
 });

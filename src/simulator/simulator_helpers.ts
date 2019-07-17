@@ -1,10 +1,10 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, getDistance, scaleSegment, isVectorLeft } from "../util";
+import { isPointOnLine, getDistance, scaleSegment, dotProduct90CCW } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
-import { RoadDirection } from "../enums";
+import { RoadDirection, DrivingDirection } from "../enums";
 import ICoord from "../interfaces/ICoord";
 import PathInstruction from "./path_instruction";
 
@@ -64,7 +64,8 @@ export function getCoord(address: Address): Coord {
     throw new Error("distance exceeds road length");
 }
 
-export function isLeftTurn(inst: PathInstruction, prevInst: PathInstruction): boolean
+export function getDrivingDirection(inst: PathInstruction, prevInst: PathInstruction): 
+    DrivingDirection
 {
     let intAddr: Address = getAddressOnRoad(prevInst.road, prevInst.location);
     let prevStartDist: number = intAddr.distance - (prevInst.distance * 
@@ -76,7 +77,16 @@ export function isLeftTurn(inst: PathInstruction, prevInst: PathInstruction): bo
     let curVec: Coord = new Coord(inst.location.x - prevInst.location.x,
         inst.location.y - prevInst.location.y);
 
-    return isVectorLeft(prevVec, curVec);
+    let product: number = dotProduct90CCW(prevVec, curVec);
+    
+    if(product > 0) {
+        return DrivingDirection.Right;
+    }
+    if(product < 0) {
+        return DrivingDirection.Left
+    }
+
+    return DrivingDirection.Straight;
 }
 
 class RoadDistanceFinder {

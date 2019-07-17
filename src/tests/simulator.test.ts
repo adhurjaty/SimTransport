@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, getCoord, isLeftTurn } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -11,7 +11,7 @@ import DrivingCar from "../simulator/driving_car";
 import Address from "../simulator/address";
 import PathFinder from "../simulator/path_finder";
 import PathInstruction from "../simulator/path_instruction";
-import { RoadDirection } from "../enums";
+import { RoadDirection, DrivingDirection } from "../enums";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -275,7 +275,9 @@ test('right turn going up', () => {
             new Coord(.3, .3))
     ];
 
-    expect(isLeftTurn(path[1], path[0])).toBeFalsy();
+    let result: DrivingDirection = getDrivingDirection(path[1], path[0]);
+
+    expect(result).toBe(DrivingDirection.Right);
 });
 
 test('left turn going left', () => {
@@ -286,7 +288,22 @@ test('left turn going left', () => {
             new Coord(.2, .1))
     ];
 
-    expect(isLeftTurn(path[1], path[0])).toBeTruthy();
+    let result: DrivingDirection = getDrivingDirection(path[1], path[0]);
+
+    expect(result).toBe(DrivingDirection.Left);
+});
+
+test('get straight direction', () => {
+    let path: PathInstruction[] = [
+        new PathInstruction(map.roads[2], RoadDirection.Strange, .15, 
+            new Coord(.2, .2)),
+        new PathInstruction(map.roads[2], RoadDirection.Strange, .1, 
+            new Coord(.1, .2))
+    ];
+
+    let result: DrivingDirection = getDrivingDirection(path[1], path[0]);
+
+    expect(result).toBe(DrivingDirection.Straight);
 });
 
 function createMap(): RoadMap {

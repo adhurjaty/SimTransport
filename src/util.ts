@@ -73,18 +73,9 @@ export function scaleSegment(seg: LineSegment, scale: number): LineSegment {
     return [base, newCoord]; 
 }
 
-export function isVectorLeft(base: ICoord, other: ICoord): boolean {
+export function dotProduct90CCW(base: ICoord, other: ICoord): number {
     let rot90CCW: ICoord = {x: -other.y, y: other.x};
-    let res: number = dotProduct(toTuple(base), toTuple(rot90CCW));
-    if(res > 0) {
-        return false;
-    }
-
-    if(res < 0) {
-        return true;
-    }
-
-    throw new Error("Vectors are parallel");
+    return dotProduct(toTuple(base), toTuple(rot90CCW));
 }
 
 // returns indices of the values closest to 0 both positive and negative

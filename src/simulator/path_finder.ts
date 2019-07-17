@@ -1,16 +1,22 @@
 import RoadNetwork from "./road_network";
 import Coord from "../models/coord";
 import Address from "./address";
-import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection } from "./simulator_helpers";
+import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection } from "./simulator_helpers";
 import Intersection from "./intersection";
 import { PriorityQueue, last } from "../util";
 import Road from "../models/road";
 import PathInstruction from "./path_instruction";
-import { RoadDirection } from "../enums";
+import { RoadDirection, DrivingDirection } from "../enums";
 
 const LEFT_TURN_COST: number = .05;
 const RIGHT_TURN_COST: number = .01;
 const INSTRUCTION_COST: number = .005;
+
+const TURN_COSTS: {[k: number]: number; } = {
+    0: LEFT_TURN_COST,
+    1: RIGHT_TURN_COST,
+    2: INSTRUCTION_COST, 
+};
 
 export default class PathFinder {
     private frontier: PriorityQueue<AStarNodeElement>;
@@ -79,7 +85,9 @@ export default class PathFinder {
         let totalCost: number = instruction.distance;
         if(curNode) {
             totalCost += curNode.cost;
-            totalCost += INSTRUCTION_COST;
+            let turn: DrivingDirection = getDrivingDirection(instruction, 
+                last(curNode.path));
+            totalCost += TURN_COSTS[turn];
         }
         let path: PathInstruction[] = curNode ? curNode.path.concat([instruction]) 
             : [instruction];
