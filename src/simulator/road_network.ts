@@ -6,6 +6,7 @@ import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "..
 import ICoord from "../interfaces/ICoord";
 import { getConnectingRoad, getRoadDistance, getAddress } from "./simulator_helpers";
 import Address from "./address";
+import PathInstruction from "./path_instruction";
 
 const fillValue: number = -1;
 
@@ -169,5 +170,9 @@ export default class RoadNetwork {
                 yield this.intersections[i];
             }
         }
+    }
+
+    isLeftTurn(inst: PathInstruction, prevInst: PathInstruction) {
+        
     }
 }

@@ -1,7 +1,7 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, getDistance, PriorityQueue, scaleSegment } from "../util";
+import { isPointOnLine, getDistance, scaleSegment } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection } from "../enums";

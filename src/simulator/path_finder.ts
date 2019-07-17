@@ -36,9 +36,11 @@ export default class PathFinder {
             this.network.getIntersectionsOnRoad(this.endAddr.road));
 
         // edge-case: if the source and dest are on the same road - just follow the road
-        // with more complicated roads, this may be undesirable
         if(startAddr.road.id == this.endAddr.road.id) {
-            return [this.createInstruction(startAddr.road, source, dest)];
+            let instruction: PathInstruction = this.createInstruction(startAddr.road, 
+                source, dest);
+            this.frontier.push(new AStarNodeElement(instruction.distance,
+                instruction.distance, [instruction], undefined));
         }
 
         for (const int of startIntersections) {
