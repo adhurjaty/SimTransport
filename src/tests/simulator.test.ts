@@ -12,6 +12,9 @@ import Address from "../simulator/address";
 import PathFinder from "../simulator/path_finder";
 import PathInstruction from "../simulator/path_instruction";
 import { RoadDirection, DrivingDirection } from "../enums";
+import { TICK_DURATION } from "../constants";
+import { Speed } from "../primitives";
+import CarController from "../simulator/car_controller";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -304,6 +307,67 @@ test('get straight direction', () => {
     let result: DrivingDirection = getDrivingDirection(path[1], path[0]);
 
     expect(result).toBe(DrivingDirection.Straight);
+});
+
+test('drive along simple road', () => {
+    let car: Car = new Car(.003, 10, 5);
+    let road: Road = new Road(0, [new Coord(0, 1), new Coord(1, 1), new Coord(2, 2)],
+        1, 1);
+
+    let drivingCar: DrivingCar = new DrivingCar(car, new Address(road, 0),
+        RoadDirection.Charm);
+    drivingCar.setSpeed(new Speed(40));
+    
+    let timeToEnd = 219.28 // seconds to get to end of road;
+    for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
+        drivingCar.drive();
+    }
+
+    expect(drivingCar.address.distance).toBeCloseTo(2.414, 3);
+    let endLoc: Coord = getCoord(drivingCar.address);
+    expect(endLoc.x).toBeCloseTo(2);
+    expect(endLoc.y).toBeCloseTo(2);
+});
+
+test('drive along simple road strange direction', () => {
+    let car: Car = new Car(.003, 10, 5);
+    let road: Road = new Road(0, [new Coord(0, 1), new Coord(1, 1), new Coord(2, 2)],
+        1, 1);
+
+    let drivingCar: DrivingCar = new DrivingCar(car, new Address(road, 2.414),
+        RoadDirection.Strange);
+    drivingCar.setSpeed(new Speed(40));
+    
+    let timeToEnd = 219.28 // seconds to get to end of road;
+    for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
+        drivingCar.drive();
+    }
+
+    expect(drivingCar.address.distance).toBeCloseTo(0, 3);
+    let endLoc: Coord = getCoord(drivingCar.address);
+    expect(endLoc.x).toBeCloseTo(0);
+    expect(endLoc.y).toBeCloseTo(1);
+});
+
+test('drive follow simple path with turn', () => {
+    let car: Car = new Car(.003, 10, 5);
+    let addr: Address = new Address(map.roads[7], .09);
+    let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
+    let world: World = new World(network, [drivingCar]);
+    let controller: CarController = new CarController(drivingCar, world);
+    
+    drivingCar.setController(controller);
+    drivingCar.setSpeed(new Speed(40));
+
+    let dest: Address = new Address(map.roads[2], .11);
+    drivingCar.setDestination(dest);
+    let timeToEnd: number = 20.025;
+    for (let _ = 0; _ < Math.ceil(timeToEnd / TICK_DURATION); _++) {
+        drivingCar.drive();
+    }
+
+    expect(drivingCar.address.road.id).toBe(dest.road.id);
+    expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
 });
 
 function createMap(): RoadMap {
