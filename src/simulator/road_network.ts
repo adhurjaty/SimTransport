@@ -4,8 +4,9 @@ import Road from "../models/road";
 import Coord from "../models/coord";
 import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
 import ICoord from "../interfaces/ICoord";
-import { getConnectingRoad, getRoadDistance, getAddress } from "./simulator_helpers";
+import { getConnectingRoad, getRoadDistance, getAddress, getCoord } from "./simulator_helpers";
 import Address from "./address";
+import { INTERSECTION_SIZE } from "../constants";
 
 const fillValue: number = -1;
 
@@ -169,5 +170,18 @@ export default class RoadNetwork {
                 yield this.intersections[i];
             }
         }
+    }
+
+    isInIntersection(addr: Address): boolean {
+        let intersections: IterableIterator<Intersection> = 
+            this.getIntersectionsOnRoad(addr.road);
+        for (const int of intersections) {
+            let loc: Coord = getCoord(addr);
+            if(getRoadDistance(addr.road, loc, int.location) <= INTERSECTION_SIZE) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

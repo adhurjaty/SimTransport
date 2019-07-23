@@ -1,5 +1,6 @@
 import ICoord from "./interfaces/ICoord";
 import { LineSegment } from "./interfaces/LineSegment";
+import { Random } from "./primitives";
 
 export function* tipTailGrouping<T>(lst: T[], size: number): 
     IterableIterator<T[]> 
@@ -35,12 +36,12 @@ export function isPointOnLine(seg: LineSegment, p: ICoord): boolean {
     let vector: [number, number] = toTuple(makeOriginVector(seg));
     let transPoint: [number, number] = toTuple(makeOriginVector([seg[0], p]));
     let cross: number = determinant(vector, transPoint);
-    if(Math.abs(cross) > .0001) {
+    if(Math.abs(cross) > Number.EPSILON) {
         return false;
     }
 
     let projection: number = dotProduct(vector, transPoint);
-    return projection < getDistance(seg) ** 2;
+    return projection <= getDistance(seg) ** 2;
 }
 
 function toTuple(coord: ICoord): [number, number] {
@@ -89,6 +90,18 @@ export function getSortedSignChangeIndices(lst: number[]): [number, number] {
     }
 
     return [lst.length - 1, -1];
+}
+
+export function randInt(start: number, end?: number): number {
+    return Math.floor(randDouble(start, end));
+}
+
+export function randDouble(start: number, end?: number): number {
+    if(end == undefined) {
+        end = start;
+        start = 0;
+    }
+    return (end - start) * Random.next() + start;
 }
 
 export function last<T>(lst: T[]): T {

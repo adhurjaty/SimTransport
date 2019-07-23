@@ -11,3 +11,9 @@ export class Speed {
         return this.speedInMph / 3600;
     }
 }
+
+export class Random {
+    static next: () => number = () => {
+        return Math.random();
+    }
+}

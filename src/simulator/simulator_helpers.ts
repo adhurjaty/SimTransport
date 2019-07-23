@@ -13,6 +13,10 @@ export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     return distanceFinder.getRoadDistance();
 }
 
+export function getRoadLength(road: Road): number {
+    return getRoadDistance(road, road.path[0], road.path[road.path.length - 1]);
+}
+
 export function getRoadDirection(road: Road, from: Coord, to: Coord): RoadDirection {
     if(getRoadDistance(road, road.path[0], from) < 
         getRoadDistance(road, road.path[0], to))

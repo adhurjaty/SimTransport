@@ -13,7 +13,7 @@ import PathFinder from "../simulator/path_finder";
 import PathInstruction from "../simulator/path_instruction";
 import { RoadDirection, DrivingDirection } from "../enums";
 import { TICK_DURATION } from "../constants";
-import { Speed } from "../primitives";
+import { Speed, Random } from "../primitives";
 import CarController from "../simulator/car_controller";
 
 const parallelRoadDistance: number = .1;
@@ -370,6 +370,29 @@ test('drive follow simple path with turn', () => {
     expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
 });
 
+test('is in intersection', () => {
+    let inCoord: Coord = new Coord(.1, .1001);
+    let outCoord: Coord = new Coord(.2, .22);
+    let inAddr: Address = getAddress(network, inCoord);
+    let outAddr: Address = getAddress(network, outCoord);
+
+    expect(network.isInIntersection(inAddr)).toBeTruthy();
+    expect(network.isInIntersection(outAddr)).toBeFalsy();
+});
+
+test('build single car world', () => {
+    let cars: Car[] = [new Car(.005, 1, 5)];
+
+    let builder: WorldBuilder = new WorldBuilder(map, cars)
+
+    // ensure that the car will try to be placed in an intersection
+    makeRandomReturn([0.1, 0.1, 0.1, 0.1, 0.13]);
+
+    let world = builder.build();
+    expect(world.cars[0].address.distance).toBeCloseTo(0.26);
+    expect(world.cars[0].address.road.id).toBe(1);
+});
+
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);
@@ -406,4 +429,18 @@ function makeHorizontalPath(roadNum: number): Coord[] {
 function makeVerticalPath(roadNum: number): Coord[] {
     return [new Coord(roadNum * parallelRoadDistance, 0), 
         new Coord(roadNum * parallelRoadDistance, roadLength)];
+}
+
+function makeRandomReturn(lst: number[]): void {
+    let buffer: IterableIterator<number> = circleYield(lst);
+    Random.next = () => buffer.next().value;
+}
+
+function* circleYield(lst: number[]): IterableIterator<number> {
+    for (let i = 0; i < lst.length; i++) {
+        yield lst[i];
+        if(i == lst.length - 1) {
+            i = -1
+        }
+    }
 }
