@@ -357,11 +357,30 @@ test('drive follow simple path with turn', () => {
     let controller: CarController = new CarController(drivingCar, world);
     
     drivingCar.setController(controller);
-    drivingCar.setSpeed(new Speed(40));
 
     let dest: Address = new Address(map.roads[2], .11);
     drivingCar.setDestination(dest);
     let timeToEnd: number = 20.025;
+    for (let _ = 0; _ < Math.ceil(timeToEnd / TICK_DURATION); _++) {
+        drivingCar.drive();
+    }
+
+    expect(drivingCar.address.road.id).toBe(dest.road.id);
+    expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
+});
+
+test('drive path with multiple turns', () => {
+    let car: Car = new Car(.003, 10, 5);
+    let addr: Address = new Address(map.roads[7], .09);
+    let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
+    let world: World = new World(network, [drivingCar]);
+    let controller: CarController = new CarController(drivingCar, world);
+    
+    drivingCar.setController(controller);
+
+    let dest: Address = new Address(map.roads[6], .32);
+    drivingCar.setDestination(dest);
+    let timeToEnd: number = 50;
     for (let _ = 0; _ < Math.ceil(timeToEnd / TICK_DURATION); _++) {
         drivingCar.drive();
     }

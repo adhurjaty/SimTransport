@@ -3,11 +3,12 @@ import World from "./world";
 import Address from "./address";
 import PathInstruction from "./path_instruction";
 import PathFinder from "./path_finder";
-import { getCoord, getAddress } from "./simulator_helpers";
+import { getCoord, getAddress, getRoadDistance } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { RoadDirection } from "../enums";
 import Coord from "../models/coord";
+import Road from "../models/road";
 
 export default class CarController {
     public path: PathInstruction[];
@@ -36,9 +37,8 @@ export default class CarController {
         let destAddr: Address = getAddress(this.world.network, this.path[0].location);
 
         let distToWaypoint: number = Math.abs(this.car.address.distance 
-            - destAddr.distance);
+            - destAddr.distance) - Number(this.path.length > 1) * INTERSECTION_SIZE;
 
-        distToWaypoint -= INTERSECTION_SIZE;
         if(this.path.length == 1 && distToWaypoint <= Number.EPSILON) {
             this.path = [];
             this.car.setSpeed(new Speed(0));
@@ -48,7 +48,8 @@ export default class CarController {
         if(distToWaypoint <= Number.EPSILON) {
             let lastInstruction: PathInstruction = this.path.splice(0, 1)[0];
 
-            this.car.address = this.getNextAddress(lastInstruction.location);
+            this.car.address = this.getNextAddress(this.path[0].road, 
+                lastInstruction.location);
             this.car.direction = this.path[0].direction;
             this.car.setSpeed(this.getSpeedLimit());
             return;
@@ -64,9 +65,9 @@ export default class CarController {
         return Math.abs(this.car.velocity.mps()) / TICK_DURATION;
     }
 
-    private getNextAddress(intersectionLoc: Coord): Address {
-        let addr: Address = getAddress(this.world.network, 
-            intersectionLoc);
+    private getNextAddress(road: Road, intersectionLoc: Coord): Address {
+        let addr: Address = new Address(road, getRoadDistance(road, road.path[0], 
+            intersectionLoc));
 
         addr.distance += (this.path[0].direction == RoadDirection.Charm
             ? 1 : -1) * INTERSECTION_SIZE;
