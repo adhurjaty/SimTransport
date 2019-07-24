@@ -30,39 +30,44 @@ export default class CarController {
     }
 
     makeDecision(): void {
-        if(this.path.length == 0) {
-            return;
-        }
-
-        let destAddr: Address = getAddress(this.world.network, this.path[0].location);
-
-        let distToWaypoint: number = Math.abs(this.car.address.distance 
-            - destAddr.distance) - Number(this.path.length > 1) * INTERSECTION_SIZE;
-
-        if(this.path.length == 1 && distToWaypoint <= Number.EPSILON) {
+        if(this.atDestination() || this.atRedLight()) {
             this.path = [];
             this.car.setSpeed(new Speed(0));
             return;
         }
         
+        let distToWaypoint: number = this.distToWaypoint();
         if(distToWaypoint <= Number.EPSILON) {
-            let lastInstruction: PathInstruction = this.path.splice(0, 1)[0];
-
-            this.car.address = this.getNextAddress(this.path[0].road, 
-                lastInstruction.location);
-            this.car.direction = this.path[0].direction;
-            this.car.setSpeed(this.getSpeedLimit());
+            this.setNextWaypoint();
             return;
         }
 
-        // if car is so close to checkpoint that it will overshoot next time step
-        if(distToWaypoint < this.distPerTimeStep()) {
-            this.car.setSpeed(Speed.fromMps(distToWaypoint / TICK_DURATION));
-        }
+        this.setForwardSpeed(distToWaypoint);
     }
 
-    private distPerTimeStep(): number {
-        return Math.abs(this.car.velocity.mps()) / TICK_DURATION;
+    private distToWaypoint(): number {
+        let destAddr: Address = getAddress(this.world.network, this.path[0].location);
+
+        return Math.abs(this.car.address.distance - destAddr.distance) 
+            - Number(this.path.length > 1) * INTERSECTION_SIZE;
+    }
+
+    private atDestination(): boolean {
+        return this.path.length == 0 || (this.path.length == 1 
+            && this.path[0].location.equals(this.car.getLocation()));
+    }
+
+    private atRedLight(): boolean {
+        return false;
+    }
+
+    private setNextWaypoint(): void {
+        let lastInstruction: PathInstruction = this.path.splice(0, 1)[0];
+
+        this.car.address = this.getNextAddress(this.path[0].road, 
+            lastInstruction.location);
+        this.car.direction = this.path[0].direction;
+        this.car.setSpeed(this.getSpeedLimit());
     }
 
     private getNextAddress(road: Road, intersectionLoc: Coord): Address {
@@ -73,5 +78,39 @@ export default class CarController {
             ? 1 : -1) * INTERSECTION_SIZE;
 
         return addr;
+    }
+
+    private setForwardSpeed(distToWaypoint: number) {
+        let speed: Speed = this.getSpeedLimit();
+
+        // if car is so close to checkpoint that it will overshoot next time step
+        let distToStop: number = Math.min(distToWaypoint, this.getRedLightDist());
+        if(distToStop < this.distPerTimeStep()) {
+            speed = Speed.fromMps(distToStop / TICK_DURATION);
+        }
+
+        let car: DrivingCar = this.getCarAhead();
+        if(car) {
+            speed = new Speed(Math.min(speed.speedInMph, 
+                this.getSpeedFromCarAhead(car)));
+        }
+
+        this.car.setSpeed(speed);
+    }
+
+    private distPerTimeStep(): number {
+        return Math.abs(this.car.velocity.mps()) / TICK_DURATION;
+    }
+
+    private getRedLightDist(): number {
+        return Number.MAX_SAFE_INTEGER;
+    }
+
+    private getCarAhead(): DrivingCar {
+        return undefined;
+    }
+
+    private getSpeedFromCarAhead(car: DrivingCar) {
+        return this.getSpeedLimit().speedInMph;
     }
 }

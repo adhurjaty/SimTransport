@@ -12,6 +12,7 @@ export default class Coord {
     }
 
     equals(other: Coord): boolean {
-        return this.x == other.x && this.y == other.y;
+        return Math.abs(this.x - other.x) < Number.EPSILON 
+            && Math.abs(this.y - other.y) < Number.EPSILON;
     }
 }
