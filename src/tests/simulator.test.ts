@@ -416,8 +416,8 @@ test('build single car world', () => {
 
 test('follow slower car', () => {
     let cars: Car[] = Array.from(defaultCars(2));
-    let addrs: Address[] = [new Address(map.roads[2], .3), 
-        new Address(map.roads[2], .6)];
+    let addrs: Address[] = [new Address(map.roads[2], .6), 
+        new Address(map.roads[2], .3)];
 
     let dest: Address = new Address(map.roads[2], 1.99);
 
@@ -425,31 +425,35 @@ test('follow slower car', () => {
     let dcs: DrivingCar[] = [...Array(2).keys()].map(i => {
         let car: DrivingCar = new DrivingCar(cars[i], addrs[i], RoadDirection.Charm);
         car.setController(new CarController(car, world));
-        car.setDestination(dest);
         car.setSpeedLimit(new Speed(20 * (i + 1)));
         return car;
     });
     world.setCars(dcs);
+    dcs.forEach(car => {
+        car.setDestination(dest);        
+    });
 
-    runSimulation(world, 2);
+    runSimulation(world, 1);
 
     expect(dcs[0].velocity.speedInMph).toBe(20);
     expect(dcs[1].velocity.speedInMph).toBe(40);
 
-    runSimulation(world, 60);
+    runSimulation(world, 70);
 
     expect(dcs[0].velocity.speedInMph).toBe(20);
-    expect(dcs[1].velocity.speedInMph).toBe(20);
+    expect(dcs[1].velocity.speedInMph).toBeCloseTo(20, 1);
 });
 
 test('get dist between addresses', () => {
     let a1: Address = new Address(map.roads[1], .9);
     let a2: Address = new Address(map.roads[1], 1.4);
 
-    let dist: number = getDistBetweenAddresses(a1, a2);
+    let dist: number = getDistBetweenAddresses(a1, a2, RoadDirection.Charm);
     expect(dist).toBeCloseTo(.5);
-    dist = getDistBetweenAddresses(a2, a1);
-    expect(dist).toBeCloseTo(.5);
+    dist = getDistBetweenAddresses(a2, a1, RoadDirection.Charm);
+    expect(dist).toBeCloseTo(-.5);
+    dist = getDistBetweenAddresses(a1, a2, RoadDirection.Strange);
+    expect(dist).toBeCloseTo(-.5);
 });
 
 test('get cars on road', () => {
@@ -530,6 +534,6 @@ function runSimulation(world: World, time: number): void {
 
 function* defaultCars(num: number): IterableIterator<Car> {
     for(let _ = 0; _ < num; _++) {
-        yield new Car(.005, 10, 3);
+        yield new Car(.005, 100, 3);
     }
 }

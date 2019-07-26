@@ -91,8 +91,9 @@ export default class CarController {
 
         let car: DrivingCar = this.getCarAhead();
         if(car) {
-            speed = new Speed(Math.min(speed.speedInMph, 
-                this.getSpeedFromCarAhead(car)));
+            // Zeno's paradox!
+            speed = new Speed(Math.abs((this.car.velocity.speedInMph + 
+                car.velocity.speedInMph)/ 2));
         }
 
         this.car.setSpeedLimit(speed);
@@ -107,24 +108,24 @@ export default class CarController {
     }
 
     private getCarAhead(): DrivingCar {
-        return undefined;
-    }
+        let sameDirCars: DrivingCar[] = this.world.getCarsOnRoad(this.car.address.road)
+            .filter(c => c.direction == this.car.direction && c !== this.car);
 
-    private getSpeedFromCarAhead(car: DrivingCar) {
-        return this.getSpeedLimit().speedInMph;
-    }
+        let carAhead: DrivingCar = undefined;
+        let minDist: number = Infinity;
+        for (const car of sameDirCars) {
+            let dist: number = getDistBetweenAddresses(this.car.address, car.address, 
+                this.car.direction);
+            if(dist > 0 && dist <= this.twoSecondRule() && dist < minDist) {
+                carAhead = car;
+            }
+        }
 
-    private getDistFromCarAhead(car: DrivingCar): number {
-        return getDistBetweenAddresses(this.car.address, car.address) - car.size;
+        return carAhead;
     }
 
     // Gives safe driving distance from car ahead
     private twoSecondRule(): number {
-        let car: DrivingCar = this.getCarAhead();
-        if(!car) {
-            return Infinity;
-        }
-
-        return 2 * Math.abs(this.car.velocity.mps()) / TICK_DURATION;
+        return 2 * Math.abs(this.car.velocity.mps());
     }
 }

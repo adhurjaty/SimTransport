@@ -27,12 +27,21 @@ export function getRoadDirection(road: Road, from: Coord, to: Coord): RoadDirect
     return RoadDirection.Strange;
 }
 
-export function getDistBetweenAddresses(addr1: Address, addr2: Address): number {
+export function getDistBetweenAddresses(addr1: Address, addr2: Address, 
+    direction: RoadDirection=undefined): number 
+{
     if(addr1.road.id != addr2.road.id) {
         throw new Error("Addresses must be on the same road")
     }
 
-    return Math.abs(addr1.distance - addr2.distance);
+    if(direction == undefined) {
+        return Math.abs(addr1.distance - addr2.distance);
+    }
+
+    if(direction == RoadDirection.Charm) {
+        return addr2.distance - addr1.distance;
+    }
+    return addr1.distance - addr2.distance;
 }
 
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {
