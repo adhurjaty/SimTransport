@@ -8,6 +8,7 @@ import { RoadDirection } from "../enums";
 import { randInt, randDouble } from "../util";
 import Road from "../models/road";
 import { getRoadLength } from "./simulator_helpers";
+import CarController from "./car_controller";
 
 export default class WorldBuilder {
 
@@ -17,11 +18,18 @@ export default class WorldBuilder {
 
     build(): World {
         let network = new RoadNetwork(this.map);
+        let world = new World(network);
+
         let worldCars: DrivingCar[] = this.cars.map((c) => {
             let [addr, dir] = this.generateRandomAddressDir(network);
-            return new DrivingCar(c, addr, dir);
+            let car: DrivingCar = new DrivingCar(c, addr, dir);
+            let controller: CarController = new CarController(car, world);
+            car.setController(controller);
+            return car;
         });
-        return new World(network, worldCars);
+        world.setCars(worldCars);
+
+        return world
     }
 
     private generateRandomAddressDir(network: RoadNetwork): [Address, RoadDirection] {

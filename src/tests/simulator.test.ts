@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -316,7 +316,7 @@ test('drive along simple road', () => {
 
     let drivingCar: DrivingCar = new DrivingCar(car, new Address(road, 0),
         RoadDirection.Charm);
-    drivingCar.setSpeed(new Speed(40));
+    drivingCar.setSpeedLimit(new Speed(40));
     
     let timeToEnd = 219.28 // seconds to get to end of road;
     for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
@@ -336,7 +336,7 @@ test('drive along simple road strange direction', () => {
 
     let drivingCar: DrivingCar = new DrivingCar(car, new Address(road, 2.414),
         RoadDirection.Strange);
-    drivingCar.setSpeed(new Speed(40));
+    drivingCar.setSpeedLimit(new Speed(40));
     
     let timeToEnd = 219.28 // seconds to get to end of road;
     for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
@@ -353,7 +353,8 @@ test('drive follow simple path with turn', () => {
     let car: Car = new Car(.003, 10, 5);
     let addr: Address = new Address(map.roads[7], .09);
     let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
-    let world: World = new World(network, [drivingCar]);
+    let world: World = new World(network);
+    world.setCars([drivingCar]);
     let controller: CarController = new CarController(drivingCar, world);
     
     drivingCar.setController(controller);
@@ -373,7 +374,8 @@ test('drive path with multiple turns', () => {
     let car: Car = new Car(.003, 10, 5);
     let addr: Address = new Address(map.roads[7], .09);
     let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
-    let world: World = new World(network, [drivingCar]);
+    let world: World = new World(network);
+    world.setCars([drivingCar]);
     let controller: CarController = new CarController(drivingCar, world);
     
     drivingCar.setController(controller);
@@ -400,7 +402,7 @@ test('is in intersection', () => {
 });
 
 test('build single car world', () => {
-    let cars: Car[] = [new Car(.005, 1, 5)];
+    let cars: Car[] = Array.from(defaultCars(1));
 
     let builder: WorldBuilder = new WorldBuilder(map, cars)
 
@@ -411,6 +413,62 @@ test('build single car world', () => {
     expect(world.cars[0].address.distance).toBeCloseTo(0.26);
     expect(world.cars[0].address.road.id).toBe(1);
 });
+
+test('follow slower car', () => {
+    let cars: Car[] = Array.from(defaultCars(2));
+    let addrs: Address[] = [new Address(map.roads[2], .3), 
+        new Address(map.roads[2], .6)];
+
+    let dest: Address = new Address(map.roads[2], 1.99);
+
+    let world: World = new World(network);
+    let dcs: DrivingCar[] = [...Array(2).keys()].map(i => {
+        let car: DrivingCar = new DrivingCar(cars[i], addrs[i], RoadDirection.Charm);
+        car.setController(new CarController(car, world));
+        car.setDestination(dest);
+        car.setSpeedLimit(new Speed(20 * (i + 1)));
+        return car;
+    });
+    world.setCars(dcs);
+
+    runSimulation(world, 2);
+
+    expect(dcs[0].velocity.speedInMph).toBe(20);
+    expect(dcs[1].velocity.speedInMph).toBe(40);
+
+    runSimulation(world, 60);
+
+    expect(dcs[0].velocity.speedInMph).toBe(20);
+    expect(dcs[1].velocity.speedInMph).toBe(20);
+});
+
+test('get dist between addresses', () => {
+    let a1: Address = new Address(map.roads[1], .9);
+    let a2: Address = new Address(map.roads[1], 1.4);
+
+    let dist: number = getDistBetweenAddresses(a1, a2);
+    expect(dist).toBeCloseTo(.5);
+    dist = getDistBetweenAddresses(a2, a1);
+    expect(dist).toBeCloseTo(.5);
+});
+
+test('get cars on road', () => {
+    let cars: Car[] = Array.from(defaultCars(3));
+    let addrs: Address[] = [new Address(map.roads[2], .3), 
+        new Address(map.roads[2], .6), new Address(map.roads[1], .2)];
+
+    let world: World = new World(network);
+    let dcs: DrivingCar[] = [...Array(2).keys()].map(i => {
+        let car: DrivingCar = new DrivingCar(cars[i], addrs[i], RoadDirection.Charm);
+        return car;
+    });
+    world.setCars(dcs);
+
+    let carsOnRoad: DrivingCar[] = world.getCarsOnRoad(map.roads[2]);
+    expect(carsOnRoad).toContain(world.cars[0]);
+    expect(carsOnRoad).toContain(world.cars[1]);
+    expect(carsOnRoad.length).toBe(2);
+})
 
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
@@ -461,5 +519,17 @@ function* circleYield(lst: number[]): IterableIterator<number> {
         if(i == lst.length - 1) {
             i = -1
         }
+    }
+}
+
+function runSimulation(world: World, time: number): void {
+    for (let _ = 0; _ < time / TICK_DURATION; _++) {
+        world.tick();
+    }
+}
+
+function* defaultCars(num: number): IterableIterator<Car> {
+    for(let _ = 0; _ < num; _++) {
+        yield new Car(.005, 10, 3);
     }
 }

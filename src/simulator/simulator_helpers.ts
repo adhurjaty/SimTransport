@@ -27,6 +27,14 @@ export function getRoadDirection(road: Road, from: Coord, to: Coord): RoadDirect
     return RoadDirection.Strange;
 }
 
+export function getDistBetweenAddresses(addr1: Address, addr2: Address): number {
+    if(addr1.road.id != addr2.road.id) {
+        throw new Error("Addresses must be on the same road")
+    }
+
+    return Math.abs(addr1.distance - addr2.distance);
+}
+
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {
     let road: Road = fromInt.roads.find(r => 
         toInt.roads.map(t => t.id).indexOf(r.id) != -1);

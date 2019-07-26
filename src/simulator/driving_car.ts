@@ -10,9 +10,9 @@ import { Speed } from "../primitives";
 export default class DrivingCar extends Car {
     private controller: CarController;
     private turnTimeElapsed: number;
-    private speedLimit: Speed = new Speed(0);
     
     public velocity: Speed = new Speed(0);
+    public speedLimit: Speed = new Speed(40);
     public turning: boolean = false;
 
     constructor(car: Car, public address: Address, public direction: RoadDirection) {
@@ -63,7 +63,7 @@ export default class DrivingCar extends Car {
         this.controller.setDestination(addr);
     }
 
-    setSpeed(limit: Speed): void {
+    setSpeedLimit(limit: Speed): void {
         this.speedLimit = limit;
     }
 

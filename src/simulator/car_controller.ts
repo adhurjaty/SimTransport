@@ -3,7 +3,7 @@ import World from "./world";
 import Address from "./address";
 import PathInstruction from "./path_instruction";
 import PathFinder from "./path_finder";
-import { getCoord, getAddress, getRoadDistance } from "./simulator_helpers";
+import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { RoadDirection } from "../enums";
@@ -22,17 +22,17 @@ export default class CarController {
         this.path = finder.getPath(this.car.getLocation(), getCoord(addr));
 
         this.car.direction = this.path[0].direction;
-        this.car.setSpeed(this.getSpeedLimit());
+        this.makeDecision();
     }
 
     private getSpeedLimit(): Speed {
-        return new Speed(40);
+        return this.car.speedLimit;
     }
 
     makeDecision(): void {
         if(this.atDestination() || this.atRedLight()) {
             this.path = [];
-            this.car.setSpeed(new Speed(0));
+            this.car.setSpeedLimit(new Speed(0));
             return;
         }
         
@@ -67,7 +67,7 @@ export default class CarController {
         this.car.address = this.getNextAddress(this.path[0].road, 
             lastInstruction.location);
         this.car.direction = this.path[0].direction;
-        this.car.setSpeed(this.getSpeedLimit());
+        this.car.setSpeedLimit(this.getSpeedLimit());
     }
 
     private getNextAddress(road: Road, intersectionLoc: Coord): Address {
@@ -95,7 +95,7 @@ export default class CarController {
                 this.getSpeedFromCarAhead(car)));
         }
 
-        this.car.setSpeed(speed);
+        this.car.setSpeedLimit(speed);
     }
 
     private distPerTimeStep(): number {
@@ -112,5 +112,19 @@ export default class CarController {
 
     private getSpeedFromCarAhead(car: DrivingCar) {
         return this.getSpeedLimit().speedInMph;
+    }
+
+    private getDistFromCarAhead(car: DrivingCar): number {
+        return getDistBetweenAddresses(this.car.address, car.address) - car.size;
+    }
+
+    // Gives safe driving distance from car ahead
+    private twoSecondRule(): number {
+        let car: DrivingCar = this.getCarAhead();
+        if(!car) {
+            return Infinity;
+        }
+
+        return 2 * Math.abs(this.car.velocity.mps()) / TICK_DURATION;
     }
 }
