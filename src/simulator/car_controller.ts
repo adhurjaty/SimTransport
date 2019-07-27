@@ -3,12 +3,13 @@ import World from "./world";
 import Address from "./address";
 import PathInstruction from "./path_instruction";
 import PathFinder from "./path_finder";
-import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses } from "./simulator_helpers";
+import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { RoadDirection } from "../enums";
 import Coord from "../models/coord";
 import Road from "../models/road";
+import Intersection from "./intersection";
 
 export default class CarController {
     public path: PathInstruction[];
@@ -30,7 +31,7 @@ export default class CarController {
     }
 
     makeDecision(): void {
-        if(this.atDestination() || this.atRedLight()) {
+        if(this.atDestination()) {
             this.path = [];
             this.car.setSpeedLimit(new Speed(0));
             return;
@@ -57,8 +58,22 @@ export default class CarController {
             && this.path[0].location.equals(this.car.getLocation()));
     }
 
-    private atRedLight(): boolean {
-        return false;
+    private getRedLightDist(): number {
+        let intersection: Intersection = this.getIntersectionAhead();
+        if(intersection == undefined) {
+            return Infinity;
+        }
+
+        let greenRoad: Road = intersection.roads[intersection.light.greenDirection];
+        if(greenRoad.id == this.car.address.road.id) {
+            return Infinity;
+        }
+
+        return getDistToIntersection(this.car.address, intersection);
+    }
+
+    private getIntersectionAhead(): Intersection {
+        return undefined;
     }
 
     private setNextWaypoint(): void {
@@ -101,10 +116,6 @@ export default class CarController {
 
     private distPerTimeStep(): number {
         return Math.abs(this.car.velocity.mps()) / TICK_DURATION;
-    }
-
-    private getRedLightDist(): number {
-        return Number.MAX_SAFE_INTEGER;
     }
 
     private getCarAhead(): DrivingCar {

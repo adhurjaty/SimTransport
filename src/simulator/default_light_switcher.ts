@@ -27,7 +27,7 @@ export default class DefaultLightSwitcher {
         }
     }
 
-    shouldSwitch(): boolean {
+    private shouldSwitch(): boolean {
         if(this.carsWaiting > 0 && this.waitingDuration >= DURATION_THRESHOLD) {
             return true;
         }
@@ -41,7 +41,7 @@ export default class DefaultLightSwitcher {
         this.waitingDuration = 0;
     }
 
-    getDurationInSeconds(): number {
+    private getDurationInSeconds(): number {
         return this.greenDuration * TICK_DURATION;
     }
 }

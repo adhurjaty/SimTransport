@@ -7,6 +7,7 @@ import RoadNetwork from "./road_network";
 import { RoadDirection, DrivingDirection } from "../enums";
 import ICoord from "../interfaces/ICoord";
 import PathInstruction from "./path_instruction";
+import { INTERSECTION_SIZE } from "../constants";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -42,6 +43,20 @@ export function getDistBetweenAddresses(addr1: Address, addr2: Address,
         return addr2.distance - addr1.distance;
     }
     return addr1.distance - addr2.distance;
+}
+
+export function getDistToIntersection(addr: Address, int: Intersection): number {
+    let road: Road = int.roads.find(x => x.id == addr.road.id);
+    if(road == undefined) {
+        throw new Error("Intersection is not on the same road");
+    }
+
+    let dist = getRoadDistance(road, getCoord(addr), int.location) - INTERSECTION_SIZE;
+    if(dist < 0) {
+        throw new Error("Car is inside intersection");
+    }
+
+    return dist;
 }
 
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {

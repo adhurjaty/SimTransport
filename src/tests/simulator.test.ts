@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses, getDistToIntersection } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -11,10 +11,12 @@ import DrivingCar from "../simulator/driving_car";
 import Address from "../simulator/address";
 import PathFinder from "../simulator/path_finder";
 import PathInstruction from "../simulator/path_instruction";
-import { RoadDirection, DrivingDirection } from "../enums";
-import { TICK_DURATION } from "../constants";
+import { RoadDirection, DrivingDirection, IntersectionDirection } from "../enums";
+import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { Speed, Random } from "../primitives";
 import CarController from "../simulator/car_controller";
+import LightSwitcher from "../simulator/light_switcher";
+import TrafficLight from "../simulator/traffic_light";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -472,7 +474,37 @@ test('get cars on road', () => {
     expect(carsOnRoad).toContain(world.cars[0]);
     expect(carsOnRoad).toContain(world.cars[1]);
     expect(carsOnRoad.length).toBe(2);
-})
+});
+
+test('get distance to intersection', () => {
+    let addr: Address = new Address(map.roads[2], .05);
+    let int: Intersection = network.intersections[11];
+
+    let dist: number = getDistToIntersection(addr, int);
+
+    expect(dist).toBeCloseTo(.05 - INTERSECTION_SIZE, 3);
+});
+
+test('car stops at stop light', () => {
+    let int: Intersection = network.intersections[7];
+    let light: LightSwitcher = new SimpleLightSwitcher(int.light,
+        IntersectionDirection.First);
+
+    let car: DrivingCar = new DrivingCar(defaultCars(1).next().value, 
+        new Address(map.roads[6], .08), RoadDirection.Charm);
+    
+    let world: World = new World(network);
+    let controller: CarController = new CarController(car, world);
+    car.setController(controller);
+    world.setCars([car]);
+    
+    car.setDestination(new Address(map.roads[6], 1));
+
+    runSimulation(world, 30);
+
+    expect(car.address.distance).toBeCloseTo(.1 - INTERSECTION_SIZE);
+    expect(car.address.road.id).toBe(6);
+});
 
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
@@ -536,4 +568,14 @@ function* defaultCars(num: number): IterableIterator<Car> {
     for(let _ = 0; _ < num; _++) {
         yield new Car(.005, 100, 3);
     }
+}
+
+class SimpleLightSwitcher implements LightSwitcher {
+    constructor(private light: TrafficLight, private direction: IntersectionDirection) {
+        this.light.setSwitcher(this);
+        light.greenDirection = this.direction;
+    }
+
+    tick(): void {}
+    setDirection(dir: IntersectionDirection): void {}
 }
