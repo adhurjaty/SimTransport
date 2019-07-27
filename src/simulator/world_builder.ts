@@ -9,6 +9,9 @@ import { randInt, randDouble } from "../util";
 import Road from "../models/road";
 import { getRoadLength } from "./simulator_helpers";
 import CarController from "./car_controller";
+import LightSwitcher from "./light_switcher";
+import TrafficLight from "./traffic_light";
+import DefaultLightSwitcher from "./default_light_switcher";
 
 export default class WorldBuilder {
 
@@ -28,6 +31,12 @@ export default class WorldBuilder {
             return car;
         });
         world.setCars(worldCars);
+
+        world.network.intersections.forEach(int => {
+            let light: TrafficLight = int.light;
+            let controller: LightSwitcher = new DefaultLightSwitcher(light);
+            light.setSwitcher(controller);
+        });
 
         return world
     }

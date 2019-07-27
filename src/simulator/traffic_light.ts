@@ -7,10 +7,13 @@ export default class TrafficLight {
     public greenDirection: IntersectionDirection = IntersectionDirection.First;
 
     constructor(private intersection: Intersection) {
-        this.switcher = new LightSwitcher(this);
     }
 
     tick() {
-        this.switcher.tick();
+        this.switcher && this.switcher.tick();
+    }
+
+    setSwitcher(switcher: LightSwitcher) {
+        this.switcher = switcher;
     }
 }
