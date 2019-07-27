@@ -487,8 +487,10 @@ test('get distance to intersection', () => {
 
 test('car stops at stop light', () => {
     let int: Intersection = network.intersections[7];
-    let light: LightSwitcher = new SimpleLightSwitcher(int.light,
+    let switcher: LightSwitcher = new SimpleLightSwitcher(int.light,
         IntersectionDirection.First);
+
+    int.light.setSwitcher(switcher);
 
     let car: DrivingCar = new DrivingCar(defaultCars(1).next().value, 
         new Address(map.roads[6], .08), RoadDirection.Charm);

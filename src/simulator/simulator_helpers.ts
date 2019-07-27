@@ -80,7 +80,7 @@ export function getAddress(network: RoadNetwork, location: Coord): Address {
     return getAddressOnRoad(road, location);
 }
 
-function getAddressOnRoad(road: Road, location: Coord): Address {
+export function getAddressOnRoad(road: Road, location: Coord): Address {
     let distance: number = getRoadDistance(road, road.path[0], location);
     return new Address(road, distance);
 }

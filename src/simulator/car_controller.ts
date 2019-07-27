@@ -3,7 +3,7 @@ import World from "./world";
 import Address from "./address";
 import PathInstruction from "./path_instruction";
 import PathFinder from "./path_finder";
-import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection } from "./simulator_helpers";
+import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection, getAddressOnRoad } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { RoadDirection } from "../enums";
@@ -73,7 +73,24 @@ export default class CarController {
     }
 
     private getIntersectionAhead(): Intersection {
-        return undefined;
+        let ints: IterableIterator<Intersection> = this.world.network
+            .getIntersectionsOnRoad(this.car.address.road);
+
+        let intAhead: Intersection = undefined;        
+        let minDist: number = Infinity;
+        for (const int of ints) {
+            let intAddr: Address = getAddressOnRoad(this.car.address.road, 
+                int.location);
+            let dist: number = getDistBetweenAddresses(this.car.address, intAddr,
+                this.car.direction);
+
+            if(dist > 0 && dist < minDist) {
+                minDist = dist;
+                intAhead = int;
+            }
+        }
+
+        return intAhead;
     }
 
     private setNextWaypoint(): void {
