@@ -132,7 +132,7 @@ export default class CarController {
     }
 
     private distPerTimeStep(): number {
-        return Math.abs(this.car.velocity.mps()) / TICK_DURATION;
+        return Math.abs(this.car.velocity.mps()) * TICK_DURATION;
     }
 
     private getCarAhead(): DrivingCar {

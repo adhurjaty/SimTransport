@@ -30,4 +30,13 @@ export default class World {
     getCarsOnRoad(road: Road): DrivingCar[] {
         return this.cars.filter(c => c.address.road.id == road.id);
     }
+
+    private tripLightSensors(): void {
+
+    }
+
+    private isCarAtIntersection(car: DrivingCar) {
+        
+    }
+
 }

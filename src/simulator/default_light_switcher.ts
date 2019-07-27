@@ -1,10 +1,11 @@
 import TrafficLight from "./traffic_light";
 import { IntersectionDirection, switchDirection } from "../enums";
 import { TICK_DURATION } from "../constants";
+import LightSwitcher from "./light_switcher";
 
 const DURATION_THRESHOLD: number = 500;
 
-export default class DefaultLightSwitcher {
+export default class DefaultLightSwitcher implements LightSwitcher {
     private greenDuration: number = 0;  // in time ticks
     private carsWaiting: number = 0;
 
@@ -35,10 +36,14 @@ export default class DefaultLightSwitcher {
         return false;
     }
 
-    setDirection(dir: IntersectionDirection) {
+    setDirection(dir: IntersectionDirection): void {
         this.light.greenDirection = dir;
         this.greenDuration = 0;
         this.waitingDuration = 0;
+    }
+
+    carSensorTripped(dir: IntersectionDirection): void {
+        this.carsWaiting++;
     }
 
     private getDurationInSeconds(): number {

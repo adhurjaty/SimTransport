@@ -508,6 +508,38 @@ test('car stops at stop light', () => {
     expect(car.address.road.id).toBe(6);
 });
 
+test('multiple cars stop at stop light', () => {
+    let int: Intersection = network.intersections[7];
+    let switcher: LightSwitcher = new SimpleLightSwitcher(int.light,
+        IntersectionDirection.First);
+
+    int.light.setSwitcher(switcher);
+
+    let baseCars: Car[] = Array.from(defaultCars(2));
+    let addresses = [new Address(map.roads[6], .08),
+        new Address(map.roads[6], .06)]
+    let cars: DrivingCar[] = baseCars.map((c, i) => new DrivingCar(c, addresses[i],
+        RoadDirection.Charm));
+    let world: World = new World(network);
+    world.setCars(cars);
+    
+    cars.forEach(car => {
+        car.setController(new CarController(car, world));
+        car.setDestination(new Address(map.roads[6], 1));
+    });
+
+    runSimulation(world, 30);
+
+    expect(cars[0].address.distance).toBeCloseTo(.1 - INTERSECTION_SIZE);
+    expect(cars[0].address.road.id).toBe(6);
+    expect(cars[1].address.distance).toBeCloseTo(.1 - INTERSECTION_SIZE - cars[0].size);
+    expect(cars[1].address.road.id).toBe(6);
+});
+
+test('get stopped at intersection', () => {
+    expect(true).toBeFalsy();
+});
+
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);
@@ -580,4 +612,16 @@ class SimpleLightSwitcher implements LightSwitcher {
 
     tick(): void {}
     setDirection(dir: IntersectionDirection): void {}
+    carSensorTripped(dir: IntersectionDirection): void {}
+}
+
+class AutoSwitcher implements LightSwitcher {
+    constructor(private light: TrafficLight) {
+    }
+
+    tick(): void {}
+    setDirection(dir: IntersectionDirection): void {}
+    carSensorTripped(dir: IntersectionDirection): void {
+        this.light.greenDirection = dir;
+    }
 }
