@@ -17,7 +17,7 @@ export default class DrivingCar extends Car {
     public turning: boolean = false;
 
     constructor(car: Car, public address: Address, public direction: RoadDirection) {
-        super(car.size, car.accel, car.turnTime);
+        super(car.id, car.size, car.accel, car.turnTime);
     }
 
     setController(cont: CarController): void {

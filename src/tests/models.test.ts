@@ -26,7 +26,7 @@ test('simple map test', () => {
 });
 
 test('simple car test', () => {
-    let car: Car = new Car(4, .01, 3);
+    let car: Car = new Car(0, 4, .01, 3);
     expect(car.accel).toBe(.01);
     expect(car.size).toBe(4);
 });

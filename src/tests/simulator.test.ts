@@ -130,10 +130,10 @@ test('get road from coord', () => {
 
 test('build simple world', () => {
     let cars: Car[] = [
-        new Car(.01, 1, 1),
-        new Car(.01, 1, 1),
-        new Car(.01, 1, 1),
-        new Car(.01, 1, 1)
+        new Car(0, .01, 1, 1),
+        new Car(1, .01, 1, 1),
+        new Car(2, .01, 1, 1),
+        new Car(3, .01, 1, 1)
     ];
 
     let builder: WorldBuilder = new WorldBuilder(map, cars);
@@ -312,7 +312,7 @@ test('get straight direction', () => {
 });
 
 test('drive along simple road', () => {
-    let car: Car = new Car(.003, 10, 5);
+    let car: Car = new Car(0, .003, 10, 5);
     let road: Road = new Road(0, [new Coord(0, 1), new Coord(1, 1), new Coord(2, 2)],
         1, 1);
 
@@ -332,7 +332,7 @@ test('drive along simple road', () => {
 });
 
 test('drive along simple road strange direction', () => {
-    let car: Car = new Car(.003, 10, 5);
+    let car: Car = new Car(0, .003, 10, 5);
     let road: Road = new Road(0, [new Coord(0, 1), new Coord(1, 1), new Coord(2, 2)],
         1, 1);
 
@@ -352,7 +352,7 @@ test('drive along simple road strange direction', () => {
 });
 
 test('drive follow simple path with turn', () => {
-    let car: Car = new Car(.003, 10, 5);
+    let car: Car = new Car(0, .003, 10, 5);
     let addr: Address = new Address(map.roads[7], .09);
     let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
     let world: World = new World(network);
@@ -373,7 +373,7 @@ test('drive follow simple path with turn', () => {
 });
 
 test('drive path with multiple turns', () => {
-    let car: Car = new Car(.003, 10, 5);
+    let car: Car = new Car(0, .003, 10, 5);
     let addr: Address = new Address(map.roads[7], .09);
     let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
     let world: World = new World(network);
@@ -599,8 +599,8 @@ function runSimulation(world: World, time: number): void {
 }
 
 function* defaultCars(num: number): IterableIterator<Car> {
-    for(let _ = 0; _ < num; _++) {
-        yield new Car(.005, 100, 3);
+    for(let i = 0; i < num; i++) {
+        yield new Car(i, .005, 100, 3);
     }
 }
 

@@ -46,7 +46,14 @@ export default class World {
         for (const car of stoppedCars) {
             let int: Intersection = car.atIntersection();
             if(int) {
-                let cai: CarsAtIntersection = new CarsAtIntersection(int,
+                let cai: CarsAtIntersection = carsAtInts.find(x => 
+                    x.intersection.id == int.id);
+                if(cai) {
+                    cai.cars = cai.cars.concat(this.getCarsAtIntersection(int, car, 
+                        stoppedCars));
+                    continue;
+                }
+                cai = new CarsAtIntersection(int,
                     this.getCarsAtIntersection(int, car, stoppedCars));
                 carsAtInts.push(cai);
             }
