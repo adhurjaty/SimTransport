@@ -172,16 +172,16 @@ export default class RoadNetwork {
         }
     }
 
-    isInIntersection(addr: Address): boolean {
+    getIntersectionFromAddr(addr: Address): Intersection {
         let intersections: IterableIterator<Intersection> = 
             this.getIntersectionsOnRoad(addr.road);
         for (const int of intersections) {
             let loc: Coord = getCoord(addr);
             if(getRoadDistance(addr.road, loc, int.location) <= INTERSECTION_SIZE) {
-                return true;
+                return int;
             }
         }
 
-        return false;
+        return undefined;
     }
 }

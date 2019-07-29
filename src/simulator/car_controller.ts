@@ -3,7 +3,7 @@ import World from "./world";
 import Address from "./address";
 import PathInstruction from "./path_instruction";
 import PathFinder from "./path_finder";
-import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection, getAddressOnRoad } from "./simulator_helpers";
+import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection, getAddressOnRoad, followRoad } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { RoadDirection } from "../enums";
@@ -155,5 +155,11 @@ export default class CarController {
     // Gives safe driving distance from car ahead
     private twoSecondRule(): number {
         return 2 * Math.abs(this.car.velocity.mps());
+    }
+
+    atIntersection(): Intersection {
+        let intAddr: Address = followRoad(this.car.address, INTERSECTION_SIZE,
+            this.car.direction);
+        return this.world.network.getIntersectionFromAddr(intAddr);
     }
 }

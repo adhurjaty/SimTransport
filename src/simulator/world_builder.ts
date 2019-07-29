@@ -55,7 +55,7 @@ export default class WorldBuilder {
         do {
             let distance = randDouble(maxDist);
             addr = new Address(road, distance);
-        } while(network.isInIntersection(addr));
+        } while(network.getIntersectionFromAddr(addr) != undefined);
 
         return addr;
     }

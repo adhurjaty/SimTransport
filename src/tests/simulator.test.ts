@@ -399,8 +399,8 @@ test('is in intersection', () => {
     let inAddr: Address = getAddress(network, inCoord);
     let outAddr: Address = getAddress(network, outCoord);
 
-    expect(network.isInIntersection(inAddr)).toBeTruthy();
-    expect(network.isInIntersection(outAddr)).toBeFalsy();
+    expect(network.getIntersectionFromAddr(inAddr)).toBeTruthy();
+    expect(network.getIntersectionFromAddr(outAddr)).toBeFalsy();
 });
 
 test('build single car world', () => {

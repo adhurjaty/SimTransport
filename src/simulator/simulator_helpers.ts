@@ -59,6 +59,13 @@ export function getDistToIntersection(addr: Address, int: Intersection): number 
     return dist;
 }
 
+export function followRoad(addr: Address, distance: number, direction: RoadDirection): 
+    Address 
+{
+    let disp = distance * (direction == RoadDirection.Charm ? 1 : -1);
+    return new Address(addr.road, addr.distance + disp);
+}
+
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {
     let road: Road = fromInt.roads.find(r => 
         toInt.roads.map(t => t.id).indexOf(r.id) != -1);

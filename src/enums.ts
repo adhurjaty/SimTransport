@@ -20,3 +20,10 @@ export function switchDirection(dir: IntersectionDirection): IntersectionDirecti
     }
     return IntersectionDirection.First;
 }
+
+export function otherDirection(dir: RoadDirection) {
+    if(dir == RoadDirection.Charm) {
+        return RoadDirection.Strange;
+    }
+    return RoadDirection.Charm;
+}

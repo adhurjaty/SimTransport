@@ -6,6 +6,7 @@ import { RoadDirection } from "../enums";
 import { getCoord } from "./simulator_helpers";
 import { TICK_DURATION } from "../constants";
 import { Speed } from "../primitives";
+import Intersection from "./intersection";
 
 export default class DrivingCar extends Car {
     private controller: CarController;
@@ -37,6 +38,10 @@ export default class DrivingCar extends Car {
     private moveForward(): void {
         this.adjustSpeed();
         this.address.distance += this.movementAmount();
+    }
+
+    private movementAmount(): number {
+        return this.velocity.mps() * TICK_DURATION;
     }
 
     private adjustSpeed(): void {
@@ -71,7 +76,7 @@ export default class DrivingCar extends Car {
         return getCoord(this.address);
     }
 
-    private movementAmount(): number {
-        return this.velocity.mps() * TICK_DURATION;
+    atIntersection(): Intersection {
+        return this.controller.atIntersection();
     }
 }
