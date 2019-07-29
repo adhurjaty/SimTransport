@@ -108,12 +108,10 @@ export function last<T>(lst: T[]): T {
     return lst[lst.length - 1];
 }
 
-export class PriorityQueue<T> {
-    private elements: T[] = [];
-
-    constructor(private hashFn: (a: T) => number) {
-
-    }
+export abstract class Queue<T> {
+    protected elements: T[] = [];
+    
+    abstract push(el: T): void;
 
     peek(): T {
         if(this.elements.length == 0) {
@@ -129,6 +127,16 @@ export class PriorityQueue<T> {
         return this.elements.splice(0, 1)[0];
     }
 
+    empty(): boolean {
+        return this.elements.length == 0;
+    }
+}
+
+export class PriorityQueue<T> extends Queue<T> {
+    constructor(private hashFn: (a: T) => number) {
+        super();
+    }
+
     push(el: T): void {
         for (let i = 0; i < this.elements.length; i++) {
             const existing = this.elements[i];
@@ -139,8 +147,24 @@ export class PriorityQueue<T> {
         }
         this.elements.push(el);
     }
+}
 
-    empty(): boolean {
-        return this.elements.length == 0;
+export class PrunableQueue<T> extends Queue<T> {
+    constructor(elements: T[]) {
+        super();
+        this.elements = elements;
+    }
+
+    push(el: T): void {
+        this.elements.push(el);
+    }
+
+    prune(lst: T[]) {
+        for (const item of lst) {
+            let idx: number = this.elements.indexOf(item);
+            if(idx > -1) {
+                this.elements.splice(idx, 1);
+            }
+        }
     }
 }

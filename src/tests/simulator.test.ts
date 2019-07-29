@@ -536,6 +536,30 @@ test('multiple cars stop at stop light', () => {
     expect(cars[1].address.road.id).toBe(6);
 });
 
+test('trip light sensor', () => {
+    let int: Intersection = network.intersections[6];
+    let switcher: TrippedTestSwitcher = new TrippedTestSwitcher(int.light,
+        IntersectionDirection.First);
+
+    int.light.setSwitcher(switcher);
+    let car: DrivingCar = new DrivingCar(defaultCars(1).next().value,
+        new Address(map.roads[6], .08), RoadDirection.Charm);
+
+    let world: World = new World(network)
+    world.setCars([car]);
+    car.setController(new CarController(car, world));
+    car.setDestination(new Address(map.roads[6], 1));
+
+    runSimulation(world, 1);
+
+    expect(switcher.trippedDirs.length).toBe(0);
+
+    runSimulation(world, 30);
+
+    expect(switcher.trippedDirs.length).toBe(1);
+    expect(switcher.trippedDirs[0]).toEqual(IntersectionDirection.Second);
+});
+
 test('get stopped at intersection', () => {
     expect(true).toBeFalsy();
 });
@@ -605,7 +629,7 @@ function* defaultCars(num: number): IterableIterator<Car> {
 }
 
 class SimpleLightSwitcher implements LightSwitcher {
-    constructor(private light: TrafficLight, private direction: IntersectionDirection) {
+    constructor(protected light: TrafficLight, protected direction: IntersectionDirection) {
         this.light.setSwitcher(this);
         light.greenDirection = this.direction;
     }
@@ -623,5 +647,16 @@ class AutoSwitcher implements LightSwitcher {
     setDirection(dir: IntersectionDirection): void {}
     carSensorTripped(dir: IntersectionDirection): void {
         this.light.greenDirection = dir;
+    }
+}
+
+class TrippedTestSwitcher extends SimpleLightSwitcher {
+    public trippedDirs: IntersectionDirection[] = []
+    constructor(light: TrafficLight, direction: IntersectionDirection) {
+        super(light, direction);
+    }
+
+    carSensorTripped(dir: IntersectionDirection): void {
+        this.trippedDirs.push(dir);
     }
 }
