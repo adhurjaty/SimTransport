@@ -33,7 +33,7 @@ export default class CarController {
     makeDecision(): void {
         if(this.atDestination()) {
             this.path = [];
-            this.car.setSpeedLimit(new Speed(0));
+            this.car.setSpeed(new Speed(0));
             return;
         }
         
@@ -98,7 +98,7 @@ export default class CarController {
         this.car.address = this.getNextAddress(this.path[0].road, 
             lastInstruction.location);
         this.car.direction = this.path[0].direction;
-        this.car.setSpeedLimit(this.getSpeedLimit());
+        this.car.setSpeed(this.getSpeedLimit());
     }
 
     private getNextAddress(road: Road, intersectionLoc: Coord): Address {
@@ -111,7 +111,6 @@ export default class CarController {
         return addr;
     }
 
-    public speeds: number[] = [];
     private setForwardSpeed(distToWaypoint: number) {
         let speed: Speed = this.getSpeedLimit();
 
@@ -124,16 +123,15 @@ export default class CarController {
         let car: DrivingCar = this.getCarAhead();
         if(car) {
             // Zeno's paradox!
-            speed = new Speed(Math.abs((this.car.velocity.speedInMph + 
-                car.velocity.speedInMph)/ 2));
+            speed = new Speed(Math.abs((this.car.speed.speedInMph + 
+                car.speed.speedInMph)/ 2));
         }
 
-        this.speeds.push(speed.speedInMph);
-        this.car.setSpeedLimit(speed);
+        this.car.setSpeed(speed);
     }
 
     private distPerTimeStep(): number {
-        return Math.abs(this.car.velocity.mps()) * TICK_DURATION;
+        return Math.abs(this.car.speed.mps()) * TICK_DURATION;
     }
 
     private getCarAhead(): DrivingCar {
@@ -155,7 +153,7 @@ export default class CarController {
 
     // Gives safe driving distance from car ahead
     private twoSecondRule(): number {
-        return 2 * Math.abs(this.car.velocity.mps());
+        return 2 * this.car.speed.mps();
     }
 
     atIntersection(): Intersection {

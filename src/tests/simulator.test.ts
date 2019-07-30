@@ -352,6 +352,8 @@ test('drive along simple road strange direction', () => {
 });
 
 test('drive follow simple path with turn', () => {
+    setAllLighsAuto();
+
     let car: Car = new Car(0, .003, 10, 5);
     let addr: Address = new Address(map.roads[7], .09);
     let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
@@ -361,18 +363,21 @@ test('drive follow simple path with turn', () => {
     
     drivingCar.setController(controller);
 
+    let light: TrafficLight = network.intersections[7].light;
+    light.setSwitcher(new AutoSwitcher(light));
+
     let dest: Address = new Address(map.roads[2], .11);
     drivingCar.setDestination(dest);
-    let timeToEnd: number = 20.025;
-    for (let _ = 0; _ < Math.ceil(timeToEnd / TICK_DURATION); _++) {
-        drivingCar.drive();
-    }
+
+    runSimulation(world, 21);
 
     expect(drivingCar.address.road.id).toBe(dest.road.id);
     expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
 });
 
 test('drive path with multiple turns', () => {
+    setAllLighsAuto();
+
     let car: Car = new Car(0, .003, 10, 5);
     let addr: Address = new Address(map.roads[7], .09);
     let drivingCar: DrivingCar = new DrivingCar(car, addr, RoadDirection.Charm);
@@ -437,13 +442,13 @@ test('follow slower car', () => {
 
     runSimulation(world, 1);
 
-    expect(dcs[0].velocity.speedInMph).toBe(20);
-    expect(dcs[1].velocity.speedInMph).toBe(40);
+    expect(dcs[0].speed.speedInMph).toBe(20);
+    expect(dcs[1].speed.speedInMph).toBe(40);
 
     runSimulation(world, 70);
 
-    expect(dcs[0].velocity.speedInMph).toBe(20);
-    expect(dcs[1].velocity.speedInMph).toBeCloseTo(20, 1);
+    expect(dcs[0].speed.speedInMph).toBe(20);
+    expect(dcs[1].speed.speedInMph).toBeCloseTo(20, 1);
 });
 
 test('get dist between addresses', () => {
@@ -509,6 +514,8 @@ test('car stops at stop light', () => {
 });
 
 test('multiple cars stop at stop light', () => {
+    setAllLightsSimple();
+
     let int: Intersection = network.intersections[7];
     let switcher: LightSwitcher = new SimpleLightSwitcher(int.light,
         IntersectionDirection.First);
@@ -573,7 +580,6 @@ test('trip multiple light sensors', () => {
         new Address(map.roads[6], .12),
     ];
 
-    
     let cars: DrivingCar[] = Array.from(defaultCars(4)).map((c, i) => {
         let dc = new DrivingCar(c, addresses[i], RoadDirection.Charm);
         return dc;
@@ -601,9 +607,6 @@ test('trip multiple light sensors', () => {
     expect(switcher.trippedDirs.length).toBe(3);
 });
 
-test('get stopped at intersection', () => {
-    expect(true).toBeFalsy();
-});
 
 function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
@@ -667,6 +670,19 @@ function* defaultCars(num: number): IterableIterator<Car> {
     for(let i = 0; i < num; i++) {
         yield new Car(i, .005, 100, 3);
     }
+}
+
+function setAllLightsSimple() {
+    network.intersections.forEach(x => {
+        x.light.setSwitcher(new SimpleLightSwitcher(x.light, 
+            IntersectionDirection.First));
+    });
+}
+
+function setAllLighsAuto() {
+    network.intersections.forEach(x => {
+        x.light.setSwitcher(new AutoSwitcher(x.light));
+    });
 }
 
 class SimpleLightSwitcher implements LightSwitcher {

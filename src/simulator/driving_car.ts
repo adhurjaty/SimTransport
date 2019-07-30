@@ -12,7 +12,7 @@ export default class DrivingCar extends Car {
     private controller: CarController;
     private turnTimeElapsed: number;
     
-    public velocity: Speed = new Speed(0);
+    public speed: Speed = new Speed(0);
     public speedLimit: Speed = new Speed(40);
     public turning: boolean = false;
 
@@ -41,16 +41,18 @@ export default class DrivingCar extends Car {
     }
 
     private movementAmount(): number {
-        return this.velocity.mps() * TICK_DURATION;
+        return this.speed.mps() * TICK_DURATION * this.getDirParity();
+    }
+
+    private getDirParity(): number {
+        let parity = [1, -1];
+        return parity[this.direction];
     }
 
     private adjustSpeed(): void {
-        let speed: number = Math.abs(this.velocity.speedInMph);
-        let parity: number = this.direction == RoadDirection.Charm ? 1 : -1;
-
         // deceleration is instant, accel happens linearly
-        speed += Math.min(this.speedLimit.speedInMph - speed, this.accel * TICK_DURATION);
-        this.velocity.speedInMph = speed * parity;
+        this.speed.speedInMph += Math.min(this.speedLimit.speedInMph - this.speed.speedInMph, 
+            this.accel * TICK_DURATION);
     }
 
     private executeTurn(): void {
@@ -66,6 +68,10 @@ export default class DrivingCar extends Car {
             throw new Error("Must attach a car controller");
         }
         this.controller.setDestination(addr);
+    }
+
+    setSpeed(speed: Speed): void {
+
     }
 
     setSpeedLimit(limit: Speed): void {
