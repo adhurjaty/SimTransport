@@ -560,6 +560,47 @@ test('trip light sensor', () => {
     expect(switcher.trippedDirs[0]).toEqual(IntersectionDirection.Second);
 });
 
+test('trip multiple light sensors', () => {
+    let int: Intersection = network.intersections[6];
+    let switcher: TrippedTestSwitcher = new TrippedTestSwitcher(int.light,
+        IntersectionDirection.First);
+
+    int.light.setSwitcher(switcher);
+    let addresses: Address[] = [
+        new Address(map.roads[6], .08),
+        new Address(map.roads[6], .06),
+        new Address(map.roads[1], .08),
+        new Address(map.roads[6], .12),
+    ];
+
+    
+    let cars: DrivingCar[] = Array.from(defaultCars(4)).map((c, i) => {
+        let dc = new DrivingCar(c, addresses[i], RoadDirection.Charm);
+        return dc;
+    });
+    cars[3].direction = RoadDirection.Strange;
+
+    let world: World = new World(network)
+    world.setCars(cars);
+
+    cars.forEach(c => {
+        c.setController(new CarController(c, world));
+        c.setDestination(new Address(map.roads[1], 1));
+    });
+
+    runSimulation(world, 1);
+
+    expect(switcher.trippedDirs.length).toBe(0);
+
+    runSimulation(world, 3);
+
+    expect(switcher.trippedDirs.length).toBe(2);
+
+    runSimulation(world, 30);
+
+    expect(switcher.trippedDirs.length).toBe(3);
+});
+
 test('get stopped at intersection', () => {
     expect(true).toBeFalsy();
 });

@@ -49,8 +49,7 @@ export default class CarController {
     private distToWaypoint(): number {
         let destAddr: Address = getAddress(this.world.network, this.path[0].location);
 
-        return Math.abs(this.car.address.distance - destAddr.distance) 
-            - Number(this.path.length > 1) * INTERSECTION_SIZE;
+        return Math.abs(this.car.address.distance - destAddr.distance);
     }
 
     private atDestination(): boolean {
@@ -112,6 +111,7 @@ export default class CarController {
         return addr;
     }
 
+    public speeds: number[] = [];
     private setForwardSpeed(distToWaypoint: number) {
         let speed: Speed = this.getSpeedLimit();
 
@@ -128,6 +128,7 @@ export default class CarController {
                 car.velocity.speedInMph)/ 2));
         }
 
+        this.speeds.push(speed.speedInMph);
         this.car.setSpeedLimit(speed);
     }
 

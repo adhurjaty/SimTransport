@@ -15,7 +15,7 @@ export default class LightTripper {
 
     tripSensors(): void {
         let stoppedCars: DrivingCar[] = this.world.cars.filter(car => 
-            car.velocity.speedInMph < 1e-6);
+            car.velocity.speedInMph < 1e-2);
         let carsAtInts: DrivingCar[] = [];
         let carQueue: PrunableQueue<DrivingCar> = new PrunableQueue(stoppedCars);
         while(!carQueue.empty()) {
