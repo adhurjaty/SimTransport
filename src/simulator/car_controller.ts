@@ -6,7 +6,7 @@ import PathFinder from "./path_finder";
 import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection, getAddressOnRoad, followRoad } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
-import { RoadDirection } from "../enums";
+import { RoadDirection, directionParity } from "../enums";
 import Coord from "../models/coord";
 import Road from "../models/road";
 import Intersection from "./intersection";
@@ -68,7 +68,8 @@ export default class CarController {
             return Infinity;
         }
 
-        return getDistToIntersection(this.car.address, intersection);
+        let dist: number = getDistToIntersection(this.car.address, intersection);
+        return Math.max(dist - INTERSECTION_SIZE, 0);
     }
 
     private getIntersectionAhead(): Intersection {
@@ -98,15 +99,12 @@ export default class CarController {
         this.car.address = this.getNextAddress(this.path[0].road, 
             lastInstruction.location);
         this.car.direction = this.path[0].direction;
-        this.car.setSpeed(this.getSpeedLimit());
+        this.makeDecision();
     }
 
     private getNextAddress(road: Road, intersectionLoc: Coord): Address {
         let addr: Address = new Address(road, getRoadDistance(road, road.path[0], 
             intersectionLoc));
-
-        addr.distance += (this.path[0].direction == RoadDirection.Charm
-            ? 1 : -1) * INTERSECTION_SIZE;
 
         return addr;
     }
@@ -116,7 +114,7 @@ export default class CarController {
 
         // if car is so close to checkpoint that it will overshoot next time step
         let distToStop: number = Math.min(distToWaypoint, this.getRedLightDist());
-        if(distToStop < this.distPerTimeStep()) {
+        if(distToStop - Number.EPSILON <= this.distPerTimeStep()) {
             speed = Speed.fromMps(distToStop / TICK_DURATION);
         }
 
@@ -131,7 +129,7 @@ export default class CarController {
     }
 
     private distPerTimeStep(): number {
-        return Math.abs(this.car.speed.mps()) * TICK_DURATION;
+        return this.car.speed.mps() * TICK_DURATION;
     }
 
     private getCarAhead(): DrivingCar {

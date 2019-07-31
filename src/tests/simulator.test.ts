@@ -319,8 +319,9 @@ test('drive along simple road', () => {
     let drivingCar: DrivingCar = new DrivingCar(car, new Address(road, 0),
         RoadDirection.Charm);
     drivingCar.setSpeedLimit(new Speed(40));
+    drivingCar.setSpeed(new Speed(40));
     
-    let timeToEnd = 219.28 // seconds to get to end of road;
+    let timeToEnd = 217.26
     for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
         drivingCar.drive();
     }
@@ -339,8 +340,9 @@ test('drive along simple road strange direction', () => {
     let drivingCar: DrivingCar = new DrivingCar(car, new Address(road, 2.414),
         RoadDirection.Strange);
     drivingCar.setSpeedLimit(new Speed(40));
+    drivingCar.setSpeed(new Speed(40));
     
-    let timeToEnd = 219.28 // seconds to get to end of road;
+    let timeToEnd = 217.26 // seconds to get to end of road;
     for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
         drivingCar.drive();
     }
@@ -389,10 +391,8 @@ test('drive path with multiple turns', () => {
 
     let dest: Address = new Address(map.roads[6], .32);
     drivingCar.setDestination(dest);
-    let timeToEnd: number = 50;
-    for (let _ = 0; _ < Math.ceil(timeToEnd / TICK_DURATION); _++) {
-        drivingCar.drive();
-    }
+
+    runSimulation(world, 50);
 
     expect(drivingCar.address.road.id).toBe(dest.road.id);
     expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
@@ -487,11 +487,11 @@ test('get distance to intersection', () => {
 
     let dist: number = getDistToIntersection(addr, int);
 
-    expect(dist).toBeCloseTo(.05 - INTERSECTION_SIZE, 3);
+    expect(dist).toBeCloseTo(.05, 3);
 });
 
 test('car stops at stop light', () => {
-    let int: Intersection = network.intersections[7];
+    let int: Intersection = network.intersections[6];
     let switcher: LightSwitcher = new SimpleLightSwitcher(int.light,
         IntersectionDirection.First);
 
@@ -516,7 +516,7 @@ test('car stops at stop light', () => {
 test('multiple cars stop at stop light', () => {
     setAllLightsSimple();
 
-    let int: Intersection = network.intersections[7];
+    let int: Intersection = network.intersections[6];
     let switcher: LightSwitcher = new SimpleLightSwitcher(int.light,
         IntersectionDirection.First);
 

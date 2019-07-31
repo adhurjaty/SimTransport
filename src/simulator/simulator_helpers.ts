@@ -51,11 +51,8 @@ export function getDistToIntersection(addr: Address, int: Intersection): number 
         throw new Error("Intersection is not on the same road");
     }
 
-    let dist = getRoadDistance(road, getCoord(addr), int.location) - INTERSECTION_SIZE;
-    if(dist < 0) {
-        throw new Error("Car is inside intersection");
-    }
-
+    let dist = getRoadDistance(road, getCoord(addr), int.location);
+    
     return dist;
 }
 

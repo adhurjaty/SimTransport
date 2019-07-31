@@ -27,3 +27,7 @@ export function otherDirection(dir: RoadDirection) {
     }
     return RoadDirection.Charm;
 }
+
+export function directionParity(dir: RoadDirection) {
+    return dir == RoadDirection.Charm ? 1 : -1;
+}

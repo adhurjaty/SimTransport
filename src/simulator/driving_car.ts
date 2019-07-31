@@ -36,7 +36,7 @@ export default class DrivingCar extends Car {
     }
 
     private moveForward(): void {
-        this.adjustSpeed();
+        // this.adjustSpeed();
         this.address.distance += this.movementAmount();
     }
 
@@ -49,11 +49,12 @@ export default class DrivingCar extends Car {
         return parity[this.direction];
     }
 
-    private adjustSpeed(): void {
-        // deceleration is instant, accel happens linearly
-        this.speed.speedInMph += Math.min(this.speedLimit.speedInMph - this.speed.speedInMph, 
-            this.accel * TICK_DURATION);
-    }
+    // forget about acceleration for now
+    // private adjustSpeed(): void {
+    //     // deceleration is instant, accel happens linearly
+    //     this.speed.speedInMph += Math.min(this.speedLimit.speedInMph - this.speed.speedInMph, 
+    //         this.accel * TICK_DURATION);
+    // }
 
     private executeTurn(): void {
         this.turnTimeElapsed++;
@@ -71,7 +72,7 @@ export default class DrivingCar extends Car {
     }
 
     setSpeed(speed: Speed): void {
-
+        this.speed = speed;
     }
 
     setSpeedLimit(limit: Speed): void {
