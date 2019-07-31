@@ -120,9 +120,9 @@ export default class CarController {
 
         let car: DrivingCar = this.getCarAhead();
         if(car) {
-            // Zeno's paradox!
-            speed = new Speed(Math.abs((this.car.speed.speedInMph + 
-                car.speed.speedInMph)/ 2));
+            let dist = Math.abs(this.car.address.distance - car.address.distance);
+            // preserve 2 second rule
+            speed = Speed.fromMps(dist / 2);
         }
 
         this.car.setSpeed(speed);
