@@ -7,7 +7,6 @@ import RoadNetwork from "./road_network";
 import { RoadDirection, DrivingDirection } from "../enums";
 import ICoord from "../interfaces/ICoord";
 import PathInstruction from "./path_instruction";
-import { INTERSECTION_SIZE } from "../constants";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -52,7 +51,7 @@ export function getDistToIntersection(addr: Address, int: Intersection): number 
     }
 
     let dist = getRoadDistance(road, getCoord(addr), int.location);
-    
+
     return dist;
 }
 

@@ -60,17 +60,17 @@ export default class PathFinder {
             if(last(curNode.path).location.equals(this.end)) {
                 return curNode.path;
             }
+            if(endIntersections.indexOf(curIntersection) != -1 && curNode != undefined) {
+                this.visitDest(curIntersection, curNode);
+                continue;
+            }
 
             let neighbors: IterableIterator<Intersection> = 
                 this.network.getConnectedIntersections(curIntersection);
             for (const neighbor of neighbors) {
                 let connectingRoad: Road = getConnectingRoad(curIntersection, neighbor);
-                let newNode: AStarNodeElement = this.visitNode(connectingRoad, 
-                    neighbor, curIntersection.location, curNode);
-
-                if(endIntersections.indexOf(neighbor) != -1 && newNode != undefined) {
-                    this.visitDest(neighbor, newNode);
-                }
+                this.visitNode(connectingRoad, neighbor, curIntersection.location, 
+                    curNode);
             }
         }
 
