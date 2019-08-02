@@ -392,7 +392,7 @@ test('drive follow simple path with turn', () => {
     let dest: Address = new Address(map.roads[2], .11);
     drivingCar.setDestination(dest);
 
-    runSimulation(world, 21);
+    runSimulation(world, 26);
 
     expect(drivingCar.address.road.id).toBe(dest.road.id);
     expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
@@ -643,15 +643,15 @@ test('turn takes turn time', () => {
 
     runSimulation(world, 1);
     expect(drivingCar.address.road.id).toBe(6);
-    expect(drivingCar.address.distance).toBeCloseTo(0.1);
+    expect(drivingCar.address.distance).toBeCloseTo(0.1, 3);
 
     runSimulation(world, 4)
     expect(drivingCar.address.road.id).toBe(6);
-    expect(drivingCar.address.distance).toBeCloseTo(0.1);
+    expect(drivingCar.address.distance).toBeCloseTo(0.1, 3);
 
     runSimulation(world, 2)
     expect(drivingCar.address.road.id).toBe(dest.road.id);
-    expect(drivingCar.address.distance).toBeCloseTo(dest.distance);
+    expect(drivingCar.address.distance).toBeCloseTo(dest.distance, 3);
 });
 
 test('left turning car waits', () => {

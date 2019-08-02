@@ -99,7 +99,7 @@ export default class CarController {
         this.car.address = this.getNextAddress(this.path[0].road, 
             lastInstruction.location);
         this.car.direction = this.path[0].direction;
-        // this.car.turning = true;
+        this.car.turning = true;
         this.makeDecision();
     }
 

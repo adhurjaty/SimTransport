@@ -10,7 +10,7 @@ import Intersection from "./intersection";
 
 export default class DrivingCar extends Car {
     private controller: CarController;
-    private turnTimeElapsed: number;
+    private turnTimeElapsed: number = 0;
     
     public speed: Speed = new Speed(0);
     public speedLimit: Speed = new Speed(40);
