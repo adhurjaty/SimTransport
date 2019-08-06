@@ -123,11 +123,10 @@ export default class CarController {
             speed = Speed.fromMps(distToStop / TICK_DURATION);
         }
 
-        let car: DrivingCar = this.getCarAheadSameDir();
-        if(car) {
-            let dist = Math.abs(this.car.address.distance - car.address.distance);
+        let [car, carDistance] = this.getCarAheadSameDir();
+        if(car && carDistance < this.twoSecondRule()) {
             // preserve 2 second rule
-            speed = Speed.fromMps(dist / 2);
+            speed = Speed.fromMps(carDistance / 2);
         }
 
         this.car.setSpeed(speed);
@@ -167,9 +166,9 @@ export default class CarController {
     }
 
     private canMakeLeftTurn(): boolean {
-        let oncomingCar: DrivingCar = this.getCarAheadOpposing();
+        let [oncomingCar, dist] = this.getCarAheadOpposing();
 
-        return this.canMakeTurn(oncomingCar, this.car.address);
+        return this.canMakeTurn(oncomingCar, dist);
     }
 
     private canMakeRightTurn(intersection: Intersection): boolean {
@@ -178,20 +177,19 @@ export default class CarController {
         let addr: Address = getAddressOnRoad(otherRoad, intersection.location);
         let nextAddr: Address = getAddressOnRoad(otherRoad, this.path[1].location)
         let dir: RoadDirection = getNewRoadDirection(addr, nextAddr);
-        let oncomingCar: DrivingCar = this.getCarOnNewRoad(addr, dir);
+        let [oncomingCar, dist] = this.getCarOnNewRoad(addr, dir);
         
-        return this.canMakeTurn(oncomingCar, addr);
+        return this.canMakeTurn(oncomingCar, dist);
     }
 
-    private canMakeTurn(oncomingCar: DrivingCar, addr: Address): boolean {
+    private canMakeTurn(oncomingCar: DrivingCar, dist: number): boolean {
         if(!oncomingCar) {
             return true;
         }
 
         let lookDistance: number = this.car.turnTime * oncomingCar.speed.mps();
         
-        return getDistBetweenAddresses(addr, oncomingCar.address) 
-            > lookDistance;
+        return dist > lookDistance;
     }
 
     private distToTurn(distToWaypoint: number): number {
@@ -207,37 +205,39 @@ export default class CarController {
         return this.car.speed.mps() * TICK_DURATION;
     }
 
-    private getCarAheadSameDir(): DrivingCar {
+    private getCarAheadSameDir(): [DrivingCar, number] {
         return this.getCarAhead(this.car.address, this.car.direction, 
-            this.twoSecondRule());
+            this.car.direction);
     }
 
-    private getCarAheadOpposing(): DrivingCar {
+    private getCarAheadOpposing(): [DrivingCar, number] {
         return this.getCarAhead(this.car.address, otherDirection(this.car.direction), 
-            Infinity);
+            this.car.direction);
     }
 
-    private getCarOnNewRoad(intersectionLoc: Address, dir: RoadDirection): DrivingCar {
-        return this.getCarAhead(intersectionLoc, dir, Infinity);
+    private getCarOnNewRoad(intersectionLoc: Address, dir: RoadDirection): 
+        [DrivingCar, number]
+    {
+        return this.getCarAhead(intersectionLoc, dir, otherDirection(dir));
     }
 
-    private getCarAhead(startAddr: Address, dir: RoadDirection, lookDistance: number): 
-        DrivingCar 
+    private getCarAhead(startAddr: Address, carDir: RoadDirection, 
+        lookDir: RoadDirection): [DrivingCar, number] 
     {
         let dirCars: DrivingCar[] = this.world.getCarsOnRoad(startAddr.road)
-            .filter(c => c.direction == dir && c !== this.car);
+            .filter(c => c.direction == carDir && c !== this.car);
 
         let carAhead: DrivingCar = undefined;
         let minDist: number = Infinity;
         for (const car of dirCars) {
-            let dist: number = getDistBetweenAddresses(startAddr, car.address, 
-                this.car.direction);
-            if(dist > 0 && dist <= lookDistance && dist < minDist) {
+            let dist: number = getDistBetweenAddresses(startAddr, car.address, lookDir);
+            if(dist > 0 && dist < minDist) {
                 carAhead = car;
+                minDist = dist;
             }
         }
 
-        return carAhead;
+        return [carAhead, minDist];
     }
 
     // Gives safe driving distance from car ahead
