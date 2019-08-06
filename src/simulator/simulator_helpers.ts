@@ -128,6 +128,14 @@ export function getDrivingDirection(inst: PathInstruction, prevInst: PathInstruc
     return DrivingDirection.Straight;
 }
 
+export function getNewRoadDirection(intAddr: Address, nextAddr: Address): RoadDirection {
+    if(intAddr.distance - nextAddr.distance > 0) {
+        return RoadDirection.Strange;
+    }
+
+    return RoadDirection.Charm;
+}
+
 class RoadDistanceFinder {
     private pointsToCheck: Coord[];
     constructor(private road: Road, from: Coord, to: Coord) {

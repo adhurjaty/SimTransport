@@ -684,12 +684,57 @@ test('left turning car waits', () => {
     runSimulation(world, 6.5);
 
     expect(cars[0].address.distance).toBeCloseTo(.15);
-    expect(cars[1].address.distance).toBeCloseTo(.1) // guess for now
+    expect(cars[1].address.distance).toBeCloseTo(.109, 3)
 
 });
 
 test('right on red', () => {
-    expect(false).toBeTruthy();
+    setAllLightsSimple();
+
+    let baseCar: Car = defaultCars(1).next().value;
+    let car: DrivingCar = new DrivingCar(baseCar, new Address(map.roads[6], .08), 
+        RoadDirection.Charm);
+
+    let dest = new Address(map.roads[1], .11);
+    network.intersections[6].light.greenDirection = IntersectionDirection.First;
+    
+    let world: World = new World(network);
+    world.setCars([car]);
+
+    car.setController(new CarController(car, world));
+    car.setDestination(dest);
+
+    runSimulation(world, 15);
+
+    expect(car.address.road.id).toBe(1);
+    expect(car.address.distance).toBeCloseTo(.11, 3);
+});
+
+test('right on red car waits', () => {
+    setAllLightsSimple();
+
+    let baseCars: Car[] = Array.from(defaultCars(2));
+    let addresses: Address[] = [new Address(map.roads[6], .08),
+        new Address(map.roads[1], .07)];
+    let cars: DrivingCar[] = baseCars.map((c, i) => 
+        new DrivingCar(c, addresses[i], RoadDirection.Charm));
+
+    let dest = new Address(map.roads[1], .49);
+    network.intersections[6].light.greenDirection = IntersectionDirection.First;
+    
+    let world: World = new World(network);
+    world.setCars(cars);
+
+    cars.forEach(c => {
+        c.setController(new CarController(c, world));
+        c.setDestination(dest);
+    });
+
+    runSimulation(world, 8);
+
+    expect(cars[0].address.road.id).toBe(1);
+    expect(cars[1].address.road.id).toBe(1);
+    expect(cars[1].address.distance - cars[0].address.distance).toBeCloseTo(.033, 3);
 });
 
 
