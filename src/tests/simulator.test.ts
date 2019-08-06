@@ -596,16 +596,16 @@ test('trip multiple light sensors', () => {
     int.light.setSwitcher(switcher);
     let addresses: Address[] = [
         new Address(map.roads[6], .08),
-        new Address(map.roads[6], .06),
         new Address(map.roads[1], .08),
         new Address(map.roads[6], .12),
+        new Address(map.roads[6], .14),
     ];
 
     let cars: DrivingCar[] = Array.from(defaultCars(4)).map((c, i) => {
-        let dc = new DrivingCar(c, addresses[i], RoadDirection.Charm);
+        let dir: RoadDirection = <RoadDirection>(i / 2);
+        let dc = new DrivingCar(c, addresses[i], dir);
         return dc;
     });
-    cars[3].direction = RoadDirection.Strange;
 
     let world: World = new World(network)
     world.setCars(cars);
@@ -734,7 +734,8 @@ test('right on red car waits', () => {
 
     expect(cars[0].address.road.id).toBe(1);
     expect(cars[1].address.road.id).toBe(1);
-    expect(cars[1].address.distance - cars[0].address.distance).toBeCloseTo(.033, 3);
+    expect(cars[1].address.distance - cars[0].address.distance).toBeCloseTo(.033 + 
+        INTERSECTION_SIZE, 3);
 });
 
 
