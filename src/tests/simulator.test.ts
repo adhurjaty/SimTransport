@@ -739,7 +739,7 @@ test('right on red car waits', () => {
 });
 
 
-function createMap(): RoadMap {
+export function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);
 }

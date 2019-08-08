@@ -20,7 +20,7 @@ export default class WorldBuilder {
 
     private roadID: number = 0;
 
-    constructor(private map: (RoadMap | null), private cars: (Car[] | null)) {
+    constructor(private map?: RoadMap, private cars?: Car[]) {
         if(!this.map) {
             this.map = this.createSimpleMap(10);
         }

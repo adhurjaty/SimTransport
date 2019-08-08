@@ -1,6 +1,11 @@
 import React, { RefObject, createRef } from "react";
 import World from "../simulator/world";
 
+export interface ICanvas {
+    width: number;
+    height: number;
+} 
+
 interface CanvasProps {
     width: number;
     height: number;
