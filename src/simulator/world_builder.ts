@@ -12,11 +12,69 @@ import CarController from "./car_controller";
 import LightSwitcher from "./light_switcher";
 import TrafficLight from "./traffic_light";
 import DefaultLightSwitcher from "./default_light_switcher";
+import Coord from "../models/coord";
+
+const PARALLEL_ROAD_DISTANCE = .1;
 
 export default class WorldBuilder {
 
-    constructor(private map: RoadMap, private cars: Car[]) {
+    private roadID: number = 0;
 
+    constructor(private map: (RoadMap | null), private cars: (Car[] | null)) {
+        if(!this.map) {
+            this.map = this.createSimpleMap(10);
+        }
+        if(!this.cars) {
+            this.cars = this.createCars(20);
+        }
+    }
+
+    createSimpleMap(roadsPerSide: number): RoadMap {
+        this.roadID = 0;
+        let grid: Road[] = Array.from(this.createRoadRows(roadsPerSide))
+            .concat(Array.from(this.createRoadColumns(roadsPerSide)));
+        return new RoadMap(grid);
+    }
+
+
+    private *createRoadRows(numRoads: number): IterableIterator<Road> {
+        let roadLength = numRoads * PARALLEL_ROAD_DISTANCE;
+        yield* this.createRoads(numRoads, 
+            (num) => this.makeHorizontalPath(num, roadLength));
+    }
+
+    private *createRoadColumns(numRoads: number): IterableIterator<Road> {
+        let roadLength = numRoads * PARALLEL_ROAD_DISTANCE;
+        yield* this.createRoads(numRoads, 
+            (num) => this.makeVerticalPath(num, roadLength));
+    }
+
+    private *createRoads(numRoads: number, coordCreator: (n: number) => Coord[]): 
+        IterableIterator<Road> 
+    {
+        for (let i = 0; i < numRoads; i++) {
+            let path = coordCreator(i);
+            yield new Road(this.roadID, path, 1, 1);
+            this.roadID++;
+        }
+    }
+
+    private makeHorizontalPath(roadNum: number, roadLength: number): Coord[] {
+        return [new Coord(0, roadNum * PARALLEL_ROAD_DISTANCE), 
+            new Coord(roadLength, roadNum * PARALLEL_ROAD_DISTANCE)];
+    }
+    
+    private makeVerticalPath(roadNum: number, roadLength: number): Coord[] {
+        return [new Coord(roadNum * PARALLEL_ROAD_DISTANCE, 0), 
+            new Coord(roadNum * PARALLEL_ROAD_DISTANCE, roadLength)];
+    }
+
+    createCars(numCars: number): Car[] {
+        let cars: Car[] = [];
+        for (let i = 0; i < numCars; i++) {
+            cars.push(new Car(i, .005, 10, 3));
+        }
+        return cars;
     }
 
     build(): World {
