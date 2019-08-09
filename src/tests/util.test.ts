@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -142,4 +142,17 @@ test('get left vector', () => {
     let v2: ICoord = {x: -3, y: 0};
 
     expect(dotProduct90CCW(v1, v2) < 0).toBeTruthy();
+});
+
+test('flatten array', () => {
+    let arr: number[][] = [
+        [1, 5, 3],
+        [1, 1, 1, 1],
+        [3],
+        [],
+        [77, 3]
+    ];
+
+    let flat: number[] = flatten(arr);
+    expect(flat).toEqual([1, 5, 3, 1, 1, 1, 1, 3, 77, 3]);
 });

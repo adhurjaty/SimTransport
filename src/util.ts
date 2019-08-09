@@ -108,6 +108,10 @@ export function last<T>(lst: T[]): T {
     return lst[lst.length - 1];
 }
 
+export function flatten<T>(lst: T[][]): T[] {
+    return [].concat(...lst);
+}
+
 export abstract class Queue<T> {
     protected elements: T[] = [];
     

@@ -17,6 +17,7 @@ import { Speed, Random } from "../primitives";
 import CarController from "../simulator/car_controller";
 import LightSwitcher from "../simulator/light_switcher";
 import TrafficLight from "../simulator/traffic_light";
+import { Rectangle } from "../util";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -738,6 +739,22 @@ test('right on red car waits', () => {
         INTERSECTION_SIZE, 3);
 });
 
+test('get world bounds', () => {
+    let simpleMap = new RoadMap([
+        new Road(0, [new Coord(-1, -2), new Coord(2, 1)], 1, 1),
+        new Road(0, [new Coord(-3, -2), new Coord(2, 0.5)], 1, 1),
+        new Road(0, [new Coord(1, 3), new Coord(1, -4)], 1, 1)
+    ]);
+    let simpleNet: RoadNetwork = new RoadNetwork(simpleMap);
+    let world: World = new World(simpleNet);
+
+    let bounds: Rectangle = world.getBounds();
+
+    expect(bounds.x).toBeCloseTo(-3);
+    expect(bounds.y).toBeCloseTo(-4);
+    expect(bounds.width).toBeCloseTo(5);
+    expect(bounds.height).toBeCloseTo(7);
+});
 
 export function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);

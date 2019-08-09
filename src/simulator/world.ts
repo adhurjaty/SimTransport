@@ -8,6 +8,8 @@ import Address from "./address";
 import { followRoad, getAddress, getAddressOnRoad } from "./simulator_helpers";
 import { otherDirection } from "../enums";
 import LightTripper from "./light_tripper";
+import { Rectangle, flatten } from "../util";
+import ICoord from "../interfaces/ICoord";
 
 export default class World {
     private lightTripper: LightTripper; 
@@ -40,4 +42,14 @@ export default class World {
         return this.cars.filter(c => c.address.road.id == road.id);
     }
 
+    getBounds(): Rectangle {
+        let coords: ICoord[] = flatten(this.map.roads.map(r => r.path));
+        let xs: number[] = coords.map(c => c.x).sort((a, b) => a - b);
+        let ys: number[] = coords.map(c => c.y).sort((a, b) => a - b);
+
+        let end: number = coords.length - 1;
+        let width: number = xs[end] - xs[0];
+        let height: number = ys[end] - ys[0];
+        return new Rectangle(xs[0], ys[0], width, height);
+    }
 }
