@@ -9,14 +9,14 @@ export interface ICanvas {
 interface CanvasProps {
     width: number;
     height: number;
-    world: World;
+    // world: World;
 }
 
 interface CanvasState {
     ctx: CanvasRenderingContext2D | null;
 }
 
-export default class SimCanvas extends React.Component<CanvasProps, {}> {
+export default class SimCanvas extends React.Component<CanvasProps, CanvasState> {
     private canvasRef: RefObject<HTMLCanvasElement> = createRef<HTMLCanvasElement>();
     private ctx: CanvasRenderingContext2D;
 

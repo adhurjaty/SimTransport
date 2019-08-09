@@ -8,5 +8,5 @@ let builder: WorldBuilder = new WorldBuilder();
 let world: World = builder.build();
 
 ReactDOM.render(
-    <SimCanvas width={800} height={450} world={world} />
+    <SimCanvas width={800} height={450} /*world={world}*/ />
 , document.body);
