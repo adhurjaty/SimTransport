@@ -16,7 +16,8 @@ export default class WorldView {
     }
 
     getRoadLines(): LineSegment[] {
-        return flatten(this.world.map.roads.map(r => Array.from(r.toLineSegments())));
+        return flatten(this.world.map.roads.map(r => Array.from(r.toLineSegments())))
+            .map(l => <LineSegment>l.map(c => this.toCanvasCoords(c)));
     }
 
     toCanvasCoords(worldCoord: ICoord): ICoord {
