@@ -23,7 +23,6 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
     private canvasRef: RefObject<HTMLCanvasElement> = createRef<HTMLCanvasElement>();
     private ctx: CanvasRenderingContext2D;
     private worldView: WorldView;
-    private lastDrawTime: Date;
 
     constructor(props: CanvasProps) {
         super(props);
