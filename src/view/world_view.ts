@@ -20,6 +20,11 @@ export default class WorldView {
             .map(l => <LineSegment>l.map(c => this.toCanvasCoords(c)));
     }
 
+    getIntersectionLocations(): ICoord[] {
+        return this.world.network.intersections.map(int => 
+            this.toCanvasCoords(int.location));
+    }
+
     toCanvasCoords(worldCoord: ICoord): ICoord {
         let xPrime: number = (worldCoord.x - this.viewRect.x) 
             * (this.canvas.width / this.viewRect.width);
