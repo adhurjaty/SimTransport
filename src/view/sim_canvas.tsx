@@ -1,8 +1,6 @@
 import React, { RefObject, createRef } from "react";
 import World from "../simulator/world";
 import WorldView from "./world_view";
-import { LineSegment } from "../interfaces/LineSegment";
-import ICoord from "../interfaces/ICoord";
 
 export interface ICanvas {
     width: number;
@@ -45,46 +43,9 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
     }
     
     draw(): void {
-        // this.drawRoads();
-        // this.drawIntersections();
-        // this.drawCars();
         this.worldView.draw(this.ctx);
 
         window.requestAnimationFrame(this.draw.bind(this));
-    }
-
-    private drawRoads(): void {
-        this.ctx.strokeStyle = "black";
-
-        let roadLines: LineSegment[] = this.worldView.getRoadLines();
-
-        this.ctx.beginPath();
-        roadLines.forEach(line => {
-            this.ctx.moveTo(line[0].x, line[0].y);
-            this.ctx.lineTo(line[1].x, line[1].y);
-        });
-        this.ctx.stroke();
-        this.ctx.save();
-    }
-
-    private drawIntersections(): void {
-        this.ctx.fillStyle = "black";
-
-        let intersections: ICoord[] = this.worldView.getIntersectionLocations();
-
-        let rad: number = 5;
-
-        this.ctx.beginPath();
-        intersections.forEach(c => {
-            this.ctx.moveTo(c.x, c.y);
-            this.ctx.arc(c.x, c.y, rad, 0, 2 * Math.PI);
-        });
-        this.ctx.fill();
-        this.ctx.save();
-    }
-
-    private drawCars(): void {
-
     }
 
     render() {

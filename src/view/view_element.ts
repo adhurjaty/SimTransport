@@ -24,4 +24,8 @@ export default abstract class ViewElement {
             / (this.canvas.height / viewRect.height);
         return {x: xPrime, y: yPrime};
     }
+
+    toCanvasSize(worldSize: number, viewRect: Rectangle): number {
+        return worldSize * this.canvas.width / viewRect.width;
+    }
 }

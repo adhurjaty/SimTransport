@@ -26,12 +26,12 @@ export default class WorldView {
         this.roads.forEach(road => {
             road.draw(ctx, this.viewRect);
         });
-        // this.intersections.forEach(int => {
-        //     int.draw(ctx, this.viewRect);
-        // });
-        // this.cars.forEach(car => {
-        //     car.draw(ctx, this.viewRect);
-        // });
+        this.intersections.forEach(int => {
+            int.draw(ctx, this.viewRect);
+        });
+        this.cars.forEach(car => {
+            car.draw(ctx, this.viewRect);
+        });
     }
 
     private createRoads(): void {
