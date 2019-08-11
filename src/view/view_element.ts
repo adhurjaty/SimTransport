@@ -7,7 +7,7 @@ export default abstract class ViewElement {
 
     }
 
-    abstract draw(ctx: CanvasRenderingContext2D): void;
+    abstract draw(ctx: CanvasRenderingContext2D, viewRect: Rectangle): void;
 
     toCanvasCoords(worldCoord: ICoord, viewRect: Rectangle): ICoord {
         let xPrime: number = (worldCoord.x - viewRect.x) 

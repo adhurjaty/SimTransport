@@ -8,14 +8,13 @@ import RoadView from "./road_view";
 import CarView from "./car_view";
 import IntersectionView from "./intersection_view";
 
-export default class WorldView extends ViewElement {
+export default class WorldView {
     private viewRect: Rectangle; // in world coords
     private roads: RoadView[];
     private intersections: IntersectionView[];
     private cars: CarView[];
 
-    constructor(private world: World, canvas: ICanvas) {
-        super(canvas);
+    constructor(private world: World, private canvas: ICanvas) {
         this.viewRect = world.getBounds();
 
         this.createRoads();
@@ -24,7 +23,15 @@ export default class WorldView extends ViewElement {
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-
+        this.roads.forEach(road => {
+            road.draw(ctx, this.viewRect);
+        });
+        // this.intersections.forEach(int => {
+        //     int.draw(ctx, this.viewRect);
+        // });
+        // this.cars.forEach(car => {
+        //     car.draw(ctx, this.viewRect);
+        // });
     }
 
     private createRoads(): void {

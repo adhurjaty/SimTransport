@@ -45,9 +45,10 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
     }
     
     draw(): void {
-        this.drawRoads();
-        this.drawIntersections();
-        this.drawCars();
+        // this.drawRoads();
+        // this.drawIntersections();
+        // this.drawCars();
+        this.worldView.draw(this.ctx);
 
         window.requestAnimationFrame(this.draw.bind(this));
     }
