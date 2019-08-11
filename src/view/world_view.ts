@@ -3,12 +3,41 @@ import { LineSegment } from "../interfaces/LineSegment";
 import ICoord from "../interfaces/ICoord";
 import { Rectangle, flatten } from "../util";
 import { ICanvas } from "./sim_canvas";
+import ViewElement from "./view_element";
+import RoadView from "./road_view";
+import CarView from "./car_view";
+import IntersectionView from "./intersection_view";
 
-export default class WorldView {
+export default class WorldView extends ViewElement {
     private viewRect: Rectangle; // in world coords
+    private roads: RoadView[];
+    private intersections: IntersectionView[];
+    private cars: CarView[];
 
-    constructor(private world: World, private canvas: ICanvas) {
+    constructor(private world: World, canvas: ICanvas) {
+        super(canvas);
         this.viewRect = world.getBounds();
+
+        this.createRoads();
+        this.createIntersections();
+        this.createCars();
+    }
+
+    draw(ctx: CanvasRenderingContext2D): void {
+
+    }
+
+    private createRoads(): void {
+        this.roads = this.world.map.roads.map(road => new RoadView(road, this.canvas));
+    }
+
+    private createIntersections(): void {
+        this.intersections = this.world.network.intersections.map(int => 
+            new IntersectionView(int, this.canvas));
+    }
+
+    private createCars(): void {
+        this.cars = this.world.cars.map(car => new CarView(car, this.canvas));
     }
 
     setViewRect(newRect: Rectangle) {
