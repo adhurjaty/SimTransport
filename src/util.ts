@@ -93,8 +93,8 @@ export function topCenterRect(coord: ICoord, width: number, height: number,
     let rect: ICoord[] = [
         {x: 0, y: width / 2},
         {x: 0, y: -width / 2},
-        {x: -height, y: width /2},
-        {x: -height, y: -width /2}
+        {x: -height, y: -width /2},
+        {x: -height, y: width /2}
     ];
 
     // rotate and move

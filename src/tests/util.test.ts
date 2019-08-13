@@ -163,8 +163,8 @@ test('make rotated top center rectangle', () => {
     let expected: ICoord[] = [
         {x: .45, y: .3 + .1 * Math.sqrt(3)/2},
         {x: .55, y: .3 - .1 * Math.sqrt(3)/2},
-        {x: .45 - .5 * Math.sqrt(3)/2, y: .3 + .1 * Math.sqrt(3)/2 - .25},
-        {x: .55 - .5 * Math.sqrt(3)/2, y: .3 - .1 * Math.sqrt(3)/2 - .25}
+        {x: .55 - .5 * Math.sqrt(3)/2, y: .3 - .1 * Math.sqrt(3)/2 - .25},
+        {x: .45 - .5 * Math.sqrt(3)/2, y: .3 + .1 * Math.sqrt(3)/2 - .25}
     ];
 
     rect.forEach((r, i) => {
