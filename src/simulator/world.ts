@@ -5,7 +5,7 @@ import TrafficLight from "./traffic_light";
 import Road from "../models/road";
 import Intersection from "./intersection";
 import Address from "./address";
-import { followRoad, getAddress, getAddressOnRoad } from "./simulator_helpers";
+import { followRoad, getAddress, getAddressOnRoad, randomAddress } from "./simulator_helpers";
 import { otherDirection } from "../enums";
 import LightTripper from "./light_tripper";
 import { Rectangle, flatten } from "../util";
@@ -51,5 +51,11 @@ export default class World {
         let width: number = xs[end] - xs[0];
         let height: number = ys[end] - ys[0];
         return new Rectangle(xs[0], ys[0], width, height);
+    }
+
+    setRandomDestinations(): void {
+        for (const car of this.cars) {
+            car.setDestination(randomAddress(this.network));
+        }
     }
 }

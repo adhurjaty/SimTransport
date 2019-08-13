@@ -67,7 +67,7 @@ export default class CarController {
         if(greenRoad.id == this.car.address.road.id) {
             return Infinity;
         }
-        if(this.makingRightTurn() && this.canMakeRightTurn(intersection)) {
+        if(this.makingRightTurn(intersection) && this.canMakeRightTurn(intersection)) {
             return Infinity;
         }
 
@@ -153,8 +153,13 @@ export default class CarController {
         return this.makingDirectionTurn(DrivingDirection.Left);
     }
 
-    private makingRightTurn(): boolean {
-        return this.makingDirectionTurn(DrivingDirection.Right);
+    private makingRightTurn(intersection: Intersection): boolean {
+        if(this.path.length <= 1) {
+            return false;
+        }
+        let nextAddress: Address = getAddress(this.world.network, this.path[1].location);
+        let road: Road = intersection.roads.find(r => r.id == nextAddress.road.id);
+        return this.makingDirectionTurn(DrivingDirection.Right) && road != undefined;
     }
 
     private makingDirectionTurn(dir: DrivingDirection) {

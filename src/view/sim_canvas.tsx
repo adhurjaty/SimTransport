@@ -32,7 +32,6 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
         this.worldView = new WorldView(this.props.world, this.canvasRef.current);
         this.ctx = canvas.getContext("2d");
 
-            this.drawBackground();
             window.requestAnimationFrame(this.draw.bind(this));
         }
     }
@@ -43,6 +42,9 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
     }
     
     draw(): void {
+        this.ctx.clearRect(0, 0, this.canvasRef.current.width, 
+            this.canvasRef.current.height);
+        this.drawBackground();
         this.worldView.draw(this.ctx);
 
         window.requestAnimationFrame(this.draw.bind(this));

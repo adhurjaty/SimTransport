@@ -7,7 +7,7 @@ import Address from "./address";
 import { RoadDirection } from "../enums";
 import { randInt, randDouble } from "../util";
 import Road from "../models/road";
-import { getRoadLength } from "./simulator_helpers";
+import { getRoadLength, randomAddress, randomDirection } from "./simulator_helpers";
 import CarController from "./car_controller";
 import LightSwitcher from "./light_switcher";
 import TrafficLight from "./traffic_light";
@@ -100,33 +100,7 @@ export default class WorldBuilder {
     }
 
     private generateRandomAddressDir(network: RoadNetwork): [Address, RoadDirection] {
-        let addr: Address = this.randomAddress(network)
-        return [addr, this.randomDirection(addr.road)]
-    }
-
-    private randomAddress(network: RoadNetwork): Address {
-        let roadId: number = randInt(network.map.roads.length);
-        let road: Road = network.map.roads[roadId];
-
-        let maxDist: number = getRoadLength(road);
-        let addr: Address;
-        do {
-            let distance = randDouble(maxDist);
-            addr = new Address(road, distance);
-        } while(network.getIntersectionFromAddr(addr) != undefined);
-
-        return addr;
-    }
-
-    private randomDirection(road: Road): RoadDirection {
-        if(road.charmLanes == 0) {
-            return RoadDirection.Strange;
-        }
-        if(road.strangeLanes == 0) {
-            return RoadDirection.Charm;
-        }
-
-        return randInt(road.charmLanes + road.strangeLanes) < road.charmLanes 
-            ? RoadDirection.Charm : RoadDirection.Strange;
+        let addr: Address = randomAddress(network);
+        return [addr, randomDirection(addr.road)];
     }
 }

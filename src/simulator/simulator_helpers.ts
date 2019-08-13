@@ -1,7 +1,7 @@
 import Road from "../models/road";
 import Coord from "../models/coord";
 import Intersection from "./intersection";
-import { isPointOnLine, getDistance, scaleSegment, dotProduct90CCW } from "../util";
+import { isPointOnLine, getDistance, scaleSegment, dotProduct90CCW, randInt, randDouble } from "../util";
 import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection, DrivingDirection } from "../enums";
@@ -147,6 +147,32 @@ export function getRoadTheta(addr: Address, direction: RoadDirection): number {
         }
     }
     throw new Error("address is invalid");
+}
+
+export function randomAddress(network: RoadNetwork): Address {
+    let roadId: number = randInt(network.map.roads.length);
+    let road: Road = network.map.roads[roadId];
+
+    let maxDist: number = getRoadLength(road);
+    let addr: Address;
+    do {
+        let distance = randDouble(maxDist);
+        addr = new Address(road, distance);
+    } while(network.getIntersectionFromAddr(addr) != undefined);
+
+    return addr;
+}
+
+export function randomDirection(road: Road): RoadDirection {
+    if(road.charmLanes == 0) {
+        return RoadDirection.Strange;
+    }
+    if(road.strangeLanes == 0) {
+        return RoadDirection.Charm;
+    }
+
+    return randInt(road.charmLanes + road.strangeLanes) < road.charmLanes 
+        ? RoadDirection.Charm : RoadDirection.Strange;
 }
 
 class RoadDistanceFinder {

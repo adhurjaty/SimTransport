@@ -7,8 +7,9 @@ import { TICK_DURATION } from './constants';
 
 let builder: WorldBuilder = new WorldBuilder();
 let world: World = builder.build();
+world.setRandomDestinations();
 
-window.setInterval(world.tick, TICK_DURATION);
+window.setInterval(world.tick.bind(world), TICK_DURATION);
 
 ReactDOM.render(
     <SimCanvas width={800} height={600} world={world} />

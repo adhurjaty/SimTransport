@@ -711,6 +711,28 @@ test('right on red', () => {
     expect(car.address.distance).toBeCloseTo(.11, 3);
 });
 
+test('right on red far away', () => {
+    setAllLightsSimple();
+
+    let baseCar: Car = defaultCars(1).next().value;
+    let car: DrivingCar = new DrivingCar(baseCar, new Address(map.roads[6], .08), 
+        RoadDirection.Charm);
+
+    let dest = new Address(map.roads[2], .11);
+    network.intersections[6].light.greenDirection = IntersectionDirection.Second;
+    
+    let world: World = new World(network);
+    world.setCars([car]);
+
+    car.setController(new CarController(car, world));
+    car.setDestination(dest);
+
+    runSimulation(world, 60);
+
+    expect(car.address.road.id).toBe(2);
+    expect(car.address.distance).toBeCloseTo(.11, 3);
+});
+
 test('right on red car waits', () => {
     setAllLightsSimple();
 
