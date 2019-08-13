@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -155,4 +155,20 @@ test('flatten array', () => {
 
     let flat: number[] = flatten(arr);
     expect(flat).toEqual([1, 5, 3, 1, 1, 1, 1, 3, 77, 3]);
+});
+
+test('make rotated top center rectangle', () => {
+    let rect: ICoord[] = topCenterRect({x: .5, y: .3}, .2, .5, Math.PI / 6);
+
+    let expected: ICoord[] = [
+        {x: .45, y: .3 + .1 * Math.sqrt(3)/2},
+        {x: .55, y: .3 - .1 * Math.sqrt(3)/2},
+        {x: .45 - .5 * Math.sqrt(3)/2, y: .3 + .1 * Math.sqrt(3)/2 - .25},
+        {x: .55 - .5 * Math.sqrt(3)/2, y: .3 - .1 * Math.sqrt(3)/2 - .25}
+    ];
+
+    rect.forEach((r, i) => {
+        expect(r.x).toBeCloseTo(expected[i].x);
+        expect(r.y).toBeCloseTo(expected[i].y);
+    });
 });

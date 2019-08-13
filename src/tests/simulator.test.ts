@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses, getDistToIntersection } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses, getDistToIntersection, getRoadTheta } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -754,6 +754,14 @@ test('get world bounds', () => {
     expect(bounds.y).toBeCloseTo(-4);
     expect(bounds.width).toBeCloseTo(5);
     expect(bounds.height).toBeCloseTo(7);
+});
+
+test('get road angle', () => {
+    let road: Road = new Road(0, [new Coord(1, 1), new Coord(4, 4)], 1, 1);
+    let angle: number = getRoadTheta(new Address(road, 1), RoadDirection.Charm);
+    expect(angle).toBeCloseTo(Math.PI / 4);
+    angle = getRoadTheta(new Address(road, 1), RoadDirection.Strange);
+    expect(angle).toBeCloseTo(-3 * Math.PI / 4);
 });
 
 export function createMap(): RoadMap {

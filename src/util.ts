@@ -79,6 +79,30 @@ export function dotProduct90CCW(base: ICoord, other: ICoord): number {
     return dotProduct(toTuple(base), toTuple(rot90CCW));
 }
 
+export function rotateCoord(coord: ICoord, theta: number): ICoord {
+    return {
+        x: coord.x * Math.cos(theta) - coord.y * Math.sin(theta),
+        y: coord.x * Math.sin(theta) + coord.y * Math.cos(theta)
+    };
+}
+
+export function topCenterRect(coord: ICoord, width: number, height: number, 
+    orientation: number): ICoord[] 
+{
+    // create rectangle
+    let rect: ICoord[] = [
+        {x: 0, y: width / 2},
+        {x: 0, y: -width / 2},
+        {x: -height, y: width /2},
+        {x: -height, y: -width /2}
+    ];
+
+    // rotate and move
+    return rect.map(c => {
+        let rotated: ICoord = rotateCoord(c, orientation);
+        return {x: rotated.x + coord.x, y: rotated.y + coord.y};
+    });
+}
 // returns indices of the values closest to 0 both positive and negative
 // input list must be ordered least to greatest
 export function getSortedSignChangeIndices(lst: number[]): [number, number] {
