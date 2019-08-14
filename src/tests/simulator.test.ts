@@ -786,6 +786,31 @@ test('get road angle', () => {
     expect(angle).toBeCloseTo(-3 * Math.PI / 4);
 });
 
+test('car doesn\'t go over edge of world', () => {
+    let builder: WorldBuilder = new WorldBuilder();
+    let bigWorld: World = builder.build();
+
+    bigWorld.network.intersections.forEach(x => {
+        x.light.setSwitcher(new AutoSwitcher(x.light));
+    });
+
+    let baseCar: Car = defaultCars(1).next().value;
+    let address: Address = new Address(bigWorld.map.roads[11], 0.788);
+    let car: DrivingCar = new DrivingCar(baseCar, address, RoadDirection.Strange);
+
+    let dest = new Address(bigWorld.map.roads[12], 0.8408);
+    
+    bigWorld.setCars([car]);
+
+    car.setController(new CarController(car, bigWorld));
+    car.setDestination(dest);
+
+    runSimulation(bigWorld, 30);
+
+    expect(car.address.road.id).toBe(12);
+    expect(car.address.distance).toBeCloseTo(0.84);
+});
+
 export function createMap(): RoadMap {
     let grid: Road[] = generateGrid(5);
     return new RoadMap(grid);

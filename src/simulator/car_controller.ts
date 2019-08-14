@@ -6,7 +6,7 @@ import PathFinder from "./path_finder";
 import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection, getAddressOnRoad, followRoad, getDrivingDirection, getNewRoadDirection } from "./simulator_helpers";
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
-import { RoadDirection, directionParity, otherDirection, DrivingDirection } from "../enums";
+import { RoadDirection, otherDirection, DrivingDirection } from "../enums";
 import Coord from "../models/coord";
 import Road from "../models/road";
 import Intersection from "./intersection";
@@ -47,9 +47,9 @@ export default class CarController {
     }
 
     private distToWaypoint(): number {
-        let destAddr: Address = getAddress(this.world.network, this.path[0].location);
-
-        return Math.abs(this.car.address.distance - destAddr.distance);
+        return getDistBetweenAddresses(this.car.address, 
+            getAddressOnRoad(this.car.address.road, this.path[0].location), 
+            this.car.direction);
     }
 
     private atDestination(): boolean {
@@ -139,9 +139,10 @@ export default class CarController {
     }
 
     private distToStopForTurn(distToWaypoint: number): number {
+        let intersection: Intersection = this.getIntersectionAhead();
         let distToTurn: number = this.distToTurn(distToWaypoint);
         if(distToTurn - Number.EPSILON <= this.distPerTimeStep()) {
-            if(this.makingLeftTurn() && !this.canMakeLeftTurn()) {
+            if(this.makingLeftTurn(intersection) && !this.canMakeLeftTurn()) {
                 return distToTurn;
             }
         }
@@ -149,17 +150,26 @@ export default class CarController {
         return Infinity;
     }
 
-    private makingLeftTurn(): boolean {
+    private makingLeftTurn(intersection: Intersection): boolean {
+        if(!this.isTurningIntersection(intersection)) {
+            return false;
+        }
         return this.makingDirectionTurn(DrivingDirection.Left);
     }
 
     private makingRightTurn(intersection: Intersection): boolean {
+        if(!this.isTurningIntersection(intersection)) {
+            return false;
+        }
+        return this.makingDirectionTurn(DrivingDirection.Right);
+    }
+
+    private isTurningIntersection(intersection: Intersection): boolean {
         if(this.path.length <= 1) {
             return false;
         }
         let nextAddress: Address = getAddress(this.world.network, this.path[1].location);
-        let road: Road = intersection.roads.find(r => r.id == nextAddress.road.id);
-        return this.makingDirectionTurn(DrivingDirection.Right) && road != undefined;
+        return !!intersection.roads.find(r => r.id == nextAddress.road.id);
     }
 
     private makingDirectionTurn(dir: DrivingDirection) {
