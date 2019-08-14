@@ -8,13 +8,16 @@ import RoadView from "./road_view";
 import CarView from "./car_view";
 import IntersectionView from "./intersection_view";
 
-export default class WorldView {
+const MIN_VIEW_WIDTH = .005;
+
+export default class WorldView extends ViewElement {
     private viewRect: Rectangle; // in world coords
     private roads: RoadView[];
     private intersections: IntersectionView[];
     private cars: CarView[];
 
-    constructor(private world: World, private canvas: ICanvas) {
+    constructor(private world: World, canvas: ICanvas) {
+        super(canvas);
         this.viewRect = world.getBounds();
 
         this.createRoads();
@@ -34,6 +37,14 @@ export default class WorldView {
         });
     }
 
+    toCanvasCoords(worldCoord: ICoord): ICoord {
+        return super.toCanvasCoords(worldCoord, this.viewRect);
+    }
+
+    toWorldCoords(worldCoord: ICoord): ICoord {
+        return super.toWorldCoords(worldCoord, this.viewRect);
+    }
+
     private createRoads(): void {
         this.roads = this.world.map.roads.map(road => new RoadView(road, this.canvas));
     }
@@ -51,29 +62,52 @@ export default class WorldView {
         this.viewRect = newRect;
     }
 
-    getRoadLines(): LineSegment[] {
-        return flatten(this.world.map.roads.map(r => Array.from(r.toLineSegments())))
-            .map(l => <LineSegment>l.map(c => this.toCanvasCoords(c)));
+    zoom(canvasAmount: number, canvasLocation: ICoord): void {
+        let amount: number = this.toWorldSize(canvasAmount, this.viewRect);
+        let newWidth: number = this.viewRect.width - amount;
+        if(newWidth <= MIN_VIEW_WIDTH) {
+            this.setViewByWidth(MIN_VIEW_WIDTH);
+            return;
+        }
+
+        let worldBounds: Rectangle = this.world.getBounds();
+        if(newWidth >= worldBounds.width) {
+            this.setViewByWidth(worldBounds.width);
+            this.viewRect.x = worldBounds.x;
+            this.viewRect.y = worldBounds.y;
+            return;
+        }
+
+        let newX: number = (this.viewRect.width - newWidth) 
+            * canvasLocation.x / this.canvas.width + this.viewRect.x;
+        let newHeight: number = newWidth / this.aspectRatio();
+        let newY: number = (this.viewRect.height - newHeight) 
+            * (this.canvas.height - canvasLocation.y) / this.canvas.height 
+            + this.viewRect.y;
+
+        let newRect: Rectangle = this.fitToBounds(
+            new Rectangle(newX, newY, newWidth, newHeight), worldBounds);
+        this.setViewRect(newRect);
     }
 
-    getIntersectionLocations(): ICoord[] {
-        return this.world.network.intersections.map(int => 
-            this.toCanvasCoords(int.location));
+    private setViewByWidth(width: number) {
+        this.viewRect.width = width;
+        this.viewRect.height = width / this.aspectRatio();
     }
 
-    toCanvasCoords(worldCoord: ICoord): ICoord {
-        let xPrime: number = (worldCoord.x - this.viewRect.x) 
-            * (this.canvas.width / this.viewRect.width);
-        let yPrime: number = this.canvas.height - ((worldCoord.y - this.viewRect.y) 
-            * (this.canvas.height / this.viewRect.height));
-        return {x: xPrime, y: yPrime};
+    private aspectRatio(): number {
+        return this.canvas.width / this.canvas.height;
     }
 
-    toWorldCoords(canvasCoords: ICoord): ICoord {
-        let xPrime: number = (canvasCoords.x / (this.canvas.width / this.viewRect.width))
-            + this.viewRect.x;
-        let yPrime: number = (this.canvas.height - canvasCoords.y) 
-            / (this.canvas.height / this.viewRect.height);
-        return {x: xPrime, y: yPrime};
+    private fitToBounds(rect: Rectangle, bounds: Rectangle): Rectangle {
+        rect.x = this.fitInDim(rect.x, rect.width, [bounds.x, bounds.x + bounds.width]);
+        rect.y = this.fitInDim(rect.y, rect.height, 
+            [bounds.y, bounds.y + bounds.height]);
+        return rect;
+    }
+
+    private fitInDim(val: number, size: number, bound: [number, number]): number {
+        val = Math.max(val, bound[0]);
+        return Math.min(val + size, bound[1]) - size;
     }
 }

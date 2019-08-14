@@ -17,6 +17,8 @@ interface CanvasProps {
 //     ctx: CanvasRenderingContext2D | null;
 // }
 
+const ZOOM_SPEED = .2;
+
 export default class SimCanvas extends React.Component<CanvasProps, {}> {
     private canvasRef: RefObject<HTMLCanvasElement> = createRef<HTMLCanvasElement>();
     private ctx: CanvasRenderingContext2D;
@@ -24,6 +26,8 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
 
     constructor(props: CanvasProps) {
         super(props);
+
+        this.handleWheel = this.handleWheel.bind(this);
     }
 
     componentDidMount() {
@@ -50,11 +54,19 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
         window.requestAnimationFrame(this.draw.bind(this));
     }
 
+    handleWheel(e: React.WheelEvent<HTMLCanvasElement>): void {
+        let canvasBounds: ClientRect = this.canvasRef.current.getBoundingClientRect();
+        let relX: number = e.screenX - canvasBounds.left;
+        let relY: number = e.screenY - canvasBounds.top;
+        this.worldView.zoom(ZOOM_SPEED * e.deltaY, {x: relX, y: relY});
+    }
+
     render() {
         return (
             <canvas ref={this.canvasRef} 
                     width={this.props.width} 
-                    height={this.props.height} />
+                    height={this.props.height}
+                    onWheel={this.handleWheel}  />
         )
     }
 } 

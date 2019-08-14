@@ -28,4 +28,8 @@ export default abstract class ViewElement {
     toCanvasSize(worldSize: number, viewRect: Rectangle): number {
         return worldSize * this.canvas.width / viewRect.width;
     }
+
+    toWorldSize(canvasSize: number, viewRect: Rectangle): number {
+        return canvasSize * viewRect.width / this.canvas.width;
+    }
 }
