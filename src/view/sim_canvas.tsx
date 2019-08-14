@@ -1,6 +1,7 @@
 import React, { RefObject, createRef } from "react";
 import World from "../simulator/world";
 import WorldView from "./world_view";
+import ICoord from "../interfaces/ICoord";
 
 export interface ICanvas {
     width: number;
@@ -28,6 +29,9 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
         super(props);
 
         this.handleWheel = this.handleWheel.bind(this);
+        this.handleStartDrag = this.handleStartDrag.bind(this);
+        this.handleEndDrag = this.handleEndDrag.bind(this);
+        this.handleDrag = this.handleDrag.bind(this);
     }
 
     componentDidMount() {
@@ -55,10 +59,35 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
     }
 
     handleWheel(e: React.WheelEvent<HTMLCanvasElement>): void {
+        this.worldView.zoom(ZOOM_SPEED * e.deltaY, 
+            this.relCoords({x: e.screenX, y: e.screenY}));
+    }
+
+    private curDragCoord?: ICoord;
+    handleStartDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
+        this.curDragCoord = this.relCoords({x: e.screenX, y: e.screenY})
+    }
+
+    handleEndDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
+        this.curDragCoord = undefined;
+    }
+
+    handleDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
+        if(!this.curDragCoord) {
+            return;
+        }
+
+        let newCoord: ICoord = this.relCoords({x: e.screenX, y: e.screenY});
+        let delta: ICoord = {x: newCoord.x - this.curDragCoord.x,
+            y: newCoord.y - this.curDragCoord.y};
+        this.worldView.pan(delta);
+        this.curDragCoord = newCoord;
+    }
+
+    private relCoords(screenCoords: ICoord): ICoord {
         let canvasBounds: ClientRect = this.canvasRef.current.getBoundingClientRect();
-        let relX: number = e.screenX - canvasBounds.left;
-        let relY: number = e.screenY - canvasBounds.top;
-        this.worldView.zoom(ZOOM_SPEED * e.deltaY, {x: relX, y: relY});
+        return {x: screenCoords.x - canvasBounds.left,
+            y: screenCoords.y - canvasBounds.top};
     }
 
     render() {
@@ -66,7 +95,10 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
             <canvas ref={this.canvasRef} 
                     width={this.props.width} 
                     height={this.props.height}
-                    onWheel={this.handleWheel}  />
+                    onWheel={this.handleWheel}
+                    onMouseDown={this.handleStartDrag}
+                    onMouseUp={this.handleEndDrag}
+                    onMouseMove={this.handleDrag}  />
         )
     }
 } 

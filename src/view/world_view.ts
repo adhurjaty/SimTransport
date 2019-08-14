@@ -1,7 +1,7 @@
 import World from "../simulator/world";
 import { LineSegment } from "../interfaces/LineSegment";
 import ICoord from "../interfaces/ICoord";
-import { Rectangle, flatten } from "../util";
+import { Rectangle, flatten, constrainValue } from "../util";
 import { ICanvas } from "./sim_canvas";
 import ViewElement from "./view_element";
 import RoadView from "./road_view";
@@ -41,8 +41,12 @@ export default class WorldView extends ViewElement {
         return super.toCanvasCoords(worldCoord, this.viewRect);
     }
 
-    toWorldCoords(worldCoord: ICoord): ICoord {
-        return super.toWorldCoords(worldCoord, this.viewRect);
+    toWorldCoords(canvasCoord: ICoord): ICoord {
+        return super.toWorldCoords(canvasCoord, this.viewRect);
+    }
+
+    toWorldSize(canvasSize: number): number {
+        return super.toWorldSize(canvasSize, this.viewRect);
     }
 
     private createRoads(): void {
@@ -63,7 +67,7 @@ export default class WorldView extends ViewElement {
     }
 
     zoom(canvasAmount: number, canvasLocation: ICoord): void {
-        let amount: number = this.toWorldSize(canvasAmount, this.viewRect);
+        let amount: number = this.toWorldSize(canvasAmount);
         let newWidth: number = this.viewRect.width - amount;
         if(newWidth <= MIN_VIEW_WIDTH) {
             this.setViewByWidth(MIN_VIEW_WIDTH);
@@ -88,6 +92,16 @@ export default class WorldView extends ViewElement {
         let newRect: Rectangle = this.fitToBounds(
             new Rectangle(newX, newY, newWidth, newHeight), worldBounds);
         this.setViewRect(newRect);
+    }
+
+    pan(deltaCanvasCoord: ICoord): void {
+        let delta: ICoord = {x: this.toWorldSize(deltaCanvasCoord.x),
+            y: this.toWorldSize(deltaCanvasCoord.y)};
+        let worldBounds: Rectangle = this.world.getBounds();
+
+        this.viewRect = this.fitToBounds(new Rectangle(this.viewRect.x - delta.x,
+            this.viewRect.y + delta.y, this.viewRect.width, this.viewRect.height),
+            worldBounds);
     }
 
     private setViewByWidth(width: number) {

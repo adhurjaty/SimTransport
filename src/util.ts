@@ -136,6 +136,10 @@ export function flatten<T>(lst: T[][]): T[] {
     return [].concat(...lst);
 }
 
+export function constrainValue(val: number, bounds: [number, number]): number {
+    return Math.min(bounds[1], Math.max(bounds[0], val));
+}
+
 export abstract class Queue<T> {
     protected elements: T[] = [];
     
