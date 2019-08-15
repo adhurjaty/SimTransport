@@ -18,8 +18,8 @@ export default class WorldView extends ViewElement {
 
     constructor(private world: World, canvas: ICanvas) {
         super(canvas);
-        this.viewRect = world.getBounds();
 
+        this.createViewRect();
         this.createRoads();
         this.createIntersections();
         this.createCars();
@@ -47,6 +47,15 @@ export default class WorldView extends ViewElement {
 
     toWorldSize(canvasSize: number): number {
         return super.toWorldSize(canvasSize, this.viewRect);
+    }
+
+    private createViewRect(): void {
+        // center vertically if aspect ratios are different
+        let bounds: Rectangle = this.world.getBounds();
+        let aspectRatio: number = this.canvas.width / this.canvas.height;
+        let height: number = bounds.width / aspectRatio;
+        let y: number = (bounds.height - height) / 2 + bounds.y;
+        this.viewRect = new Rectangle(bounds.x, y, bounds.width, height);
     }
 
     private createRoads(): void {
