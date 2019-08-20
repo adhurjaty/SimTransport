@@ -103,6 +103,7 @@ export function topCenterRect(coord: ICoord, width: number, height: number,
         return {x: rotated.x + coord.x, y: rotated.y + coord.y};
     });
 }
+
 // returns indices of the values closest to 0 both positive and negative
 // input list must be ordered least to greatest
 export function getSortedSignChangeIndices(lst: number[]): [number, number] {

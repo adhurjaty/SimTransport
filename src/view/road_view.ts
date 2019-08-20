@@ -4,6 +4,8 @@ import { ICanvas } from "./sim_canvas";
 import { LineSegment } from "../interfaces/LineSegment";
 import { Rectangle } from "../util";
 
+const LANE_WIDTH = 5;
+
 export default class RoadView extends ViewElement {
     constructor(private road: Road, canvas: ICanvas) {
         super(canvas);
@@ -20,5 +22,9 @@ export default class RoadView extends ViewElement {
             ctx.lineTo(line[1].x, line[1].y);
         });
         ctx.stroke();
+    }
+
+    private drawLane(seg: LineSegment): void {
+        
     }
 }

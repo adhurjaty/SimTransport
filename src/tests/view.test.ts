@@ -7,6 +7,8 @@ import { ICanvas } from "../view/sim_canvas";
 import Coord from "../models/coord";
 import ICoord from "../interfaces/ICoord";
 import { Rectangle } from "../util";
+import { LineSegment } from "../interfaces/LineSegment";
+import { midlineRectCoords } from "../view/view_helper";
 
 let map: RoadMap = createMap();
 let builder: WorldBuilder = new WorldBuilder(map, []);
@@ -20,7 +22,7 @@ test('convert to canvas coords', () => {
     let canvasCoord: ICoord = worldView.toCanvasCoords(coord);
 
     expect(canvasCoord.x).toBeCloseTo(400);
-    expect(canvasCoord.y).toBeCloseTo(450);
+    expect(canvasCoord.y).toBeCloseTo(500);
 });
 
 test('convert to world coords', () => {
@@ -31,7 +33,7 @@ test('convert to world coords', () => {
     let worldCoord: ICoord = worldView.toWorldCoords(coord);
 
     expect(worldCoord.x).toBeCloseTo(0.5);
-    expect(worldCoord.y).toBeCloseTo(0.5);
+    expect(worldCoord.y).toBeCloseTo(0.375);
 });
 
 test('convert to canvas coords zoomed', () => {
@@ -46,4 +48,23 @@ test('convert to canvas coords zoomed', () => {
     expect(canvasCoord.y).toBeCloseTo(0);
 });
 
+test('midline rectangle', () => {
+    let line: LineSegment = [
+        {x: 1, y: 1},
+        {x: 2, y: 2}
+    ];
+    const w = 2 * Math.sqrt(2);
+    let rect: ICoord[] = midlineRectCoords(line, w);
 
+    let expectedCoords: ICoord[] = [
+        {x: 1, y: 3},
+        {x: 3, y: 1},
+        {x: 2, y: 0},
+        {x: 0, y: 2}
+    ];
+
+    rect.forEach((c, i) => {
+        expect(c.x).toBeCloseTo(expectedCoords[i].x);
+        expect(c.y).toBeCloseTo(expectedCoords[i].y);
+    });
+});
