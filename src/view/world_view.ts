@@ -76,7 +76,7 @@ export default class WorldView extends ViewElement {
     }
 
     zoom(canvasAmount: number, canvasLocation: ICoord): void {
-        let amount: number = this.toWorldSize(canvasAmount);
+        let amount: number = -this.toWorldSize(canvasAmount);
         let newWidth: number = this.viewRect.width - amount;
         if(newWidth <= MIN_VIEW_WIDTH) {
             this.setViewByWidth(MIN_VIEW_WIDTH);
