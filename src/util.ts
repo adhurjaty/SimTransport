@@ -48,6 +48,8 @@ function toTuple(coord: ICoord): [number, number] {
     return [coord.x, coord.y];
 }
 
+//#region  geometry
+
 export function getDistance(seg: LineSegment): number {
     let vector: ICoord = makeOriginVector(seg);
     return Math.sqrt(vector.x ** 2 + vector.y ** 2);
@@ -103,6 +105,14 @@ export function topCenterRect(coord: ICoord, width: number, height: number,
         return {x: rotated.x + coord.x, y: rotated.y + coord.y};
     });
 }
+
+export function scaleRect(coords: ICoord[], factor: number): ICoord[] {
+    let center: ICoord = {x: (coords[2].x + coords[0].x) / 2,
+        y: (coords[2].y + coords[0].y) / 2};
+    let offsetCoords: ICoord[] = coords.map()
+}
+
+//#endregion
 
 // returns indices of the values closest to 0 both positive and negative
 // input list must be ordered least to greatest
@@ -206,5 +216,24 @@ export class Rectangle {
     constructor(public x: number, public y: number, public width: number,
         public height: number) {
 
+    }
+}
+
+export default class Coord {
+    constructor(public x: number, public y: number) {
+        
+    }
+
+    toTuple(): [number, number] {
+        return [this.x, this.y];
+    }
+
+    distance(other: Coord): number {
+        return Math.sqrt((this.x - other.x)**2 + (this.y - other.y)**2);
+    }
+
+    equals(other: Coord): boolean {
+        return Math.abs(this.x - other.x) < Number.EPSILON 
+            && Math.abs(this.y - other.y) < Number.EPSILON;
     }
 }

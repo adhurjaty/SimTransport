@@ -1,3 +1,3 @@
-import ICoord from "./ICoord";
+import Coord from "../util";
 
-export type LineSegment = [ICoord, ICoord];
+export type LineSegment = [Coord, Coord];
