@@ -101,7 +101,9 @@ export function topCenterRect(coord: Coord, width: number, height: number,
 
 export function scaleRect(coords: Coord[], factor: number): Coord[] {
     let center: Coord = new Coord((coords[2].x + coords[0].x) / 2,  (coords[2].y + coords[0].y) / 2);
-    let offsetCoords: Coord[] = coords.map()
+    let offsetCoords: Coord[] = coords.map(c => c.sub(center));
+    let scaled: Coord[] = offsetCoords.map(c => c.scale(factor));
+    return scaled.map(c => c.add(center));
 }
 
 //#endregion
@@ -227,5 +229,17 @@ export class Coord {
     equals(other: Coord): boolean {
         return Math.abs(this.x - other.x) < Number.EPSILON 
             && Math.abs(this.y - other.y) < Number.EPSILON;
+    }
+
+    add(other: Coord): Coord {
+        return new Coord(other.x + this.x, other.y + this.y);
+    }
+
+    sub(other: Coord): Coord {
+        return new Coord(this.x - other.x, this.y - other.y);
+    }
+
+    scale(factor: number): Coord {
+        return new Coord(this.x * factor, this.y * factor);
     }
 }

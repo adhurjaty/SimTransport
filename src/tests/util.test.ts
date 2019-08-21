@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect, scaleRect } from "../util";
 import { Coord } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -171,4 +171,29 @@ test('make rotated top center rectangle', () => {
         expect(r.x).toBeCloseTo(expected[i].x);
         expect(r.y).toBeCloseTo(expected[i].y);
     });
+});
+
+test('scale square', () => {
+    let sq: Coord[] = [
+        new Coord(0, 0),
+        new Coord(0, 4),
+        new Coord(4, 4),
+        new Coord(4, 0)
+    ];
+
+    let scaled: Coord[] = scaleRect(sq, .5);
+    let newSq: Coord[] = [
+        new Coord(1, 1),
+        new Coord(1, 3),
+        new Coord(3, 3),
+        new Coord(3, 1)
+    ];
+
+    for (let i = 0; i < sq.length; i++) {
+        const sc = scaled[i];
+        const exp = newSq[i];
+
+        expect(sc.x).toBeCloseTo(exp.x);
+        expect(sc.y).toBeCloseTo(exp.y);
+    }
 });
