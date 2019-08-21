@@ -2,7 +2,7 @@ import RoadMap from "../models/road_map";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
-import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses, getDistToIntersection, getRoadTheta } from "../simulator/simulator_helpers";
+import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses, getDistToIntersection, getRoadTheta, followRoad } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
 import WorldBuilder from "../simulator/world_builder";
 import Car from "../models/car";
@@ -809,6 +809,13 @@ test('car doesn\'t go over edge of world', () => {
 
     expect(car.address.road.id).toBe(12);
     expect(car.address.distance).toBeCloseTo(0.84);
+});
+
+test('follow road to end', () => {
+    let startAddr: Address = new Address(map.roads[3], 1.9);
+
+    let endAddr: Address = followRoad(startAddr, .2, RoadDirection.Charm);
+    expect(endAddr.distance).toBeCloseTo(2);
 });
 
 export function createMap(): RoadMap {

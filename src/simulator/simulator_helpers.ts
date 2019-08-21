@@ -59,7 +59,18 @@ export function followRoad(addr: Address, distance: number, direction: RoadDirec
     Address 
 {
     let disp = distance * (direction == RoadDirection.Charm ? 1 : -1);
-    return new Address(addr.road, addr.distance + disp);
+    let endAddr: Address = new Address(addr.road, addr.distance + disp);
+    if(endAddr.distance < 0) {
+        endAddr.distance = 0;
+        return endAddr;
+    }
+    
+    let roadLen: number = getRoadLength(addr.road);
+    if(endAddr.distance > roadLen) {
+        endAddr.distance = roadLen;
+    }
+    
+    return endAddr;
 }
 
 export function getConnectingRoad(fromInt: Intersection, toInt: Intersection): Road {

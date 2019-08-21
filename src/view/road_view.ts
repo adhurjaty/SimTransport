@@ -5,15 +5,8 @@ import { LineSegment } from "../interfaces/LineSegment";
 import { Rectangle } from "../util";
 import ICoord from "../interfaces/ICoord";
 import { midlineRectCoords, drawFilledPolygon, offsetLine } from "./view_helper";
+import { LANE_COLOR, LANE_WIDTH, SIDEWALK_WIDTH, SIDEWALK_COLOR, LINE_WIDTH, LINE_COLOR } from "../constants";
 
-const LANE_WIDTH = .005;
-const LANE_COLOR = '#545454';
-
-const SIDEWALK_WIDTH = .002;
-const SIDEWALK_COLOR = '#888c75';
-
-const LINE_WIDTH = .0005;
-const LINE_COLOR = '#fcfc00';
 
 export default class RoadView extends ViewElement {
     constructor(private road: Road, canvas: ICanvas) {
