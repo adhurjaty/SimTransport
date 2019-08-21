@@ -2,7 +2,7 @@ import DrivingCar from "../simulator/driving_car";
 import ViewElement from "./view_element";
 import { ICanvas } from "./sim_canvas";
 import { Rectangle, topCenterRect } from "../util";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { getCoord, getRoadTheta } from "../simulator/simulator_helpers";
 
 export default class CarView extends ViewElement {

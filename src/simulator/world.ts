@@ -9,7 +9,7 @@ import { followRoad, getAddress, getAddressOnRoad, randomAddress } from "./simul
 import { otherDirection } from "../enums";
 import LightTripper from "./light_tripper";
 import { Rectangle, flatten } from "../util";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 
 export default class World {
     private lightTripper: LightTripper; 

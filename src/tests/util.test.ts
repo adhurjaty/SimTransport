@@ -1,5 +1,5 @@
 import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect } from "../util";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 
 

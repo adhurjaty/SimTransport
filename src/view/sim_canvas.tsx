@@ -1,7 +1,7 @@
 import React, { RefObject, createRef } from "react";
 import World from "../simulator/world";
 import WorldView from "./world_view";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 
 export interface ICanvas {
     width: number;

@@ -1,5 +1,5 @@
 import { LineSegment } from "../interfaces/LineSegment";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 
 export function offsetLine(seg: LineSegment, dist: number): LineSegment {
     let perpVec: Coord = findPerpVec(seg, dist);

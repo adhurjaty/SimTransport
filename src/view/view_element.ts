@@ -1,5 +1,5 @@
 import { ICanvas } from "./sim_canvas";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { Rectangle } from "../util";
 
 export default abstract class ViewElement {

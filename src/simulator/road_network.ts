@@ -3,7 +3,7 @@ import Intersection from "./intersection";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { getConnectingRoad, getRoadDistance, getAddress, getCoord } from "./simulator_helpers";
 import Address from "./address";
 import { INTERSECTION_SIZE } from "../constants";

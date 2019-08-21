@@ -1,6 +1,6 @@
 import World from "../simulator/world";
 import { LineSegment } from "../interfaces/LineSegment";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { Rectangle, flatten, constrainValue } from "../util";
 import { ICanvas } from "./sim_canvas";
 import ViewElement from "./view_element";

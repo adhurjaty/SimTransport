@@ -5,7 +5,7 @@ import World from "../simulator/world";
 import WorldView from "../view/world_view";
 import { ICanvas } from "../view/sim_canvas";
 import Coord from "../models/coord";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { Rectangle } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { midlineRectCoords } from "../view/view_helper";

@@ -3,7 +3,7 @@ import ViewElement from "./view_element";
 import { ICanvas } from "./sim_canvas";
 import { LineSegment } from "../interfaces/LineSegment";
 import { Rectangle } from "../util";
-import Coord from "../interfaces/Coord";
+import { Coord } from "../util";
 import { midlineRectCoords, drawFilledPolygon, offsetLine } from "./view_helper";
 import { LANE_COLOR, LANE_WIDTH, SIDEWALK_WIDTH, SIDEWALK_COLOR, LINE_WIDTH, LINE_COLOR } from "../constants";
 
