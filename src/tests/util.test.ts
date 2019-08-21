@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect, scaleRect } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect, scaleRect, padRect } from "../util";
 import { Coord } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -195,5 +195,30 @@ test('scale square', () => {
 
         expect(sc.x).toBeCloseTo(exp.x);
         expect(sc.y).toBeCloseTo(exp.y);
+    }
+});
+
+test('pad tilted square', () => {
+    let sq: Coord[] = [
+        new Coord(0, 4),
+        new Coord(4, 8),
+        new Coord(8, 4),
+        new Coord(4, 0)
+    ];
+
+    let padded: Coord[] = padRect(sq, 1/Math.sqrt(2));
+    let expected: Coord[] = [
+        new Coord(1, 4),
+        new Coord(4, 7),
+        new Coord(7, 4),
+        new Coord(4, 1)
+    ];
+
+    for (let i = 0; i < padded.length; i++) {
+        const p = padded[i];
+        const e = expected[i];
+
+        expect(p.x).toBeCloseTo(e.x);
+        expect(p.y).toBeCloseTo(e.y);
     }
 });

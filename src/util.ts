@@ -106,6 +106,35 @@ export function scaleRect(coords: Coord[], factor: number): Coord[] {
     return scaled.map(c => c.add(center));
 }
 
+export function padRect(coords: Coord[], padding: number): Coord[] {
+    let vecComponents: LineSegment[] = 
+        Array.from(getVectorComponentCorners(coords, padding));
+    let vectors: Coord[] = vecComponents.map(l => l[0].add(l[1]));
+    return coords.map((c, i) => c.add(vectors[i]));
+}
+
+function *getVectorComponentCorners(coords: Coord[], size: number): 
+    IterableIterator<LineSegment>
+{
+    let circuit: Coord[] = Object.assign([], coords);
+    circuit.push(coords[0]);
+
+    let clockwise: Coord[] = getVectorComponent(circuit, size);
+    let ccw: Coord[] = getVectorComponent(circuit.reverse(), size);
+
+    for (let i = 0; i < clockwise.length; i++) {
+        const cPoint = clockwise[i];
+        let j = (clockwise.length - i) % clockwise.length;
+        const ccwPoint = ccw[j];
+        yield [cPoint, ccwPoint];
+    }
+}
+
+function getVectorComponent(circuit: Coord[], size: number): Coord[] {
+    let lines: LineSegment[] = <LineSegment[]>Array.from(tipTailGrouping(circuit, 2));
+    return lines.map(l => l[1].sub(l[0]).normalize(size));
+}
+
 //#endregion
 
 // returns indices of the values closest to 0 both positive and negative
@@ -241,5 +270,21 @@ export class Coord {
 
     scale(factor: number): Coord {
         return new Coord(this.x * factor, this.y * factor);
+    }
+
+    normalize(size?: number): Coord {
+        if(size == undefined) {
+            size = 1;
+        }
+
+        let mag: number = this.magnitude();
+        if(!mag) {
+            new Coord(0, 0);
+        }
+        return this.scale(size / mag);
+    }
+
+    magnitude(): number {
+        return Math.sqrt(this.x**2 + this.y**2);
     }
 }
