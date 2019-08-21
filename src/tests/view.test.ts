@@ -50,17 +50,17 @@ test('convert to canvas coords zoomed', () => {
 
 test('midline rectangle', () => {
     let line: LineSegment = [
-        {x: 1, y: 1},
-        {x: 2, y: 2}
+        new Coord( 1,  1),
+        new Coord( 2,  2)
     ];
     const w = 2 * Math.sqrt(2);
     let rect: Coord[] = midlineRectCoords(line, w);
 
     let expectedCoords: Coord[] = [
-        {x: 1, y: 3},
-        {x: 3, y: 1},
-        {x: 2, y: 0},
-        {x: 0, y: 2}
+        new Coord( 1,  3),
+        new Coord( 3,  1),
+        new Coord( 2,  0),
+        new Coord( 0,  2)
     ];
 
     rect.forEach((c, i) => {

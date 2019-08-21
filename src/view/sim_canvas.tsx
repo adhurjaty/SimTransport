@@ -60,13 +60,11 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
 
     handleWheel(e: React.WheelEvent<HTMLCanvasElement>): void {
         this.worldView.zoom(ZOOM_SPEED * e.deltaY, 
-            this.relCoords({x: e.screenX, y: e.screenY}));
-    }
+            this.relCoords(new Coord( e.screenX,  e.screenY}));)
 
     private curDragCoord?: Coord;
     handleStartDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
-        this.curDragCoord = this.relCoords({x: e.screenX, y: e.screenY})
-    }
+        this.curDragCoord = this.relCoords(new Coord( e.screenX,  e.screenY}))
 
     handleEndDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
         this.curDragCoord = undefined;
@@ -77,18 +75,15 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
             return;
         }
 
-        let newCoord: Coord = this.relCoords({x: e.screenX, y: e.screenY});
-        let delta: Coord = {x: newCoord.x - this.curDragCoord.x,
-            y: newCoord.y - this.curDragCoord.y};
+        let newCoord: Coord = this.relCoords(new Coord( e.screenX,  e.screenY));
+        let delta: Coord = new Coord( newCoord.x - this.curDragCoord.x,  newCoord.y - this.curDragCoord.y);
         this.worldView.pan(delta);
         this.curDragCoord = newCoord;
     }
 
     private relCoords(screenCoords: Coord): Coord {
         let canvasBounds: ClientRect = this.canvasRef.current.getBoundingClientRect();
-        return {x: screenCoords.x - canvasBounds.left,
-            y: screenCoords.y - canvasBounds.top};
-    }
+        return new Coord( screenCoords.x - canvasBounds.left,  screenCoords.y - canvasBounds.top};)
 
     render() {
         return (

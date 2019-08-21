@@ -152,7 +152,7 @@ export function getRoadTheta(addr: Address, direction: RoadDirection): number {
     for(const seg of addr.road.toLineSegments()) {
         dist += getDistance(seg);
         if(dist >= addr.distance) {
-            let vec: Coord = {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
+            let vec: Coord = new Coord( seg[1].x - seg[0].x,  seg[1].y - seg[0].y);
             let parity: number = direction == RoadDirection.Charm ? 1 : -1;
             return Math.atan2(parity * vec.y, parity * vec.x);
         }

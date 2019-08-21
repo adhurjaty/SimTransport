@@ -63,28 +63,21 @@ function dotProduct(a: [number, number], b: [number, number]) {
 }
 
 function makeOriginVector(seg: LineSegment): Coord {
-    return {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
-}
+    return new Coord( seg[1].x - seg[0].x,  seg[1].y - seg[0].y};)
 
 export function scaleSegment(seg: LineSegment, scale: number): LineSegment {
     let base: Coord = seg[0];
-    let newCoord: Coord = {
-        x: base.x + (seg[1].x - base.x) * scale,
-        y: base.y + (seg[1].y - base.y) * scale
-    };
+    let newCoord: Coord = new Coord( base.x + (seg[1].x - base.x) * scale,  base.y + (seg[1].y - base.y) * scale);
     return [base, newCoord]; 
 }
 
 export function dotProduct90CCW(base: Coord, other: Coord): number {
-    let rot90CCW: Coord = {x: -other.y, y: other.x};
+    let rot90CCW: Coord = new Coord( -other.y,  other.x);
     return dotProduct(toTuple(base), toTuple(rot90CCW));
 }
 
 export function rotateCoord(coord: Coord, theta: number): Coord {
-    return {
-        x: coord.x * Math.cos(theta) - coord.y * Math.sin(theta),
-        y: coord.x * Math.sin(theta) + coord.y * Math.cos(theta)
-    };
+    return new Coord( coord.x * Math.cos(theta) - coord.y * Math.sin(theta),  coord.x * Math.sin(theta) + coord.y * Math.cos(theta));
 }
 
 export function topCenterRect(coord: Coord, width: number, height: number, 
@@ -92,22 +85,20 @@ export function topCenterRect(coord: Coord, width: number, height: number,
 {
     // create rectangle
     let rect: Coord[] = [
-        {x: 0, y: width / 2},
-        {x: 0, y: -width / 2},
-        {x: -height, y: -width /2},
-        {x: -height, y: width /2}
+        new Coord( 0,  width / 2),
+        new Coord( 0,  -width / 2),
+        new Coord( -height,  -width /2),
+        new Coord( -height,  width /2)
     ];
 
     // rotate and move
     return rect.map(c => {
         let rotated: Coord = rotateCoord(c, orientation);
-        return {x: rotated.x + coord.x, y: rotated.y + coord.y};
-    });
+        return new Coord( rotated.x + coord.x,  rotated.y + coord.y};));
 }
 
 export function scaleRect(coords: Coord[], factor: number): Coord[] {
-    let center: Coord = {x: (coords[2].x + coords[0].x) / 2,
-        y: (coords[2].y + coords[0].y) / 2};
+    let center: Coord = new Coord( (coords[2].x + coords[0].x) / 2,  (coords[2].y + coords[0].y) / 2);
     let offsetCoords: Coord[] = coords.map()
 }
 

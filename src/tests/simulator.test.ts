@@ -1,6 +1,5 @@
 import RoadMap from "../models/road_map";
 import Road from "../models/road";
-import Coord from "../models/coord";
 import RoadNetwork from "../simulator/road_network";
 import { getRoadDistance, getConnectingRoad, getAddress, getCoord, getDrivingDirection, getDistBetweenAddresses, getDistToIntersection, getRoadTheta, followRoad } from "../simulator/simulator_helpers";
 import Intersection from "../simulator/intersection";
@@ -17,7 +16,7 @@ import { Speed, Random } from "../primitives";
 import CarController from "../simulator/car_controller";
 import LightSwitcher from "../simulator/light_switcher";
 import TrafficLight from "../simulator/traffic_light";
-import { Rectangle } from "../util";
+import { Rectangle, Coord } from "../util";
 
 const parallelRoadDistance: number = .1;
 const roadLength: number = 2;
@@ -31,9 +30,8 @@ test('intersection network size', () => {
 });
 
 test('get intersection locations', () => {
-    expect(network.intersections.map(x => x.location)).toContainEqual({x: .2, y: .2});
-    expect(network.intersections.map(x => x.location)).toContainEqual({x: .1, y: .4});
-});
+    expect(network.intersections.map(x => x.location)).toContainEqual(new Coord( .2,  .2));
+    expect(network.intersections.map(x => x.location)).toContainEqual(new Coord( .1,  .4});));
 
 test('get intersection at corner', () => {
     let cornerMap: RoadMap = new RoadMap([

@@ -104,8 +104,7 @@ export default class WorldView extends ViewElement {
     }
 
     pan(deltaCanvasCoord: Coord): void {
-        let delta: Coord = {x: this.toWorldSize(deltaCanvasCoord.x),
-            y: this.toWorldSize(deltaCanvasCoord.y)};
+        let delta: Coord = new Coord( this.toWorldSize(deltaCanvasCoord.x),  this.toWorldSize(deltaCanvasCoord.y));
         let worldBounds: Rectangle = this.world.getBounds();
 
         this.viewRect = this.fitToBounds(new Rectangle(this.viewRect.x - delta.x,

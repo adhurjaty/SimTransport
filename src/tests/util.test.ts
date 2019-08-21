@@ -20,12 +20,12 @@ test('intersection grouping 3', () => {
 
 test('origin intersects', () => {
     let seg: LineSegment = [
-        {x: 0, y: 0},
-        {x: 2, y: 0}
+        new Coord( 0,  0),
+        new Coord( 2,  0)
     ];
     let other: LineSegment = [
-        {x: 0, y: 0},
-        {x: 0, y: 2}
+        new Coord( 0,  0),
+        new Coord( 0,  2)
     ];
 
     let result: Coord = segmentsIntersect(seg, other);
@@ -34,12 +34,12 @@ test('origin intersects', () => {
 
 test('no intersection', () => {
     let seg: LineSegment = [
-        {x: 0, y: 0},
-        {x: 2, y: 0}
+        new Coord( 0,  0),
+        new Coord( 2,  0)
     ];
     let other: LineSegment = [
-        {x: 0, y: .3},
-        {x: 4, y: .3}
+        new Coord( 0,  .3),
+        new Coord( 4,  .3)
     ];
 
     let result: Coord = segmentsIntersect(seg, other);
@@ -48,40 +48,40 @@ test('no intersection', () => {
 
 test('point on line', () => {
     let seg: LineSegment = [
-        {x: 0, y: 0},
-        {x: 2, y: 0}
+        new Coord( 0,  0),
+        new Coord( 2,  0)
     ];
-    let p: Coord = {x: .3, y: 0};
+    let p: Coord = new Coord( .3,  0);
 
     expect(isPointOnLine(seg, p)).toBeTruthy();
 });
 
 test('point not on line', () => {
     let seg: LineSegment = [
-        {x: 0, y: 0},
-        {x: 2, y: 0}
+        new Coord( 0,  0),
+        new Coord( 2,  0)
     ];
-    let p: Coord = {x: .3, y: .01};
+    let p: Coord = new Coord( .3,  .01);
 
     expect(isPointOnLine(seg, p)).toBeFalsy();
 });
 
 test('point on diagonal line', () => {
     let seg: LineSegment = [
-        {x: 1, y: 2},
-        {x: 3, y: 6}
+        new Coord( 1,  2),
+        new Coord( 3,  6)
     ];
-    let p: Coord = {x: 2.5, y: 5};
+    let p: Coord = new Coord( 2.5,  5);
 
     expect(isPointOnLine(seg, p)).toBeTruthy();
 });
 
 test('point on line but not segment', () => {
     let seg: LineSegment = [
-        {x: 0, y: 0},
-        {x: 2, y: 0}
+        new Coord( 0,  0),
+        new Coord( 2,  0)
     ];
-    let p: Coord = {x: 3, y: 0};
+    let p: Coord = new Coord( 3,  0);
 
     expect(isPointOnLine(seg, p)).toBeFalsy();
 });
@@ -131,15 +131,15 @@ test('get sign change indices all pos', () => {
 });
 
 test('get right vector', () => {
-    let v1: Coord = {x: 1, y: 1};
-    let v2: Coord = {x: 3, y: 0};
+    let v1: Coord = new Coord( 1,  1);
+    let v2: Coord = new Coord( 3,  0);
 
     expect(dotProduct90CCW(v1, v2) < 0).toBeFalsy();
 });
 
 test('get left vector', () => {
-    let v1: Coord = {x: 1, y: 1};
-    let v2: Coord = {x: -3, y: 0};
+    let v1: Coord = new Coord( 1,  1);
+    let v2: Coord = new Coord( -3,  0);
 
     expect(dotProduct90CCW(v1, v2) < 0).toBeTruthy();
 });
@@ -158,13 +158,13 @@ test('flatten array', () => {
 });
 
 test('make rotated top center rectangle', () => {
-    let rect: Coord[] = topCenterRect({x: .5, y: .3}, .2, .5, Math.PI / 6);
+    let rect: Coord[] = topCenterRect(new Coord( .5,  .3), .2, .5, Math.PI / 6);
 
     let expected: Coord[] = [
-        {x: .45, y: .3 + .1 * Math.sqrt(3)/2},
-        {x: .55, y: .3 - .1 * Math.sqrt(3)/2},
-        {x: .55 - .5 * Math.sqrt(3)/2, y: .3 - .1 * Math.sqrt(3)/2 - .25},
-        {x: .45 - .5 * Math.sqrt(3)/2, y: .3 + .1 * Math.sqrt(3)/2 - .25}
+        new Coord( .45,  .3 + .1 * Math.sqrt(3)/2),
+        new Coord( .55,  .3 - .1 * Math.sqrt(3)/2),
+        new Coord( .55 - .5 * Math.sqrt(3)/2,  .3 - .1 * Math.sqrt(3)/2 - .25),
+        new Coord( .45 - .5 * Math.sqrt(3)/2,  .3 + .1 * Math.sqrt(3)/2 - .25)
     ];
 
     rect.forEach((r, i) => {
