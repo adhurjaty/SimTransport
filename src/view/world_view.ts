@@ -1,6 +1,6 @@
 import World from "../simulator/world";
 import { LineSegment } from "../interfaces/LineSegment";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 import { Rectangle, flatten, constrainValue } from "../util";
 import { ICanvas } from "./sim_canvas";
 import ViewElement from "./view_element";
@@ -37,11 +37,11 @@ export default class WorldView extends ViewElement {
         });
     }
 
-    toCanvasCoords(worldCoord: ICoord): ICoord {
+    toCanvasCoords(worldCoord: Coord): Coord {
         return super.toCanvasCoords(worldCoord, this.viewRect);
     }
 
-    toWorldCoords(canvasCoord: ICoord): ICoord {
+    toWorldCoords(canvasCoord: Coord): Coord {
         return super.toWorldCoords(canvasCoord, this.viewRect);
     }
 
@@ -75,7 +75,7 @@ export default class WorldView extends ViewElement {
         this.viewRect = newRect;
     }
 
-    zoom(canvasAmount: number, canvasLocation: ICoord): void {
+    zoom(canvasAmount: number, canvasLocation: Coord): void {
         let amount: number = -this.toWorldSize(canvasAmount);
         let newWidth: number = this.viewRect.width - amount;
         if(newWidth <= MIN_VIEW_WIDTH) {
@@ -103,8 +103,8 @@ export default class WorldView extends ViewElement {
         this.setViewRect(newRect);
     }
 
-    pan(deltaCanvasCoord: ICoord): void {
-        let delta: ICoord = {x: this.toWorldSize(deltaCanvasCoord.x),
+    pan(deltaCanvasCoord: Coord): void {
+        let delta: Coord = {x: this.toWorldSize(deltaCanvasCoord.x),
             y: this.toWorldSize(deltaCanvasCoord.y)};
         let worldBounds: Rectangle = this.world.getBounds();
 

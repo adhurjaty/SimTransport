@@ -3,7 +3,7 @@ import Intersection from "./intersection";
 import Road from "../models/road";
 import Coord from "../models/coord";
 import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 import { getConnectingRoad, getRoadDistance, getAddress, getCoord } from "./simulator_helpers";
 import Address from "./address";
 import { INTERSECTION_SIZE } from "../constants";
@@ -42,7 +42,7 @@ export default class RoadNetwork {
     intersects(road: Road, otherRoad: Road): Coord {
         for (const seg of road.toLineSegments()) {
             for (const other of otherRoad.toLineSegments()) {
-                let coord: ICoord = segmentsIntersect(seg as [Coord, Coord],
+                let coord: Coord = segmentsIntersect(seg as [Coord, Coord],
                     other as [Coord, Coord]) 
                 if(coord != undefined) {
                     return new Coord(coord.x, coord.y);

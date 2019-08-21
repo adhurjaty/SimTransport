@@ -5,7 +5,7 @@ import World from "../simulator/world";
 import WorldView from "../view/world_view";
 import { ICanvas } from "../view/sim_canvas";
 import Coord from "../models/coord";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 import { Rectangle } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { midlineRectCoords } from "../view/view_helper";
@@ -19,7 +19,7 @@ test('convert to canvas coords', () => {
     let worldView: WorldView = new WorldView(world, canvas);
 
     let coord: Coord = new Coord(1.0, 0.5);
-    let canvasCoord: ICoord = worldView.toCanvasCoords(coord);
+    let canvasCoord: Coord = worldView.toCanvasCoords(coord);
 
     expect(canvasCoord.x).toBeCloseTo(400);
     expect(canvasCoord.y).toBeCloseTo(500);
@@ -30,7 +30,7 @@ test('convert to world coords', () => {
     let worldView: WorldView = new WorldView(world, canvas);
 
     let coord: Coord = new Coord(200, 450);
-    let worldCoord: ICoord = worldView.toWorldCoords(coord);
+    let worldCoord: Coord = worldView.toWorldCoords(coord);
 
     expect(worldCoord.x).toBeCloseTo(0.5);
     expect(worldCoord.y).toBeCloseTo(0.375);
@@ -42,7 +42,7 @@ test('convert to canvas coords zoomed', () => {
     worldView.setViewRect(new Rectangle(.2, .4, 1, 1));
 
     let coord = new Coord(.7, 1.4);
-    let canvasCoord: ICoord = worldView.toCanvasCoords(coord);
+    let canvasCoord: Coord = worldView.toCanvasCoords(coord);
 
     expect(canvasCoord.x).toBeCloseTo(400);
     expect(canvasCoord.y).toBeCloseTo(0);
@@ -54,9 +54,9 @@ test('midline rectangle', () => {
         {x: 2, y: 2}
     ];
     const w = 2 * Math.sqrt(2);
-    let rect: ICoord[] = midlineRectCoords(line, w);
+    let rect: Coord[] = midlineRectCoords(line, w);
 
-    let expectedCoords: ICoord[] = [
+    let expectedCoords: Coord[] = [
         {x: 1, y: 3},
         {x: 3, y: 1},
         {x: 2, y: 0},

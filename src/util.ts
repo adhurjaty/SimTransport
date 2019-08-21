@@ -1,4 +1,3 @@
-import ICoord from "./interfaces/ICoord";
 import { LineSegment } from "./interfaces/LineSegment";
 import { Random } from "./primitives";
 
@@ -14,7 +13,7 @@ export function* tipTailGrouping<T>(lst: T[], size: number):
     }
 }
 
-export function segmentsIntersect(seg: LineSegment, other: LineSegment): ICoord
+export function segmentsIntersect(seg: LineSegment, other: LineSegment): Coord
 {
     let xdiff: [number, number] = [seg[0].x - seg[1].x, other[0].x - other[1].x];
     let ydiff: [number, number] = [seg[0].y - seg[1].y, other[0].y - other[1].y];
@@ -29,10 +28,10 @@ export function segmentsIntersect(seg: LineSegment, other: LineSegment): ICoord
     
     let x: number = determinant(d, xdiff) / div;
     let y: number = determinant(d, ydiff) / div;
-    return {x: x, y: y};
+    return new Coord(x, y);
 }
 
-export function isPointOnLine(seg: LineSegment, p: ICoord): boolean {
+export function isPointOnLine(seg: LineSegment, p: Coord): boolean {
     let vector: [number, number] = toTuple(makeOriginVector(seg));
     let transPoint: [number, number] = toTuple(makeOriginVector([seg[0], p]));
     let cross: number = determinant(vector, transPoint);
@@ -44,14 +43,14 @@ export function isPointOnLine(seg: LineSegment, p: ICoord): boolean {
     return projection <= getDistance(seg) ** 2;
 }
 
-function toTuple(coord: ICoord): [number, number] {
+function toTuple(coord: Coord): [number, number] {
     return [coord.x, coord.y];
 }
 
 //#region  geometry
 
 export function getDistance(seg: LineSegment): number {
-    let vector: ICoord = makeOriginVector(seg);
+    let vector: Coord = makeOriginVector(seg);
     return Math.sqrt(vector.x ** 2 + vector.y ** 2);
 } 
 
@@ -63,36 +62,36 @@ function dotProduct(a: [number, number], b: [number, number]) {
     return a[0] * b[0] + a[1] * b[1];
 }
 
-function makeOriginVector(seg: LineSegment): ICoord {
+function makeOriginVector(seg: LineSegment): Coord {
     return {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
 }
 
 export function scaleSegment(seg: LineSegment, scale: number): LineSegment {
-    let base: ICoord = seg[0];
-    let newCoord: ICoord = {
+    let base: Coord = seg[0];
+    let newCoord: Coord = {
         x: base.x + (seg[1].x - base.x) * scale,
         y: base.y + (seg[1].y - base.y) * scale
     };
     return [base, newCoord]; 
 }
 
-export function dotProduct90CCW(base: ICoord, other: ICoord): number {
-    let rot90CCW: ICoord = {x: -other.y, y: other.x};
+export function dotProduct90CCW(base: Coord, other: Coord): number {
+    let rot90CCW: Coord = {x: -other.y, y: other.x};
     return dotProduct(toTuple(base), toTuple(rot90CCW));
 }
 
-export function rotateCoord(coord: ICoord, theta: number): ICoord {
+export function rotateCoord(coord: Coord, theta: number): Coord {
     return {
         x: coord.x * Math.cos(theta) - coord.y * Math.sin(theta),
         y: coord.x * Math.sin(theta) + coord.y * Math.cos(theta)
     };
 }
 
-export function topCenterRect(coord: ICoord, width: number, height: number, 
-    orientation: number): ICoord[] 
+export function topCenterRect(coord: Coord, width: number, height: number, 
+    orientation: number): Coord[] 
 {
     // create rectangle
-    let rect: ICoord[] = [
+    let rect: Coord[] = [
         {x: 0, y: width / 2},
         {x: 0, y: -width / 2},
         {x: -height, y: -width /2},
@@ -101,15 +100,15 @@ export function topCenterRect(coord: ICoord, width: number, height: number,
 
     // rotate and move
     return rect.map(c => {
-        let rotated: ICoord = rotateCoord(c, orientation);
+        let rotated: Coord = rotateCoord(c, orientation);
         return {x: rotated.x + coord.x, y: rotated.y + coord.y};
     });
 }
 
-export function scaleRect(coords: ICoord[], factor: number): ICoord[] {
-    let center: ICoord = {x: (coords[2].x + coords[0].x) / 2,
+export function scaleRect(coords: Coord[], factor: number): Coord[] {
+    let center: Coord = {x: (coords[2].x + coords[0].x) / 2,
         y: (coords[2].y + coords[0].y) / 2};
-    let offsetCoords: ICoord[] = coords.map()
+    let offsetCoords: Coord[] = coords.map()
 }
 
 //#endregion
@@ -219,7 +218,7 @@ export class Rectangle {
     }
 }
 
-export default class Coord {
+export class Coord {
     constructor(public x: number, public y: number) {
         
     }

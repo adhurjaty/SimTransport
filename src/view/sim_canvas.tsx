@@ -1,7 +1,7 @@
 import React, { RefObject, createRef } from "react";
 import World from "../simulator/world";
 import WorldView from "./world_view";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 
 export interface ICanvas {
     width: number;
@@ -63,7 +63,7 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
             this.relCoords({x: e.screenX, y: e.screenY}));
     }
 
-    private curDragCoord?: ICoord;
+    private curDragCoord?: Coord;
     handleStartDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
         this.curDragCoord = this.relCoords({x: e.screenX, y: e.screenY})
     }
@@ -77,14 +77,14 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
             return;
         }
 
-        let newCoord: ICoord = this.relCoords({x: e.screenX, y: e.screenY});
-        let delta: ICoord = {x: newCoord.x - this.curDragCoord.x,
+        let newCoord: Coord = this.relCoords({x: e.screenX, y: e.screenY});
+        let delta: Coord = {x: newCoord.x - this.curDragCoord.x,
             y: newCoord.y - this.curDragCoord.y};
         this.worldView.pan(delta);
         this.curDragCoord = newCoord;
     }
 
-    private relCoords(screenCoords: ICoord): ICoord {
+    private relCoords(screenCoords: Coord): Coord {
         let canvasBounds: ClientRect = this.canvasRef.current.getBoundingClientRect();
         return {x: screenCoords.x - canvasBounds.left,
             y: screenCoords.y - canvasBounds.top};

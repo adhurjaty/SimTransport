@@ -5,7 +5,7 @@ import { isPointOnLine, getDistance, scaleSegment, dotProduct90CCW, randInt, ran
 import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection, DrivingDirection } from "../enums";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 import PathInstruction from "./path_instruction";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
@@ -104,7 +104,7 @@ export function getCoord(address: Address): Coord {
     for (const seg of address.road.toLineSegments()) {
         let segLength: number = getDistance(seg);
         if(segLength >= distance) {
-            let result: ICoord = scaleSegment(seg as [Coord, Coord], 
+            let result: Coord = scaleSegment(seg as [Coord, Coord], 
                 distance / segLength)[1];
             return new Coord(result.x, result.y);
         }
@@ -152,7 +152,7 @@ export function getRoadTheta(addr: Address, direction: RoadDirection): number {
     for(const seg of addr.road.toLineSegments()) {
         dist += getDistance(seg);
         if(dist >= addr.distance) {
-            let vec: ICoord = {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
+            let vec: Coord = {x: seg[1].x - seg[0].x, y: seg[1].y - seg[0].y};
             let parity: number = direction == RoadDirection.Charm ? 1 : -1;
             return Math.atan2(parity * vec.y, parity * vec.x);
         }

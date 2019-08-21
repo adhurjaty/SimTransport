@@ -1,5 +1,5 @@
 import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect } from "../util";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 import { LineSegment } from "../interfaces/LineSegment";
 
 
@@ -28,7 +28,7 @@ test('origin intersects', () => {
         {x: 0, y: 2}
     ];
 
-    let result: ICoord = segmentsIntersect(seg, other);
+    let result: Coord = segmentsIntersect(seg, other);
     expect(result).toBeTruthy();
 });
 
@@ -42,7 +42,7 @@ test('no intersection', () => {
         {x: 4, y: .3}
     ];
 
-    let result: ICoord = segmentsIntersect(seg, other);
+    let result: Coord = segmentsIntersect(seg, other);
     expect(result).toBeUndefined();    
 });
 
@@ -51,7 +51,7 @@ test('point on line', () => {
         {x: 0, y: 0},
         {x: 2, y: 0}
     ];
-    let p: ICoord = {x: .3, y: 0};
+    let p: Coord = {x: .3, y: 0};
 
     expect(isPointOnLine(seg, p)).toBeTruthy();
 });
@@ -61,7 +61,7 @@ test('point not on line', () => {
         {x: 0, y: 0},
         {x: 2, y: 0}
     ];
-    let p: ICoord = {x: .3, y: .01};
+    let p: Coord = {x: .3, y: .01};
 
     expect(isPointOnLine(seg, p)).toBeFalsy();
 });
@@ -71,7 +71,7 @@ test('point on diagonal line', () => {
         {x: 1, y: 2},
         {x: 3, y: 6}
     ];
-    let p: ICoord = {x: 2.5, y: 5};
+    let p: Coord = {x: 2.5, y: 5};
 
     expect(isPointOnLine(seg, p)).toBeTruthy();
 });
@@ -81,7 +81,7 @@ test('point on line but not segment', () => {
         {x: 0, y: 0},
         {x: 2, y: 0}
     ];
-    let p: ICoord = {x: 3, y: 0};
+    let p: Coord = {x: 3, y: 0};
 
     expect(isPointOnLine(seg, p)).toBeFalsy();
 });
@@ -131,15 +131,15 @@ test('get sign change indices all pos', () => {
 });
 
 test('get right vector', () => {
-    let v1: ICoord = {x: 1, y: 1};
-    let v2: ICoord = {x: 3, y: 0};
+    let v1: Coord = {x: 1, y: 1};
+    let v2: Coord = {x: 3, y: 0};
 
     expect(dotProduct90CCW(v1, v2) < 0).toBeFalsy();
 });
 
 test('get left vector', () => {
-    let v1: ICoord = {x: 1, y: 1};
-    let v2: ICoord = {x: -3, y: 0};
+    let v1: Coord = {x: 1, y: 1};
+    let v2: Coord = {x: -3, y: 0};
 
     expect(dotProduct90CCW(v1, v2) < 0).toBeTruthy();
 });
@@ -158,9 +158,9 @@ test('flatten array', () => {
 });
 
 test('make rotated top center rectangle', () => {
-    let rect: ICoord[] = topCenterRect({x: .5, y: .3}, .2, .5, Math.PI / 6);
+    let rect: Coord[] = topCenterRect({x: .5, y: .3}, .2, .5, Math.PI / 6);
 
-    let expected: ICoord[] = [
+    let expected: Coord[] = [
         {x: .45, y: .3 + .1 * Math.sqrt(3)/2},
         {x: .55, y: .3 - .1 * Math.sqrt(3)/2},
         {x: .55 - .5 * Math.sqrt(3)/2, y: .3 - .1 * Math.sqrt(3)/2 - .25},

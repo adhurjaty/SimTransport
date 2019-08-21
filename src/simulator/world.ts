@@ -9,7 +9,7 @@ import { followRoad, getAddress, getAddressOnRoad, randomAddress } from "./simul
 import { otherDirection } from "../enums";
 import LightTripper from "./light_tripper";
 import { Rectangle, flatten } from "../util";
-import ICoord from "../interfaces/ICoord";
+import Coord from "../interfaces/Coord";
 
 export default class World {
     private lightTripper: LightTripper; 
@@ -43,7 +43,7 @@ export default class World {
     }
 
     getBounds(): Rectangle {
-        let coords: ICoord[] = flatten(this.map.roads.map(r => r.path));
+        let coords: Coord[] = flatten(this.map.roads.map(r => r.path));
         let xs: number[] = coords.map(c => c.x).sort((a, b) => a - b);
         let ys: number[] = coords.map(c => c.y).sort((a, b) => a - b);
 
