@@ -7,7 +7,7 @@ import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDist
 import { Speed } from "../primitives";
 import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
 import { RoadDirection, otherDirection, DrivingDirection } from "../enums";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import Road from "../models/road";
 import Intersection from "./intersection";
 

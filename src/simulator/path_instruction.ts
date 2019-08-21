@@ -1,6 +1,6 @@
 import Road from "../models/road";
 import { RoadDirection } from "../enums";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 
 export default class PathInstruction {
     constructor(public road: Road, public direction: RoadDirection, 

@@ -1,5 +1,5 @@
 import RoadNetwork from "./road_network";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import Address from "./address";
 import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection } from "./simulator_helpers";
 import Intersection from "./intersection";

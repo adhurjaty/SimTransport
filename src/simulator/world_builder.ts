@@ -12,7 +12,7 @@ import CarController from "./car_controller";
 import LightSwitcher from "./light_switcher";
 import TrafficLight from "./traffic_light";
 import DefaultLightSwitcher from "./default_light_switcher";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 
 const PARALLEL_ROAD_DISTANCE = .1;
 

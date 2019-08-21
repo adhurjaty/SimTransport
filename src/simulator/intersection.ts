@@ -1,6 +1,6 @@
 import Road from "../models/road";
 import TrafficLight from "./traffic_light";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { getAddressOnRoad, getCoord } from "./simulator_helpers";
 import Address from "./address";

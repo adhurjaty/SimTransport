@@ -1,5 +1,5 @@
 import Road from "../models/road";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import Intersection from "./intersection";
 import { isPointOnLine, getDistance, scaleSegment, dotProduct90CCW, randInt, randDouble } from "../util";
 import Address from "./address";

@@ -1,7 +1,7 @@
 import Car from "../models/car";
 import CarController from "./car_controller";
 import Address from "./address";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import { RoadDirection } from "../enums";
 import { getCoord } from "./simulator_helpers";
 import { TICK_DURATION } from "../constants";

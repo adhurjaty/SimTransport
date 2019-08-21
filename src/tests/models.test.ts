@@ -1,5 +1,5 @@
 import Road from "../models/road";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import RoadMap from "../models/road_map";
 import Car from "../models/car";
 import { LineSegment } from "../interfaces/LineSegment";

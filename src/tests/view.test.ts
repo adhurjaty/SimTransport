@@ -4,7 +4,7 @@ import { createMap } from "./simulator.test";
 import World from "../simulator/world";
 import WorldView from "../view/world_view";
 import { ICanvas } from "../view/sim_canvas";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import { Coord } from "../util";
 import { Rectangle } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";

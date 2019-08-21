@@ -1,7 +1,7 @@
 import RoadMap from "../models/road_map";
 import Intersection from "./intersection";
 import Road from "../models/road";
-import Coord from "../models/coord";
+import { Coord } from "../util";
 import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
 import { Coord } from "../util";
 import { getConnectingRoad, getRoadDistance, getAddress, getCoord } from "./simulator_helpers";
