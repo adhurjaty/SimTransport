@@ -14,14 +14,16 @@ export default abstract class ViewElement {
             * (this.canvas.width / viewRect.width);
         let yPrime: number = this.canvas.height - ((worldCoord.y - viewRect.y) 
             * (this.canvas.height / viewRect.height));
-        return new Coord( xPrime,  yPrime};)
+        return new Coord(xPrime,  yPrime);
+    }
 
     toWorldCoords(canvasCoords: Coord, viewRect: Rectangle): Coord {
         let xPrime: number = (canvasCoords.x / (this.canvas.width / viewRect.width))
             + viewRect.x;
         let yPrime: number = (this.canvas.height - canvasCoords.y) 
             / (this.canvas.height / viewRect.height);
-        return new Coord( xPrime,  yPrime};)
+        return new Coord( xPrime,  yPrime);
+    }
 
     toCanvasSize(worldSize: number, viewRect: Rectangle): number {
         return worldSize * this.canvas.width / viewRect.width;

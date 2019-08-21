@@ -5,7 +5,6 @@ import { isPointOnLine, getDistance, scaleSegment, dotProduct90CCW, randInt, ran
 import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection, DrivingDirection } from "../enums";
-import { Coord } from "../util";
 import PathInstruction from "./path_instruction";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {

@@ -63,7 +63,8 @@ function dotProduct(a: [number, number], b: [number, number]) {
 }
 
 function makeOriginVector(seg: LineSegment): Coord {
-    return new Coord( seg[1].x - seg[0].x,  seg[1].y - seg[0].y};)
+    return new Coord(seg[1].x - seg[0].x,  seg[1].y - seg[0].y);
+}
 
 export function scaleSegment(seg: LineSegment, scale: number): LineSegment {
     let base: Coord = seg[0];
@@ -94,11 +95,12 @@ export function topCenterRect(coord: Coord, width: number, height: number,
     // rotate and move
     return rect.map(c => {
         let rotated: Coord = rotateCoord(c, orientation);
-        return new Coord( rotated.x + coord.x,  rotated.y + coord.y};));
+        return new Coord(rotated.x + coord.x,  rotated.y + coord.y);
+    });
 }
 
 export function scaleRect(coords: Coord[], factor: number): Coord[] {
-    let center: Coord = new Coord( (coords[2].x + coords[0].x) / 2,  (coords[2].y + coords[0].y) / 2);
+    let center: Coord = new Coord((coords[2].x + coords[0].x) / 2,  (coords[2].y + coords[0].y) / 2);
     let offsetCoords: Coord[] = coords.map()
 }
 

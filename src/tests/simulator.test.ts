@@ -31,7 +31,8 @@ test('intersection network size', () => {
 
 test('get intersection locations', () => {
     expect(network.intersections.map(x => x.location)).toContainEqual(new Coord( .2,  .2));
-    expect(network.intersections.map(x => x.location)).toContainEqual(new Coord( .1,  .4});));
+    expect(network.intersections.map(x => x.location)).toContainEqual(new Coord( .1,  .4));
+});
 
 test('get intersection at corner', () => {
     let cornerMap: RoadMap = new RoadMap([

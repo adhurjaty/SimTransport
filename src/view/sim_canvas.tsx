@@ -60,11 +60,13 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
 
     handleWheel(e: React.WheelEvent<HTMLCanvasElement>): void {
         this.worldView.zoom(ZOOM_SPEED * e.deltaY, 
-            this.relCoords(new Coord( e.screenX,  e.screenY}));)
+            this.relCoords(new Coord( e.screenX,  e.screenY)));
+    }
 
     private curDragCoord?: Coord;
     handleStartDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
-        this.curDragCoord = this.relCoords(new Coord( e.screenX,  e.screenY}))
+        this.curDragCoord = this.relCoords(new Coord( e.screenX,  e.screenY));
+    }
 
     handleEndDrag(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
         this.curDragCoord = undefined;
@@ -83,7 +85,8 @@ export default class SimCanvas extends React.Component<CanvasProps, {}> {
 
     private relCoords(screenCoords: Coord): Coord {
         let canvasBounds: ClientRect = this.canvasRef.current.getBoundingClientRect();
-        return new Coord( screenCoords.x - canvasBounds.left,  screenCoords.y - canvasBounds.top};)
+        return new Coord( screenCoords.x - canvasBounds.left,  screenCoords.y - canvasBounds.top);
+    }
 
     render() {
         return (
