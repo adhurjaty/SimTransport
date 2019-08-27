@@ -6,6 +6,8 @@ import Address from "./address";
 import RoadNetwork from "./road_network";
 import { RoadDirection, DrivingDirection } from "../enums";
 import PathInstruction from "./path_instruction";
+import { LineSegment } from "../interfaces/LineSegment";
+import DrivingCar from "./driving_car";
 
 export function getRoadDistance(road: Road, from: Coord, to: Coord): number {
     let distanceFinder: RoadDistanceFinder = new RoadDistanceFinder(road, from, to);
@@ -146,17 +148,22 @@ export function getNewRoadDirection(intAddr: Address, nextAddr: Address): RoadDi
     return RoadDirection.Charm;
 }
 
-export function getRoadTheta(addr: Address, direction: RoadDirection): number {
+export function getLineSegAtAddress(addr: Address): LineSegment {
     let dist: number = 0;
     for(const seg of addr.road.toLineSegments()) {
         dist += getDistance(seg);
         if(dist >= addr.distance) {
-            let vec: Coord = new Coord( seg[1].x - seg[0].x,  seg[1].y - seg[0].y);
-            let parity: number = direction == RoadDirection.Charm ? 1 : -1;
-            return Math.atan2(parity * vec.y, parity * vec.x);
+            return seg;
         }
     }
     throw new Error("address is invalid");
+}
+
+export function getCarTheta(car: DrivingCar): number {
+    let seg: LineSegment = getLineSegAtAddress(car.address);
+    let vec: Coord = new Coord(seg[1].x - seg[0].x,  seg[1].y - seg[0].y);
+    let parity: number = car.direction == RoadDirection.Charm ? 1 : -1;
+    return Math.atan2(parity * vec.y, parity * vec.x);
 }
 
 export function randomAddress(network: RoadNetwork): Address {

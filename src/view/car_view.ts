@@ -3,7 +3,9 @@ import ViewElement from "./view_element";
 import { ICanvas } from "./sim_canvas";
 import { Rectangle, topCenterRect } from "../util";
 import { Coord } from "../util";
-import { getCoord, getRoadTheta } from "../simulator/simulator_helpers";
+import { getCoord, getCarTheta } from "../simulator/simulator_helpers";
+import { LANE_WIDTH, CAR_WIDTH, CAR_COLOR } from "../constants";
+import { drawFilledPolygon } from "./view_helper";
 
 export default class CarView extends ViewElement {
     constructor(private car: DrivingCar, canvas: ICanvas) {
@@ -11,19 +13,19 @@ export default class CarView extends ViewElement {
     }
 
     draw(ctx: CanvasRenderingContext2D, viewRect: Rectangle): void {
-        let drawCoord: Coord = this.toCanvasCoords(getCoord(this.car.address), viewRect);
-        let width: number = this.toCanvasSize(.003, viewRect) + 10;
-        let length: number = this.toCanvasSize(this.car.size, viewRect) + 10;
-        
-        let angle: number = getRoadTheta(this.car.address, this.car.direction);
-        let verts: Coord[] = topCenterRect(drawCoord, width, length, angle) ;
+        let verts: Coord[] = this.getCarRectCoords();
+        verts = verts.map(c => this.toCanvasCoords(c, viewRect));
 
-        ctx.beginPath();
-        ctx.moveTo(verts[0].x, verts[0].y);
-        verts.slice(1).forEach(vert => {
-            ctx.lineTo(vert.x, vert.y);
-        });
-        ctx.fillStyle = "blue";
-        ctx.fill();
+        ctx.fillStyle = CAR_COLOR;
+        drawFilledPolygon(verts, ctx);
+    }
+
+    private getCarRectCoords(): Coord[] {
+        let angle: number = getCarTheta(this.car);
+        let perp: number = angle + -Math.PI / 2;
+        let centerCoord: Coord = getCoord(this.car.address);
+        let offsetVec: Coord = Coord.fromPolar(LANE_WIDTH / 2, perp);
+        let newCenter: Coord = centerCoord.add(offsetVec);
+        return topCenterRect(newCenter, CAR_WIDTH, this.car.size, angle);
     }
 }

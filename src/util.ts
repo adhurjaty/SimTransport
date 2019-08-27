@@ -243,6 +243,10 @@ export class Rectangle {
 }
 
 export class Coord {
+    static fromPolar(r: number, theta: number): Coord {
+        return new Coord(r * Math.cos(theta), r * Math.sin(theta));
+    }
+
     constructor(public x: number, public y: number) {
         
     }

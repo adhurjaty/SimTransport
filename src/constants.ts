@@ -8,3 +8,5 @@ export const SIDEWALK_WIDTH = .002;
 export const SIDEWALK_COLOR = '#888c75';
 export const LINE_WIDTH = .0005;
 export const LINE_COLOR = '#fcfc00';
+export const CAR_WIDTH = .004;
+export const CAR_COLOR = 'blue';
