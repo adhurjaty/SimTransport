@@ -470,6 +470,10 @@ test('follow slower car', () => {
 
     expect(dcs[0].speed.speedInMph).toBe(20);
     expect(dcs[1].speed.speedInMph).toBeCloseTo(20, 1);
+
+    // test 2 second rule
+    expect(dcs[0].address.distance - dcs[1].address.distance)
+        .toBeCloseTo(.011 + dcs[0].size);
 });
 
 test('get dist between addresses', () => {
@@ -756,8 +760,8 @@ test('right on red car waits', () => {
 
     expect(cars[0].address.road.id).toBe(1);
     expect(cars[1].address.road.id).toBe(1);
-    expect(cars[1].address.distance - cars[0].address.distance).toBeCloseTo(.033 + 
-        INTERSECTION_SIZE, 3);
+    expect(cars[1].address.distance - cars[0].address.distance).toBeCloseTo(.033
+        + INTERSECTION_SIZE, 3);
 });
 
 test('get world bounds', () => {

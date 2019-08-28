@@ -292,3 +292,7 @@ export class Coord {
         return Math.sqrt(this.x**2 + this.y**2);
     }
 }
+
+export function within(a: number, b: number, bound: number = 0): boolean {
+    return Math.abs(a - b) <= bound;
+}

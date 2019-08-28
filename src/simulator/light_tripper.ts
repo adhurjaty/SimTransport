@@ -4,7 +4,7 @@ import Intersection from "./intersection";
 import Address from "./address";
 import { getAddressOnRoad, followRoad } from "./simulator_helpers";
 import { otherDirection } from "../enums";
-import { PrunableQueue } from "../util";
+import { PrunableQueue, within } from "../util";
 
 export default class LightTripper {
     private carsAtIntersections: DrivingCar[] = [];
@@ -15,7 +15,7 @@ export default class LightTripper {
 
     tripSensors(): void {
         let stoppedCars: DrivingCar[] = this.world.cars.filter(car => 
-            car.speed.speedInMph < 1e-2);
+            car.speed.speedInMph < 5);
         let carsAtInts: DrivingCar[] = [];
         let carQueue: PrunableQueue<DrivingCar> = new PrunableQueue(stoppedCars);
         while(!carQueue.empty()) {
@@ -53,13 +53,15 @@ export default class LightTripper {
     {
         while(car != undefined) {
             yield car;
-            location = followRoad(location, car.size, otherDirection(car.direction))
+            location = followRoad(location, car.size,
+                otherDirection(car.direction))
             car = this.getCarAtLocation(location, stoppedCars);
         }
     }
 
     private getCarAtLocation(location: Address, cars: DrivingCar[]): DrivingCar {
-        return cars.find(c => c.address.equals(location));
+        return cars.find(c => c.address.road.id == location.road.id &&
+            within(c.address.distance, location.distance, .001));
     }
 }
 

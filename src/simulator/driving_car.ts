@@ -1,16 +1,17 @@
 import Car from "../models/car";
 import CarController from "./car_controller";
 import Address from "./address";
-import { Coord } from "../util";
+import { Coord, topCenterRect } from "../util";
 import { RoadDirection } from "../enums";
-import { getCoord } from "./simulator_helpers";
-import { TICK_DURATION } from "../constants";
+import { getCoord, getCarTheta } from "./simulator_helpers";
+import { TICK_DURATION, LANE_WIDTH, CAR_WIDTH } from "../constants";
 import { Speed } from "../primitives";
 import Intersection from "./intersection";
 
 export default class DrivingCar extends Car {
     private controller: CarController;
     private turnTimeElapsed: number = 0;
+    private onAtDest: () => void; 
 
     public speed: Speed = new Speed(0);
     public speedLimit: Speed = new Speed(40);
@@ -85,5 +86,24 @@ export default class DrivingCar extends Car {
 
     atIntersection(): Intersection {
         return this.controller.atIntersection();
+    }
+
+    getCarRectCoords(): Coord[] {
+        let angle: number = getCarTheta(this);
+        let perp: number = angle + -Math.PI / 2;
+        let centerCoord: Coord = getCoord(this.address);
+        let offsetVec: Coord = Coord.fromPolar(LANE_WIDTH / 2, perp);
+        let newCenter: Coord = centerCoord.add(offsetVec);
+        return topCenterRect(newCenter, CAR_WIDTH, this.size, angle);
+    }
+
+    atDest(): void {
+        if(this.onAtDest) {
+            this.onAtDest();
+        }
+    }
+
+    setOnAtDest(fn: ()=>void): void {
+        this.onAtDest = fn;
     }
 }

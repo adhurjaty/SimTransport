@@ -34,6 +34,7 @@ export default class CarController {
         if(this.atDestination()) {
             this.path = [];
             this.car.setSpeed(new Speed(0));
+            this.car.atDest();
             return;
         }
         
@@ -124,9 +125,9 @@ export default class CarController {
         }
 
         let [car, carDistance] = this.getCarAheadSameDir();
-        if(car && carDistance < this.twoSecondRule()) {
+        if(car && (carDistance - car.size) < this.twoSecondRule()) {
             // preserve 2 second rule
-            speed = Speed.fromMps(carDistance / 2);
+            speed = Speed.fromMps((carDistance - car.size) / 2);
         }
 
         this.car.setSpeed(speed);
