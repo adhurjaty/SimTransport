@@ -1,6 +1,5 @@
 import WorldBuilder from "../simulator/world_builder";
 import RoadMap from "../models/road_map";
-import { createMap } from "./simulator.test";
 import World from "../simulator/world";
 import WorldView from "../view/world_view";
 import { ICanvas } from "../view/sim_canvas";
@@ -8,6 +7,7 @@ import { Coord } from "../util";
 import { Rectangle } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { midlineRectCoords } from "../view/view_helper";
+import { createMap } from "./test_exports";
 
 let map: RoadMap = createMap();
 let builder: WorldBuilder = new WorldBuilder(map, []);

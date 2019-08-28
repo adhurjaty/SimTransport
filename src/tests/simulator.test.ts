@@ -17,10 +17,7 @@ import CarController from "../simulator/car_controller";
 import LightSwitcher from "../simulator/light_switcher";
 import TrafficLight from "../simulator/traffic_light";
 import { Rectangle, Coord } from "../util";
-
-const parallelRoadDistance: number = .1;
-const roadLength: number = 2;
-let roadID: number = 0;
+import { AutoSwitcher, SimpleLightSwitcher, TrippedTestSwitcher, createMap, defaultCars } from "./test_exports";
 
 let map: RoadMap = createMap();
 let network: RoadNetwork = new RoadNetwork(map);
@@ -823,44 +820,6 @@ test('follow road to end', () => {
     expect(endAddr.distance).toBeCloseTo(2);
 });
 
-export function createMap(): RoadMap {
-    let grid: Road[] = generateGrid(5);
-    return new RoadMap(grid);
-}
-
-function generateGrid(numRoads: number): Road[] {
-    return Array.from(createRoadRows(numRoads))
-        .concat(Array.from(createRoadColumns(numRoads)));
-}
-
-function* createRoadRows(numRoads: number): IterableIterator<Road> {
-    yield* createRoads(numRoads, makeHorizontalPath);
-}
-
-function* createRoadColumns(numRoads: number): IterableIterator<Road> {
-    yield* createRoads(numRoads, makeVerticalPath);
-}
-
-function* createRoads(numRoads: number, coordCreator: (n: number) => Coord[]): 
-    IterableIterator<Road> 
-{
-    for (let i = 0; i < numRoads; i++) {
-        let path = coordCreator(i);
-        yield new Road(roadID, path, 1, 1);
-        roadID++;
-    }
-}
-
-function makeHorizontalPath(roadNum: number): Coord[] {
-    return [new Coord(0, roadNum * parallelRoadDistance), 
-        new Coord(roadLength, roadNum * parallelRoadDistance)];
-}
-
-function makeVerticalPath(roadNum: number): Coord[] {
-    return [new Coord(roadNum * parallelRoadDistance, 0), 
-        new Coord(roadNum * parallelRoadDistance, roadLength)];
-}
-
 function makeRandomReturn(lst: number[]): void {
     let buffer: IterableIterator<number> = circleYield(lst);
     Random.next = () => buffer.next().value;
@@ -881,12 +840,6 @@ function runSimulation(world: World, time: number): void {
     }
 }
 
-function* defaultCars(num: number): IterableIterator<Car> {
-    for(let i = 0; i < num; i++) {
-        yield new Car(i, .005, 100, 3);
-    }
-}
-
 function setAllLightsSimple() {
     network.intersections.forEach(x => {
         x.light.setSwitcher(new SimpleLightSwitcher(x.light, 
@@ -900,35 +853,4 @@ function setAllLighsAuto() {
     });
 }
 
-class SimpleLightSwitcher implements LightSwitcher {
-    constructor(protected light: TrafficLight, protected direction: IntersectionDirection) {
-        this.light.setSwitcher(this);
-        light.greenDirection = this.direction;
-    }
 
-    tick(): void {}
-    setDirection(dir: IntersectionDirection): void {}
-    carSensorTripped(dir: IntersectionDirection): void {}
-}
-
-class AutoSwitcher implements LightSwitcher {
-    constructor(private light: TrafficLight) {
-    }
-
-    tick(): void {}
-    setDirection(dir: IntersectionDirection): void {}
-    carSensorTripped(dir: IntersectionDirection): void {
-        this.light.greenDirection = dir;
-    }
-}
-
-class TrippedTestSwitcher extends SimpleLightSwitcher {
-    public trippedDirs: IntersectionDirection[] = []
-    constructor(light: TrafficLight, direction: IntersectionDirection) {
-        super(light, direction);
-    }
-
-    carSensorTripped(dir: IntersectionDirection): void {
-        this.trippedDirs.push(dir);
-    }
-}
