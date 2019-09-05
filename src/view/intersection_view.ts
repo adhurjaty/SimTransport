@@ -1,7 +1,7 @@
 import Intersection from "../simulator/intersection";
 import ViewElement from "./view_element";
 import { ICanvas } from "./sim_canvas";
-import { Rectangle, scaleRect, Coord, padRect } from "../util";
+import { Rectangle, Coord, padRect } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { midlineRectCoords, drawFilledPolygon } from "./view_helper";
 import { LANE_WIDTH, LANE_COLOR, SIDEWALK_WIDTH, SIDEWALK_COLOR } from "../constants";

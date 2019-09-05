@@ -120,12 +120,12 @@ export default class CarController {
         let distToStop: number =this.stopDistance(distToWaypoint);
 
         // if car is so close to checkpoint that it will overshoot next time step
-        if(distToStop - Number.EPSILON <= this.distPerTimeStep()) {
+        if(distToStop <= this.distPerTimeStep()) {
             speed = Speed.fromMps(distToStop / TICK_DURATION);
         }
 
         let [car, carDistance] = this.getCarAheadSameDir();
-        if(car && (carDistance - car.size) < this.twoSecondRule()) {
+        if(car && (carDistance - car.size) <= this.twoSecondRule()) {
             // preserve 2 second rule
             speed = Speed.fromMps((carDistance - car.size) / 2);
         }

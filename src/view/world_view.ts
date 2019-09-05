@@ -7,6 +7,7 @@ import ViewElement from "./view_element";
 import RoadView from "./road_view";
 import CarView from "./car_view";
 import IntersectionView from "./intersection_view";
+import LightView from "./light_view";
 
 const MIN_VIEW_WIDTH = .005;
 
@@ -14,6 +15,7 @@ export default class WorldView extends ViewElement {
     private viewRect: Rectangle; // in world coords
     private roads: RoadView[];
     private intersections: IntersectionView[];
+    private lights: LightView[];
     private cars: CarView[];
 
     constructor(private world: World, canvas: ICanvas) {
@@ -22,6 +24,7 @@ export default class WorldView extends ViewElement {
         this.createViewRect();
         this.createRoads();
         this.createIntersections();
+        this.createLights();
         this.createCars();
     }
 
@@ -31,6 +34,9 @@ export default class WorldView extends ViewElement {
         });
         this.intersections.forEach(int => {
             int.draw(ctx, this.viewRect);
+        });
+        this.lights.forEach(light => {
+            light.draw(ctx, this.viewRect);
         });
         this.cars.forEach(car => {
             car.draw(ctx, this.viewRect);
@@ -65,6 +71,11 @@ export default class WorldView extends ViewElement {
     private createIntersections(): void {
         this.intersections = this.world.network.intersections.map(int => 
             new IntersectionView(int, this.canvas));
+    }
+
+    private createLights(): void {
+        this.lights = this.world.network.intersections.map(int => 
+            new LightView(int, this.canvas));
     }
 
     private createCars(): void {
