@@ -15,16 +15,17 @@ export default class LightTripper {
 
     tripSensors(): void {
         let stoppedCars: DrivingCar[] = this.world.cars.filter(car => 
-            car.speed.speedInMph < 5);
+            car.speed.speedInMph < .01);
         let carsAtInts: DrivingCar[] = [];
-        let carQueue: PrunableQueue<DrivingCar> = new PrunableQueue(stoppedCars);
+        let carQueue: PrunableQueue<DrivingCar> = new PrunableQueue(
+            Object.assign([], stoppedCars));
         while(!carQueue.empty()) {
             const car = carQueue.pop();
             let int: Intersection = car.atIntersection();
 
             if(int) {
                 let intCars: DrivingCar[] = 
-                    this.getCarsAtIntersection(int, car, stoppedCars);
+                    this.getCarsAtIntersection(car, stoppedCars);
                 carQueue.prune(intCars);
                 carsAtInts = carsAtInts.concat(intCars);
                 for (const intCar of intCars) {
@@ -40,20 +41,18 @@ export default class LightTripper {
         this.carsAtIntersections = carsAtInts;
     }
 
-    private getCarsAtIntersection(intersection: Intersection, firstCar: DrivingCar,
-        stoppedCars: DrivingCar[]): DrivingCar[] 
+    private getCarsAtIntersection(firstCar: DrivingCar, stoppedCars: DrivingCar[]): 
+        DrivingCar[] 
     {
-        let addr: Address = getAddressOnRoad(firstCar.address.road,
-            intersection.location);
-        return Array.from(this.getCarsHelper(addr, firstCar, stoppedCars));
+        return Array.from(this.getCarsHelper(firstCar, stoppedCars));
     }
 
-    private *getCarsHelper(location: Address, car: DrivingCar,
-        stoppedCars: DrivingCar[]): IterableIterator<DrivingCar>
+    private *getCarsHelper(car: DrivingCar, stoppedCars: DrivingCar[]): 
+        IterableIterator<DrivingCar>
     {
         while(car != undefined) {
             yield car;
-            location = followRoad(location, car.size,
+            let location: Address = followRoad(car.address, car.size,
                 otherDirection(car.direction))
             car = this.getCarAtLocation(location, stoppedCars);
         }
@@ -61,7 +60,7 @@ export default class LightTripper {
 
     private getCarAtLocation(location: Address, cars: DrivingCar[]): DrivingCar {
         return cars.find(c => c.address.road.id == location.road.id &&
-            within(c.address.distance, location.distance, .001));
+            within(c.address.distance, location.distance, .0001));
     }
 }
 

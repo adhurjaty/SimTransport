@@ -29,14 +29,15 @@ export default function makeTestWorld(): World {
         let dc = new DrivingCar(c, addresses[i], dir);
         return dc;
     });
-
+    
     let world: World = new World(network)
     world.setCars(cars);
-
+    
     cars.forEach(c => {
         c.setController(new CarController(c, world));
         c.setDestination(new Address(map.roads[1], 1));
     });
-
+    cars[0].setDestination(new Address(map.roads[1], .001));
+    
     return world;
 }

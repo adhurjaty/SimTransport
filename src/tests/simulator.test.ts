@@ -615,6 +615,7 @@ test('trip multiple light sensors', () => {
         c.setController(new CarController(c, world));
         c.setDestination(new Address(map.roads[1], 1));
     });
+    cars[0].setDestination(new Address(map.roads[1], 0));
 
     runSimulation(world, 1);
 
