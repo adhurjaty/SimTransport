@@ -5,7 +5,7 @@ import { LineSegment } from "../interfaces/LineSegment";
 import { Rectangle } from "../util";
 import { Coord } from "../util";
 import { midlineRectCoords, drawFilledPolygon, offsetLine } from "./view_helper";
-import { LANE_COLOR, LANE_WIDTH, SIDEWALK_WIDTH, SIDEWALK_COLOR, LINE_WIDTH, LINE_COLOR } from "../constants";
+import { GlobalParams } from "../constants"
 
 
 export default class RoadView extends ViewElement {
@@ -28,12 +28,12 @@ export default class RoadView extends ViewElement {
         viewRect: Rectangle): void
     {
         // draw whole street as sidewalk and let other parts get drawn on top
-        let totalWidth: number = this.toCanvasSize(SIDEWALK_WIDTH * 2 +
-            LANE_WIDTH * (this.road.charmLanes + this.road.strangeLanes),
+        let totalWidth: number = this.toCanvasSize(GlobalParams.SIDEWALK_WIDTH * 2 +
+            GlobalParams.LANE_WIDTH * (this.road.charmLanes + this.road.strangeLanes),
             viewRect);
         let coords: Coord[] = midlineRectCoords(seg, totalWidth);
 
-        ctx.fillStyle = SIDEWALK_COLOR;
+        ctx.fillStyle = GlobalParams.SIDEWALK_COLOR;
         drawFilledPolygon(coords, ctx);
     }
 
@@ -41,24 +41,24 @@ export default class RoadView extends ViewElement {
         viewRect: Rectangle): void 
     {
         let totalWidth: number = this.toCanvasSize(
-            LANE_WIDTH * (this.road.charmLanes + this.road.strangeLanes),
+            GlobalParams.LANE_WIDTH * (this.road.charmLanes + this.road.strangeLanes),
             viewRect);
         let coords: Coord[] = midlineRectCoords(seg, totalWidth);
         
-        ctx.fillStyle = LANE_COLOR;
+        ctx.fillStyle = GlobalParams.LANE_COLOR;
         drawFilledPolygon(coords, ctx);
     }
 
     private drawYellowLine(seg: LineSegment, ctx: CanvasRenderingContext2D,
         viewRect: Rectangle): void
     {
-        let totalWidth: number = this.toCanvasSize(LINE_WIDTH, viewRect);
+        let totalWidth: number = this.toCanvasSize(GlobalParams.LINE_WIDTH, viewRect);
         let offsetDist: number = this.toCanvasSize(
-            LANE_WIDTH * (this.road.strangeLanes - this.road.charmLanes), viewRect);
+            GlobalParams.LANE_WIDTH * (this.road.strangeLanes - this.road.charmLanes), viewRect);
         let centerLine: LineSegment = offsetLine(seg, offsetDist);
         let coords: Coord[] = midlineRectCoords(centerLine, totalWidth);
 
-        ctx.fillStyle = LINE_COLOR;
+        ctx.fillStyle = GlobalParams.LINE_COLOR;
         drawFilledPolygon(coords, ctx);
     }
 }

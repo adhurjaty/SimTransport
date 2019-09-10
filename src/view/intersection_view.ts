@@ -4,7 +4,7 @@ import { ICanvas } from "./sim_canvas";
 import { Rectangle, Coord, padRect } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { midlineRectCoords, drawFilledPolygon } from "./view_helper";
-import { LANE_WIDTH, LANE_COLOR, SIDEWALK_WIDTH, SIDEWALK_COLOR } from "../constants";
+import { GlobalParams } from "../constants"
 
 export default class IntersectionView extends ViewElement {
     constructor(private intersection: Intersection, canvas: ICanvas) {
@@ -15,19 +15,19 @@ export default class IntersectionView extends ViewElement {
         let worldCoords: Coord[] = this.getSquareWorldCoords();
         let roadCoords: Coord[] = worldCoords.map(c => this.toCanvasCoords(c, viewRect));
 
-        let withSidewalks: Coord[] = padRect(worldCoords, -SIDEWALK_WIDTH);
+        let withSidewalks: Coord[] = padRect(worldCoords, -GlobalParams.SIDEWALK_WIDTH);
         let swCoords: Coord[] = withSidewalks.map(c => this.toCanvasCoords(c, viewRect));
 
-        ctx.fillStyle = SIDEWALK_COLOR;
+        ctx.fillStyle = GlobalParams.SIDEWALK_COLOR;
         drawFilledPolygon(swCoords, ctx);
 
-        ctx.fillStyle = LANE_COLOR;
+        ctx.fillStyle = GlobalParams.LANE_COLOR;
         drawFilledPolygon(roadCoords, ctx);
     }
 
     private getSquareWorldCoords(): Coord[] {
         let chord: LineSegment = this.intersection.getChord();
-        let width: number = LANE_WIDTH * 
+        let width: number = GlobalParams.LANE_WIDTH * 
             (this.intersection.roads[1].charmLanes + this.intersection.roads[1].strangeLanes);
         return midlineRectCoords(chord, width);
     }

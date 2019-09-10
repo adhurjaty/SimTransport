@@ -4,7 +4,7 @@ import Address from "./address";
 import { Coord, topCenterRect } from "../util";
 import { RoadDirection } from "../enums";
 import { getCoord, getCarTheta } from "./simulator_helpers";
-import { TICK_DURATION, LANE_WIDTH, CAR_WIDTH } from "../constants";
+import { GlobalParams } from "../constants"
 import { Speed } from "../primitives";
 import Intersection from "./intersection";
 
@@ -42,7 +42,7 @@ export default class DrivingCar extends Car {
     }
 
     private movementAmount(): number {
-        return this.speed.mps() * TICK_DURATION * this.getDirParity();
+        return this.speed.mps() * GlobalParams.TICK_DURATION * this.getDirParity();
     }
 
     private getDirParity(): number {
@@ -54,12 +54,12 @@ export default class DrivingCar extends Car {
     // private adjustSpeed(): void {
     //     // deceleration is instant, accel happens linearly
     //     this.speed.speedInMph += Math.min(this.speedLimit.speedInMph - this.speed.speedInMph, 
-    //         this.accel * TICK_DURATION);
+    //         this.accel * GlobalParams.TICK_DURATION);
     // }
 
     private executeTurn(): void {
         this.turnTimeElapsed++;
-        if(this.turnTimeElapsed >= this.turnTime / TICK_DURATION) {
+        if(this.turnTimeElapsed >= this.turnTime / GlobalParams.TICK_DURATION) {
             this.turnTimeElapsed = 0;
             this.turning = false;
         }
@@ -92,9 +92,9 @@ export default class DrivingCar extends Car {
         let angle: number = getCarTheta(this);
         let perp: number = angle + -Math.PI / 2;
         let centerCoord: Coord = getCoord(this.address);
-        let offsetVec: Coord = Coord.fromPolar(LANE_WIDTH / 2, perp);
+        let offsetVec: Coord = Coord.fromPolar(GlobalParams.LANE_WIDTH / 2, perp);
         let newCenter: Coord = centerCoord.add(offsetVec);
-        return topCenterRect(newCenter, CAR_WIDTH, this.size, angle);
+        return topCenterRect(newCenter, GlobalParams.CAR_WIDTH, this.size, angle);
     }
 
     atDest(): void {

@@ -4,7 +4,7 @@ import { Coord } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 import { getAddressOnRoad, getCoord } from "./simulator_helpers";
 import Address from "./address";
-import {  LANE_WIDTH } from "../constants";
+import { GlobalParams } from "../constants"
 
 export default class Intersection {
     public light: TrafficLight;
@@ -25,7 +25,7 @@ export default class Intersection {
     getChord(): LineSegment {
         let road: Road = this.roads[0];
         
-        let width: number = LANE_WIDTH * 
+        let width: number = GlobalParams.LANE_WIDTH * 
             (this.roads[1].charmLanes + this.roads[1].strangeLanes);
 
         let roadAddress: Address = getAddressOnRoad(road, this.location);

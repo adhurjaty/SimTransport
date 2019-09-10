@@ -5,7 +5,7 @@ import PathInstruction from "./path_instruction";
 import PathFinder from "./path_finder";
 import { getCoord, getAddress, getRoadDistance, getDistBetweenAddresses, getDistToIntersection, getAddressOnRoad, followRoad, getDrivingDirection, getNewRoadDirection } from "./simulator_helpers";
 import { Speed } from "../primitives";
-import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
+import { GlobalParams } from "../constants"
 import { RoadDirection, otherDirection, DrivingDirection } from "../enums";
 import { Coord } from "../util";
 import Road from "../models/road";
@@ -73,7 +73,7 @@ export default class CarController {
         }
 
         let dist: number = getDistToIntersection(this.car.address, intersection);
-        return Math.max(dist - INTERSECTION_SIZE, 0);
+        return Math.max(dist - GlobalParams.INTERSECTION_SIZE, 0);
     }
 
     private getIntersectionAhead(): Intersection {
@@ -121,7 +121,7 @@ export default class CarController {
 
         // if car is so close to checkpoint that it will overshoot next time step
         if(distToStop <= this.distPerTimeStep()) {
-            speed = Speed.fromMps(distToStop / TICK_DURATION);
+            speed = Speed.fromMps(distToStop / GlobalParams.TICK_DURATION);
         }
 
         let [car, carDistance] = this.getCarAheadSameDir();
@@ -214,11 +214,11 @@ export default class CarController {
             return Infinity;
         }
 
-        return distToWaypoint - INTERSECTION_SIZE;
+        return distToWaypoint - GlobalParams.INTERSECTION_SIZE;
     }
 
     private distPerTimeStep(): number {
-        return this.car.speed.mps() * TICK_DURATION;
+        return this.car.speed.mps() * GlobalParams.TICK_DURATION;
     }
 
     private getCarAheadSameDir(): [DrivingCar, number] {
@@ -262,7 +262,7 @@ export default class CarController {
     }
 
     atIntersection(): Intersection {
-        let intAddr: Address = followRoad(this.car.address, INTERSECTION_SIZE,
+        let intAddr: Address = followRoad(this.car.address, GlobalParams.INTERSECTION_SIZE,
             this.car.direction);
         return this.world.network.getIntersectionFromAddr(intAddr);
     }

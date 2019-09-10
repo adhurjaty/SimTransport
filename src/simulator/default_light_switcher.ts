@@ -1,6 +1,6 @@
 import TrafficLight from "./traffic_light";
 import { IntersectionDirection, switchDirection } from "../enums";
-import { TICK_DURATION } from "../constants";
+import { GlobalParams } from "../constants"
 import LightSwitcher from "./light_switcher";
 
 const DURATION_THRESHOLD: number = 500;
@@ -47,6 +47,6 @@ export default class DefaultLightSwitcher implements LightSwitcher {
     }
 
     private getDurationInSeconds(): number {
-        return this.greenDuration * TICK_DURATION;
+        return this.greenDuration * GlobalParams.TICK_DURATION;
     }
 }

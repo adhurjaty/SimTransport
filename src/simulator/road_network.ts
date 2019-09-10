@@ -5,7 +5,7 @@ import { Coord } from "../util";
 import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
 import { getConnectingRoad, getRoadDistance, getAddress, getCoord } from "./simulator_helpers";
 import Address from "./address";
-import { INTERSECTION_SIZE } from "../constants";
+import { GlobalParams } from "../constants"
 
 const fillValue: number = -1;
 
@@ -176,7 +176,7 @@ export default class RoadNetwork {
             this.getIntersectionsOnRoad(addr.road);
         for (const int of intersections) {
             let loc: Coord = getCoord(addr);
-            if(getRoadDistance(addr.road, loc, int.location) <= INTERSECTION_SIZE) {
+            if(getRoadDistance(addr.road, loc, int.location) <= GlobalParams.INTERSECTION_SIZE) {
                 return int;
             }
         }

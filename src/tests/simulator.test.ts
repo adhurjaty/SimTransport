@@ -11,7 +11,7 @@ import Address from "../simulator/address";
 import PathFinder from "../simulator/path_finder";
 import PathInstruction from "../simulator/path_instruction";
 import { RoadDirection, DrivingDirection, IntersectionDirection } from "../enums";
-import { TICK_DURATION, INTERSECTION_SIZE } from "../constants";
+import { GlobalParams } from "../constants"
 import { Speed, Random } from "../primitives";
 import CarController from "../simulator/car_controller";
 import LightSwitcher from "../simulator/light_switcher";
@@ -340,7 +340,7 @@ test('drive along simple road', () => {
     drivingCar.setSpeed(new Speed(40));
     
     let timeToEnd = 217.26
-    for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
+    for (let _ = 0; _ < Math.floor(timeToEnd / GlobalParams.TICK_DURATION); _++) {
         drivingCar.drive();
     }
 
@@ -361,7 +361,7 @@ test('drive along simple road strange direction', () => {
     drivingCar.setSpeed(new Speed(40));
     
     let timeToEnd = 217.26 // seconds to get to end of road;
-    for (let _ = 0; _ < Math.floor(timeToEnd / TICK_DURATION); _++) {
+    for (let _ = 0; _ < Math.floor(timeToEnd / GlobalParams.TICK_DURATION); _++) {
         drivingCar.drive();
     }
 
@@ -531,7 +531,7 @@ test('car stops at stop light', () => {
 
     runSimulation(world, 30);
 
-    expect(car.address.distance).toBeCloseTo(.1 - INTERSECTION_SIZE);
+    expect(car.address.distance).toBeCloseTo(.1 - GlobalParams.INTERSECTION_SIZE);
     expect(car.address.road.id).toBe(6);
 });
 
@@ -559,9 +559,9 @@ test('multiple cars stop at stop light', () => {
 
     runSimulation(world, 30);
 
-    expect(cars[0].address.distance).toBeCloseTo(.1 - INTERSECTION_SIZE);
+    expect(cars[0].address.distance).toBeCloseTo(.1 - GlobalParams.INTERSECTION_SIZE);
     expect(cars[0].address.road.id).toBe(6);
-    expect(cars[1].address.distance).toBeCloseTo(.1 - INTERSECTION_SIZE - cars[0].size);
+    expect(cars[1].address.distance).toBeCloseTo(.1 - GlobalParams.INTERSECTION_SIZE - cars[0].size);
     expect(cars[1].address.road.id).toBe(6);
 });
 
@@ -759,7 +759,7 @@ test('right on red car waits', () => {
     expect(cars[0].address.road.id).toBe(1);
     expect(cars[1].address.road.id).toBe(1);
     expect(cars[1].address.distance - cars[0].address.distance).toBeCloseTo(.033
-        + INTERSECTION_SIZE, 3);
+        + GlobalParams.INTERSECTION_SIZE, 3);
 });
 
 test('get world bounds', () => {
@@ -864,7 +864,7 @@ function* circleYield(lst: number[]): IterableIterator<number> {
 }
 
 function runSimulation(world: World, time: number): void {
-    for (let _ = 0; _ < time / TICK_DURATION; _++) {
+    for (let _ = 0; _ < time / GlobalParams.TICK_DURATION; _++) {
         world.tick();
     }
 }
