@@ -11,33 +11,25 @@ import { createMap, TrippedTestSwitcher, defaultCars } from "./test_exports";
 export default function makeTestWorld(): World {
     let map: RoadMap = createMap();
     let network: RoadNetwork = new RoadNetwork(map);
-
-    let int: Intersection = network.intersections[6];
-    let switcher: TrippedTestSwitcher = new TrippedTestSwitcher(int.light,
-        IntersectionDirection.First);
-
-    int.light.setSwitcher(switcher);
+    
     let addresses: Address[] = [
-        new Address(map.roads[6], .08),
-        new Address(map.roads[1], .08),
-        new Address(map.roads[6], .12),
-        new Address(map.roads[6], .14),
+        new Address(map.roads[1], .25),
+        new Address(map.roads[1], .35)
     ];
+    let dests: Address[] = [
+        new Address(map.roads[8], .15),
+        new Address(map.roads[8], .05),
+    ];
+    let cars: DrivingCar[] = Array.from(defaultCars(2)).map((c, i) => 
+        new DrivingCar(c, addresses[i], <RoadDirection>i));
 
-    let cars: DrivingCar[] = Array.from(defaultCars(4)).map((c, i) => {
-        let dir: RoadDirection = <RoadDirection>(i / 2);
-        let dc = new DrivingCar(c, addresses[i], dir);
-        return dc;
-    });
-    
-    let world: World = new World(network)
+    let world: World = new World(network);
     world.setCars(cars);
-    
-    cars.forEach(c => {
+
+    cars.forEach((c, i) => {
         c.setController(new CarController(c, world));
-        c.setDestination(new Address(map.roads[1], 1));
+        c.setDestination(dests[i]);
     });
-    cars[0].setDestination(new Address(map.roads[1], .001));
     
     return world;
 }

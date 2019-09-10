@@ -821,6 +821,34 @@ test('follow road to end', () => {
     expect(endAddr.distance).toBeCloseTo(2);
 });
 
+test('two left turns opposed', () => {
+    let addresses: Address[] = [
+        new Address(map.roads[1], .25),
+        new Address(map.roads[1], .35)
+    ];
+    let dests: Address[] = [
+        new Address(map.roads[8], .15),
+        new Address(map.roads[8], .05),
+    ];
+    let cars: DrivingCar[] = Array.from(defaultCars(2)).map((c, i) => 
+        new DrivingCar(c, addresses[i], <RoadDirection>i));
+
+    let world: World = new World(network);
+    world.setCars(cars);
+
+    cars.forEach((c, i) => {
+        c.setController(new CarController(c, world));
+        c.setDestination(dests[i]);
+    });
+
+    runSimulation(world, 100);
+
+    expect(cars[0].address.road.id).toBe(8);
+    expect(cars[1].address.road.id).toBe(8);
+    expect(cars[0].address.distance).toBeCloseTo(.15);
+    expect(cars[1].address.distance).toBeCloseTo(.05);
+});
+
 function makeRandomReturn(lst: number[]): void {
     let buffer: IterableIterator<number> = circleYield(lst);
     Random.next = () => buffer.next().value;
