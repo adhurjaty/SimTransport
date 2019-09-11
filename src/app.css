@@ -1,0 +1,10 @@
+div.debug-controls {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: row;
+    height: 60px;
+}
+
+div.player {
+    height: 100px;
+}
