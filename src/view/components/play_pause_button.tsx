@@ -2,6 +2,8 @@ import React, { Component } from "react";
 
 interface PlayerProps {
     size: number;
+    playing: boolean;
+    onToggle?: () => void;
 }
 
 interface PlayerState {
@@ -9,10 +11,14 @@ interface PlayerState {
 }
 
 export default class Player extends Component<PlayerProps, PlayerState> {
+    public static defaultProps = {
+        playing: true
+    };
+
     constructor(props: PlayerProps) {
         super(props);
         this.state = {
-            playing: false
+            playing: this.props.playing
         };
     }
 
@@ -21,6 +27,9 @@ export default class Player extends Component<PlayerProps, PlayerState> {
             this.setState({ playing: true });
         } else {
             this.setState({ playing: false });
+        }
+        if(this.props.onToggle) {
+            this.props.onToggle();
         }
     };
 
