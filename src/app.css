@@ -5,6 +5,10 @@ div.debug-controls {
     height: 40px;
 }
 
+div.num-bux {
+    height: 100%;
+}
+
 /* div.player {
     height: 100px;
 } */

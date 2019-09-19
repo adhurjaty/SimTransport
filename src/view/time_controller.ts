@@ -4,8 +4,8 @@ import { GlobalParams } from "../constants";
 export default class TimeController {
     private defaultTickDuration: number;
     private handle: number;
-    private speedRatio: number = 1;
     
+    public speedRatio: number = 1;
     public playing: boolean = false;
     
     constructor(private window: Window, private world: World) {

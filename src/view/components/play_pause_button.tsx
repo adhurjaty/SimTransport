@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
 interface PlayerProps {
-    size: number;
     playing: boolean;
     onToggle?: () => void;
 }
@@ -10,7 +9,7 @@ interface PlayerState {
     playing: boolean;
 }
 
-export default class Player extends Component<PlayerProps, PlayerState> {
+export default class PlayPauseButton extends Component<PlayerProps, PlayerState> {
     public static defaultProps = {
         playing: true
     };

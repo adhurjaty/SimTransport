@@ -5,8 +5,9 @@ import WorldBuilder from './simulator/world_builder';
 import World from './simulator/world';
 import { GlobalParams } from './constants'
 import makeTestWorld from './tests/test_world_builder';
-import Player from './view/components/play_pause_button';
+import PlayPauseButton from './view/components/play_pause_button';
 import TimeController from './view/time_controller';
+import { SpeedRatioSetter } from './view/components/speed_ratio_setter';
 
 const DEBUG = true;
 
@@ -33,9 +34,10 @@ ReactDOM.render(
             <SimCanvas width={800} height={600} world={world} />
         </div>
         <div className="row debug-controls">
-            <Player size={50} 
-                    playing={timeController.playing} 
-                    onToggle={timeController.toggleRunSimulation.bind(timeController)} />
+            <PlayPauseButton playing={timeController.playing} 
+                onToggle={timeController.toggleRunSimulation.bind(timeController)} />
+            <SpeedRatioSetter ratio={timeController.speedRatio}
+                onChange={timeController.setSimulationRate.bind(timeController)} /> 
         </div>
     </div>
 , document.getElementById("sim-canvas"));
