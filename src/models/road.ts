@@ -1,6 +1,5 @@
-import Coord from "./coord";
 import { LineSegment } from "../interfaces/LineSegment";
-import { tipTailGrouping } from "../util";
+import { tipTailGrouping, Coord } from "../util";
 
 export default class Road {
     constructor(public id: number, public path: Coord[], public charmLanes: number, 

@@ -10,7 +10,7 @@ export default class CarView extends ViewElement {
 
     constructor(private car: DrivingCar, canvas: ICanvas) {
         super(canvas);
-        this.car.setOnAtDest(this.turnGreen);
+        this.car.setOnAtDest(this.turnRed.bind(this));
     }
 
     draw(ctx: CanvasRenderingContext2D, viewRect: Rectangle): void {
@@ -21,7 +21,7 @@ export default class CarView extends ViewElement {
         drawFilledPolygon(verts, ctx);
     }
 
-    turnGreen(): void {
+    turnRed(): void {
         this.fillStyle = 'red';
     }
 }

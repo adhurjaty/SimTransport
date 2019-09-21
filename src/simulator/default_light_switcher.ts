@@ -3,7 +3,7 @@ import { IntersectionDirection, switchDirection } from "../enums";
 import { GlobalParams } from "../constants"
 import LightSwitcher from "./light_switcher";
 
-const DURATION_THRESHOLD: number = 500;
+const DURATION_THRESHOLD: number = 30;
 
 export default class DefaultLightSwitcher implements LightSwitcher {
     private greenDuration: number = 0;  // in time ticks
@@ -29,7 +29,9 @@ export default class DefaultLightSwitcher implements LightSwitcher {
     }
 
     private shouldSwitch(): boolean {
-        if(this.carsWaiting > 0 && this.waitingDuration >= DURATION_THRESHOLD) {
+        if(this.carsWaiting > 0 && this.waitingDuration * GlobalParams.TICK_DURATION
+            >= DURATION_THRESHOLD)
+        {
             return true;
         }
 
@@ -44,9 +46,5 @@ export default class DefaultLightSwitcher implements LightSwitcher {
 
     carSensorTripped(dir: IntersectionDirection): void {
         this.carsWaiting++;
-    }
-
-    private getDurationInSeconds(): number {
-        return this.greenDuration * GlobalParams.TICK_DURATION;
     }
 }
