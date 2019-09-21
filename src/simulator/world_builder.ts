@@ -86,6 +86,11 @@ export default class WorldBuilder {
             let car: DrivingCar = new DrivingCar(c, addr, dir);
             let controller: CarController = new CarController(car, world);
             car.setController(controller);
+            car.setOnAtDest(() => {
+                let [addr, dir] = this.generateRandomAddressDir(network);
+                car.direction = dir;
+                car.setDestination(addr);
+            });
             return car;
         });
         world.setCars(worldCars);
