@@ -15,10 +15,12 @@ export default class TimeController {
 
     setSimulationRate(ratio: number): void {
         GlobalParams.TICK_DURATION = ratio * this.defaultTickDuration;
-        this.window.clearInterval(this.handle);
         this.speedRatio = ratio;
-        this.handle = this.window.setInterval(this.world.tick.bind(this.world),
-            this.defaultTickDuration);
+        if(this.playing) {
+            this.window.clearInterval(this.handle);
+            this.handle = this.window.setInterval(this.world.tick.bind(this.world),
+                this.defaultTickDuration);
+        }
     }
 
     toggleRunSimulation(): void {
@@ -33,8 +35,8 @@ export default class TimeController {
         if(this.playing) {
             return;
         }
-        this.setSimulationRate(this.speedRatio);
         this.playing = true;
+        this.setSimulationRate(this.speedRatio);
     }
 
     pauseSimulation(): void {

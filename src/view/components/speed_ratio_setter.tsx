@@ -33,20 +33,17 @@ export class SpeedRatioSetter extends React.Component<Props, State> {
 
     render() {
         return (
-            <div className="num-box form-group row">
-                <label htmlFor="example-number-input" 
-                    className="col-3 col-form-label">
+            <div className="label-grid">
+                <label htmlFor="example-number-input">
                     Simulation Rate
                 </label>
-                <div className="col-3">
-                    <input id="example-number-input"
-                        className="form-control" 
-                        type="number"
-                        value={this.state.ratio}
-                        min="0.0"
-                        max="10.0"
-                        onChange={this.onChange} />
-                </div>
+                <input id="example-number-input"
+                    className="form-control" 
+                    type="number"
+                    value={this.state.ratio}
+                    min="0.0"
+                    max="10.0"
+                    onChange={this.onChange} />
             </div>
         );
     }
