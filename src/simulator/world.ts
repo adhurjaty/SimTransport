@@ -30,6 +30,10 @@ export default class World {
         this.cars = cars;
     }
 
+    setPassengers(passengers: Passenger[]) {
+        this.passengers = passengers;
+    }
+
     tick() {
         this.lightTripper.tripSensors();
         this.cars.forEach(car => {

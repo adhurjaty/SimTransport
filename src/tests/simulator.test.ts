@@ -16,8 +16,10 @@ import { Speed, Random } from "../primitives";
 import CarController from "../simulator/car_controller";
 import LightSwitcher from "../simulator/light_switcher";
 import TrafficLight from "../simulator/traffic_light";
-import { Rectangle, Coord } from "../util";
-import { AutoSwitcher, SimpleLightSwitcher, TrippedTestSwitcher, createMap, defaultCars } from "./test_exports";
+import { Rectangle, Coord, last } from "../util";
+import { AutoSwitcher, SimpleLightSwitcher, TrippedTestSwitcher, createMap, defaultCars, defaultCar } from "./test_exports";
+import Passenger from "../simulator/passenger";
+import UberController from "../simulator/uber_controller";
 
 let map: RoadMap = createMap();
 let network: RoadNetwork = new RoadNetwork(map);
@@ -849,8 +851,46 @@ test('two left turns opposed', () => {
     expect(cars[1].address.distance).toBeCloseTo(.05);
 });
 
-test('uber finds passenger', () => {
+test('find closest path', () => {
+    let start: Coord = new Coord(.11, .1);
+    let dests: Coord[] = [
+        new Coord(.5, .1),
+        new Coord(.01, 0),
+        new Coord(1, 1),
+        new Coord(.1, .2)
+    ];
 
+    let finder: PathFinder = new PathFinder(network);
+    let path: PathInstruction[] = finder.getClosestPath(start, dests);
+
+    let chosenDest: Coord = last(path).location;
+    expect(chosenDest.equals(dests[3])).toBeTruthy();
+});
+
+test('uber finds passenger', () => {
+    let car: DrivingCar = new DrivingCar(defaultCar(), 
+        new Address(map.roads[2], .11), RoadDirection.Charm);
+    let passenger: Passenger = new Passenger(new Address(map.roads[3], .22),
+        new Address(map.roads[9], .03));
+    
+    let world: World = new World(network);
+    world.setCars([car]);
+    world.setPassengers([passenger]);
+
+    car.setController(new UberController(car, world));
+    car.setOnAtDest(() => {
+        throw new Error("Test passed");
+    });
+
+    try {
+        runSimulation(world, 100);
+        expect(true).toBeFalsy();   // should error out
+    } catch(e) {
+        expect(e.message).toEqual("Test passed");
+    }
+
+    expect(car.address.road.id).toBe(3);
+    expect(car.address.distance).toBeCloseTo(.22);
 });
 
 test('uber wanders', () => {

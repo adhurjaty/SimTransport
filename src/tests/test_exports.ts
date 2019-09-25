@@ -13,6 +13,10 @@ export function* defaultCars(num: number): IterableIterator<Car> {
     }
 }
 
+export function defaultCar(): Car {
+    return defaultCars(1).next().value;
+}
+
 export function createMap(): RoadMap {
     let creator: MapCreator = new MapCreator(2, .1);
     return creator.createMap(5);

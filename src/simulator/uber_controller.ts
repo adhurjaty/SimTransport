@@ -31,10 +31,10 @@ export default class UberController extends CarController {
     private findPassenger(): Address | null {
         let passengers: Passenger[] = this.world.passengers;
         if(!passengers) {
-            return null;
+            return undefined;
         }
 
-        return null;
+        return ;
     }
 
     private wanderDest(): Address {

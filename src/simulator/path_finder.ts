@@ -21,32 +21,33 @@ const TURN_COSTS: {[k: number]: number; } = {
 export default class PathFinder {
     private frontier: PriorityQueue<AStarNodeElement>;
     private intersectionCost: Map<number, number>;
-    private end: Coord;
-    private endAddr: Address;
+    private ends: Coord[];
+    private endAddrs: Address[];
 
     constructor(private network: RoadNetwork) {
 
     }
 
     getPath(source: Coord, dest: Coord): PathInstruction[] {
+        return this.getClosestPath(source, [dest]);
+    }
+
+    getClosestPath(source: Coord, dests: Coord[]): PathInstruction[] {
         this.frontier = new PriorityQueue<AStarNodeElement>((a) => a.value);
         this.intersectionCost = new Map<number, number>();
-        this.end = dest;
-        this.endAddr = getAddress(this.network, dest);
+        this.ends = dests;
+        this.endAddrs = dests.map(dest => getAddress(this.network, dest));
 
         let startAddr: Address = getAddress(this.network, source);
 
         let startIntersections: IterableIterator<Intersection> = 
             this.network.getIntersectionsOnRoad(startAddr.road);
-        let endIntersections: Intersection[] = Array.from(
-            this.network.getIntersectionsOnRoad(this.endAddr.road));
+        let endIntersections: Intersection[][] = 
+            this.getIntersectionMapping(this.endAddrs);
 
         // edge-case: if the source and dest are on the same road - just follow the road
-        if(startAddr.road.id == this.endAddr.road.id) {
-            let instruction: PathInstruction = this.createInstruction(startAddr.road, 
-                source, dest);
-            this.frontier.push(new AStarNodeElement(instruction.distance,
-                instruction.distance, [instruction], undefined));
+        for (const nodeElement of this.getStraightShots(startAddr, source)) {
+            this.frontier.push(nodeElement);
         }
 
         for (const int of startIntersections) {
@@ -57,12 +58,15 @@ export default class PathFinder {
             let curNode: AStarNodeElement = this.frontier.pop();
             let curIntersection: Intersection = curNode.intersection;
 
-            if(last(curNode.path).location.equals(this.end)) {
+            if(this.atDest(last(curNode.path))) {
                 return curNode.path;
             }
-            if(endIntersections.indexOf(curIntersection) != -1 && curNode != undefined) {
-                this.visitDest(curIntersection, curNode);
-                continue;
+            if(curNode != undefined) {
+                let endIdxs = this.adjacentDestIdxs(endIntersections, curIntersection);
+                for (const idx of endIdxs) {
+                    this.visitDest(curIntersection, curNode, this.endAddrs[idx],
+                        this.ends[idx]);
+                }
             }
 
             let neighbors: IterableIterator<Intersection> = 
@@ -75,6 +79,35 @@ export default class PathFinder {
         }
 
         throw new Error('No path from source to destination');
+    }
+
+    private getIntersectionMapping(addrs: Address[]): Intersection[][] 
+    {
+        return addrs.map(addr => {
+            return Array.from(this.network.getIntersectionsOnRoad(addr.road));
+        });
+    }
+
+    private *getStraightShots(startAddr: Address, source: Coord): IterableIterator<AStarNodeElement> {
+        let i: number = 0;
+        for (const endAddr of this.endAddrs) {
+            if(startAddr.road.id == endAddr.road.id) {
+                let instruction: PathInstruction = this.createInstruction(startAddr.road, 
+                    source, this.ends[i]);
+                yield new AStarNodeElement(instruction.distance,
+                    instruction.distance, [instruction], undefined);
+            }
+
+            i++;
+        }
+    }
+
+    private atDest(pathEnd: PathInstruction): boolean {
+        return this.ends.find(end => pathEnd.location.equals(end)) != undefined;
+    }
+
+    private adjacentDestIdxs(endInts: Intersection[][], intersection: Intersection): number[] {
+        return endInts.map(eis => eis.indexOf(intersection)).filter(x => x > -1);
     }
 
     private visitNode(road: Road, node: Intersection, source: Coord,
@@ -111,9 +144,11 @@ export default class PathFinder {
         return new PathInstruction(road, direction, d, dest);
     }
 
-    private visitDest(int: Intersection, node: AStarNodeElement) {
-        let instruction: PathInstruction = this.createInstruction(this.endAddr.road,
-            int.location, this.end);
+    private visitDest(int: Intersection, node: AStarNodeElement, endAddr: Address,
+        end: Coord) 
+    {
+        let instruction: PathInstruction = this.createInstruction(endAddr.road,
+            int.location, end);
         let totalCost = instruction.distance + node.cost + INSTRUCTION_COST;
         let path: PathInstruction[] = node.path.concat([instruction]);
 
@@ -121,7 +156,7 @@ export default class PathFinder {
     }
 
     private distHeuristic(source: Coord): number {
-        return source.distance(this.end);
+        return Math.min(...this.ends.map(end => source.distance(end)));
     }
 }
 
