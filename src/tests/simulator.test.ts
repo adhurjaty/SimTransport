@@ -849,6 +849,22 @@ test('two left turns opposed', () => {
     expect(cars[1].address.distance).toBeCloseTo(.05);
 });
 
+test('uber finds passenger', () => {
+
+});
+
+test('uber wanders', () => {
+
+});
+
+test('uber finds closest passenger', () => {
+
+});
+
+test('uber delivers passenger', () => {
+
+});
+
 function makeRandomReturn(lst: number[]): void {
     let buffer: IterableIterator<number> = circleYield(lst);
     Random.next = () => buffer.next().value;

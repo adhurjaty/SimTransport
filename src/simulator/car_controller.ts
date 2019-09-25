@@ -14,7 +14,7 @@ import Intersection from "./intersection";
 export default class CarController {
     public path: PathInstruction[];
 
-    constructor(private car: DrivingCar, private world: World) {
+    constructor(private car: DrivingCar, protected world: World) {
 
     }
 

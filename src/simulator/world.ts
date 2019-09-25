@@ -10,6 +10,7 @@ import { otherDirection } from "../enums";
 import LightTripper from "./light_tripper";
 import { Rectangle, flatten } from "../util";
 import { Coord } from "../util";
+import Passenger from "./passenger";
 
 export default class World {
     private lightTripper: LightTripper; 
@@ -17,6 +18,7 @@ export default class World {
     public map: RoadMap
     public lights: TrafficLight[];
     public cars: DrivingCar[];
+    public passengers: Passenger[];
 
     constructor(public network: RoadNetwork) {
         this.map = network.map;
