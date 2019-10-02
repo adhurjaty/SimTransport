@@ -7,4 +7,9 @@ export default class PathInstruction {
         public distance: number, public location: Coord) {
 
     }
+
+    copy(): PathInstruction {
+        return new PathInstruction(this.road, this.direction, this.distance, 
+            this.location.copy());
+    }
 }

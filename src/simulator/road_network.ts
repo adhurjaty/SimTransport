@@ -123,7 +123,7 @@ export default class RoadNetwork {
     }
 
     private getNearestIntsOnRoads(roads: Road[], intersections: Intersection[],
-        location: Coord)
+        location: Coord): Intersection[]
     {
         let results: Intersection[] = [];
         for(const road of roads) {
@@ -170,6 +170,8 @@ export default class RoadNetwork {
             }
         }
     }
+
+    
 
     getIntersectionFromAddr(addr: Address): Intersection {
         let intersections: IterableIterator<Intersection> = 

@@ -1,7 +1,7 @@
 import RoadNetwork from "./road_network";
 import { Coord } from "../util";
 import Address from "./address";
-import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection } from "./simulator_helpers";
+import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection, getCoord } from "./simulator_helpers";
 import Intersection from "./intersection";
 import { PriorityQueue, last } from "../util";
 import Road from "../models/road";
@@ -19,11 +19,6 @@ const TURN_COSTS: {[k: number]: number; } = {
 };
 
 export default class PathFinder {
-    private frontier: PriorityQueue<AStarNodeElement>;
-    private intersectionCost: Map<number, number>;
-    private ends: Coord[];
-    private endAddrs: Address[];
-
     constructor(private network: RoadNetwork) {
 
     }
@@ -33,137 +28,177 @@ export default class PathFinder {
     }
 
     getClosestPath(source: Coord, dests: Coord[]): PathInstruction[] {
-        this.frontier = new PriorityQueue<AStarNodeElement>((a) => a.value);
-        this.intersectionCost = new Map<number, number>();
-        this.ends = dests;
-        this.endAddrs = dests.map(dest => getAddress(this.network, dest));
+        let frontier: PriorityQueue<PrelimPathState> = 
+            new PriorityQueue<PrelimPathState>((a) => a.value);
+        let visited: AStarNode[] = [];
+        let ends: DestNode[] = dests.map(d => 
+            new DestNode(Location.fromCoord(this.network, d)));
+        let startNode: StartNode = new StartNode(Location.fromCoord(this.network, source), 
+            this.network);
 
-        let startAddr: Address = getAddress(this.network, source);
+        frontier.push(new PrelimPathState(startNode, ends));
+        visited.push(startNode);
 
-        let startIntersections: IterableIterator<Intersection> = 
-            this.network.getIntersectionsOnRoad(startAddr.road);
-        let endIntersections: Intersection[][] = 
-            this.getIntersectionMapping(this.endAddrs);
+        while(!frontier.empty()) {
+            let curState = frontier.pop();
 
-        // edge-case: if the source and dest are on the same road - just follow the road
-        for (const nodeElement of this.getStraightShots(startAddr, source)) {
-            this.frontier.push(nodeElement);
-        }
-
-        for (const int of startIntersections) {
-            this.visitNode(startAddr.road, int, source);
-        }
-
-        while(!this.frontier.empty()) {
-            let curNode: AStarNodeElement = this.frontier.pop();
-            let curIntersection: Intersection = curNode.intersection;
-
-            if(this.atDest(last(curNode.path))) {
-                return curNode.path;
+            if(curState.isGoal()) {
+                return curState.path;
             }
-            if(curNode != undefined) {
-                let endIdxs = this.adjacentDestIdxs(endIntersections, curIntersection);
-                for (const idx of endIdxs) {
-                    this.visitDest(curIntersection, curNode, this.endAddrs[idx],
-                        this.ends[idx]);
+
+            for (const node of curState.node.getNeighbors(ends)) {
+                if(visited.find(x => x.location.coord.equals(node.location.coord))) {
+                    continue;
                 }
-            }
-
-            let neighbors: IterableIterator<Intersection> = 
-                this.network.getConnectedIntersections(curIntersection);
-            for (const neighbor of neighbors) {
-                let connectingRoad: Road = getConnectingRoad(curIntersection, neighbor);
-                this.visitNode(connectingRoad, neighbor, curIntersection.location, 
-                    curNode);
+                let newState = curState.copy();
+                newState.add(node);
+                frontier.push(newState);
+                visited.push(node);
             }
         }
 
         throw new Error('No path from source to destination');
     }
+}
 
-    private getIntersectionMapping(addrs: Address[]): Intersection[][] 
-    {
-        return addrs.map(addr => {
-            return Array.from(this.network.getIntersectionsOnRoad(addr.road));
-        });
+class PrelimPathState {
+    public value: number; 
+    public cost: number;
+    public path: PathInstruction[];
+
+    constructor(public node: AStarNode, public dests: DestNode[]) {
+        this.path = [];
+        this.cost = 0;
+        this.value = this.distHeuristic(node);
     }
 
-    private *getStraightShots(startAddr: Address, source: Coord): IterableIterator<AStarNodeElement> {
-        let i: number = 0;
-        for (const endAddr of this.endAddrs) {
-            if(startAddr.road.id == endAddr.road.id) {
-                let instruction: PathInstruction = this.createInstruction(startAddr.road, 
-                    source, this.ends[i]);
-                yield new AStarNodeElement(instruction.distance,
-                    instruction.distance, [instruction], undefined);
-            }
+    copy(): PrelimPathState {
+        let output = new PrelimPathState(this.node, this.dests);
+        output.value = this.value;
+        output.cost = this.cost;
+        output.path = this.path.map(x => x.copy());
 
-            i++;
+        return output;
+    }
+
+    add(newNode: AStarNode): void {
+        let instruction: PathInstruction = this.createInstruction(newNode);
+        this.cost += instruction.distance;
+        if(this.path.length > 1) {
+            let lastInst: PathInstruction = last(this.path);
+            let turn: DrivingDirection = getDrivingDirection(instruction, lastInst);
+            this.cost += TURN_COSTS[turn];
         }
+        this.path.push(instruction);
+
+        let heuristic: number = this.distHeuristic(newNode);
+        this.value = this.cost + heuristic;
+
+        this.node = newNode;
     }
 
-    private atDest(pathEnd: PathInstruction): boolean {
-        return this.ends.find(end => pathEnd.location.equals(end)) != undefined;
+    private createInstruction(newNode: AStarNode): PathInstruction {
+        let connectingRoad: Road = this.node.getLinks().find(r => 
+            newNode.getLinks().find(nr => r.id == nr.id));
+        let d: number = getRoadDistance(connectingRoad, this.node.location.coord,
+            newNode.location.coord);
+        let direction: RoadDirection = getRoadDirection(connectingRoad,
+            this.node.location.coord, newNode.location.coord);
+        return new PathInstruction(connectingRoad, direction, d, newNode.location.coord);
     }
 
-    private adjacentDestIdxs(endInts: Intersection[][], intersection: Intersection): number[] {
-        return endInts.map(eis => eis.indexOf(intersection)).filter(x => x > -1);
+    private distHeuristic(newNode: AStarNode): number {
+        return Math.min(...this.dests.map(dest => 
+            newNode.location.coord.distance(dest.location.coord)));
     }
 
-    private visitNode(road: Road, node: Intersection, source: Coord,
-        curNode: AStarNodeElement = undefined): AStarNodeElement 
-    {
-        let instruction: PathInstruction = this.createInstruction(road, source, 
-            node.location);
-        let totalCost: number = instruction.distance;
-        if(curNode) {
-            totalCost += curNode.cost;
-            let turn: DrivingDirection = getDrivingDirection(instruction, 
-                last(curNode.path));
-            totalCost += TURN_COSTS[turn];
-        }
-        let path: PathInstruction[] = curNode ? curNode.path.concat([instruction]) 
-            : [instruction];
-
-        let intID: number = node.id;
-        if(totalCost < (this.intersectionCost.get(intID) || Infinity)) {
-            let h: number = this.distHeuristic(source);
-            let newNode = new AStarNodeElement(totalCost + h, totalCost, path, node);
-            this.frontier.push(newNode);
-            this.intersectionCost.set(node.id, 
-                totalCost);
-            return newNode;
-        }
-
-        return undefined;
-    }
-
-    private createInstruction(road: Road, source: Coord, dest: Coord): PathInstruction {
-        let d: number = getRoadDistance(road, source, dest);
-        let direction: RoadDirection = getRoadDirection(road, source, dest);
-        return new PathInstruction(road, direction, d, dest);
-    }
-
-    private visitDest(int: Intersection, node: AStarNodeElement, endAddr: Address,
-        end: Coord) 
-    {
-        let instruction: PathInstruction = this.createInstruction(endAddr.road,
-            int.location, end);
-        let totalCost = instruction.distance + node.cost + INSTRUCTION_COST;
-        let path: PathInstruction[] = node.path.concat([instruction]);
-
-        this.frontier.push(new AStarNodeElement(totalCost, totalCost, path, int));
-    }
-
-    private distHeuristic(source: Coord): number {
-        return Math.min(...this.ends.map(end => source.distance(end)));
+    isGoal(): boolean {
+        return this.node instanceof DestNode; 
     }
 }
 
-class AStarNodeElement {
-    constructor(public value: number, public cost: number, 
-        public path: PathInstruction[], public intersection: Intersection) 
-    {
+interface AStarNode {
+    location: Location;
+    getNeighbors(dests: AStarNode[]): AStarNode[];
+    getLinks(): Road[];
+}
 
+function getNeighborsOnRoad(road: Road, network: RoadNetwork, dests: AStarNode[]): 
+    AStarNode[] 
+{
+    let intersections: Intersection[] = Array.from(network.getIntersectionsOnRoad(road));
+        
+    let nodes: AStarNode[] = intersections.map(x => 
+        new IntersectionNode(x, network));
+    
+    let destsOnRoad = dests.filter(d => road.id == d.location.address.road.id);
+    nodes = nodes.concat(destsOnRoad.map(x => 
+        new DestNode(x.location)));
+
+    // TODO: fix the fact that this doesn't check for one-way streets
+
+    return nodes;
+}
+
+class IntersectionNode {
+    public location: Location;
+    constructor(private intersection: Intersection, private network: RoadNetwork) {
+        this.location = Location.fromCoord(network, intersection.location);
+    }
+
+    getNeighbors(dests: AStarNode[]): AStarNode[] {
+        return this.intersection.roads.reduce((lst, road) => {
+            return lst.concat(getNeighborsOnRoad(road, this.network, dests));
+        }, []);
+    }
+
+    getLinks(): Road[] {
+        return this.intersection.roads;
+    }
+}
+
+class DestNode {
+    constructor(public location: Location) {
+
+    }
+
+    getNeighbors(dests: AStarNode[]): AStarNode[] {
+        return [];
+    }
+
+    getLinks(): Road[] {
+        return [this.location.address.road];
+    }
+}
+
+class StartNode {
+    constructor(public location: Location, private network: RoadNetwork) {
+    }
+
+    getNeighbors(dests: AStarNode[]): AStarNode[] {
+        return getNeighborsOnRoad(this.location.address.road, this.network, dests);
+    }
+
+    getLinks(): Road[] {
+        return [this.location.address.road];
+    }
+}
+
+
+class Location {
+    static fromCoord(network: RoadNetwork, coord: Coord): Location {
+        let addr: Address = getAddress(network, coord);
+        return new Location(addr, coord);
+    }
+
+    static fromAddress(addr: Address): Location {
+        let coord: Coord = getCoord(addr)
+        return new Location(addr, coord);
+    }
+
+    constructor(public address: Address, public coord: Coord) {}
+
+    copy(): Location {
+        return Location.fromAddress(this.address);
     }
 }

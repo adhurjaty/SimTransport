@@ -291,6 +291,10 @@ export class Coord {
     magnitude(): number {
         return Math.sqrt(this.x**2 + this.y**2);
     }
+
+    copy(): Coord {
+        return new Coord(this.x, this.y);
+    }
 }
 
 export function within(a: number, b: number, bound: number = 0): boolean {

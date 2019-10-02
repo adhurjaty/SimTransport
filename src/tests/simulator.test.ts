@@ -237,7 +237,7 @@ test('find simple path', () => {
 
     let expectedPath: PathInstruction[] = [
         new PathInstruction(map.roads[8], RoadDirection.Strange, .04, new Coord(.3, .4)),
-        new PathInstruction(map.roads[4], RoadDirection.Strange, .1, new Coord(.1, .4)),
+        new PathInstruction(map.roads[4], RoadDirection.Strange, .2, new Coord(.1, .4)),
         new PathInstruction(map.roads[6], RoadDirection.Strange, .37, dest),
     ]
 
