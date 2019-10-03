@@ -1,4 +1,4 @@
-import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect, scaleRect, padRect } from "../util";
+import { tipTailGrouping, segmentsIntersect, isPointOnLine, PriorityQueue, getSortedSignChangeIndices, dotProduct90CCW, flatten, topCenterRect, scaleRect, padRect, setIntersection, union } from "../util";
 import { Coord } from "../util";
 import { LineSegment } from "../interfaces/LineSegment";
 
@@ -221,4 +221,32 @@ test('pad tilted square', () => {
         expect(p.x).toBeCloseTo(e.x);
         expect(p.y).toBeCloseTo(e.y);
     }
+});
+
+class CompareObj {
+    constructor(public num: number){}
+
+    equals(other: CompareObj) {
+        return this.num == other.num;
+    }
+}
+
+test('basic object intersection', () => {
+    let firstSet: CompareObj[] = [2, 3, 5, 6, 7, 8].map(x => new CompareObj(x));
+    let secondSet: CompareObj[] = [3, 6, 5, 9, 8, 11, 10].map(x => new CompareObj(x));
+
+    let int: CompareObj[] = setIntersection(firstSet, secondSet);
+    let results: number[] = int.map(x => x.num);
+
+    expect(results).toEqual([3, 5, 6, 8]);
+});
+
+test('basic object union', () => {
+    let firstSet: CompareObj[] = [2, 3, 5, 6, 7, 8].map(x => new CompareObj(x));
+    let secondSet: CompareObj[] = [3, 6, 5, 9, 8, 11, 10].map(x => new CompareObj(x));
+
+    let un: CompareObj[] = union(firstSet, secondSet);
+    let results: number[] = un.map(x => x.num);
+
+    expect(results).toEqual([2, 3, 5, 6, 7, 8, 9, 11, 10]);
 });

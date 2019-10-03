@@ -1,7 +1,7 @@
 import RoadNetwork from "./road_network";
 import { Coord } from "../util";
 import Address from "./address";
-import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection, getCoord } from "./simulator_helpers";
+import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection, getCoord, getAddressOnRoad } from "./simulator_helpers";
 import Intersection from "./intersection";
 import { PriorityQueue, last } from "../util";
 import Road from "../models/road";
@@ -123,19 +123,18 @@ interface AStarNode {
     getLinks(): Road[];
 }
 
-function getNeighborsOnRoad(road: Road, network: RoadNetwork, dests: AStarNode[]): 
+function getNeighborsFromAddress(address: Address, network: RoadNetwork, dests: AStarNode[]): 
     AStarNode[] 
 {
-    let intersections: Intersection[] = Array.from(network.getIntersectionsOnRoad(road));
+    let intersections: Intersection[] = Array.from(
+        network.getIntersectionsFromAddress(address));
         
     let nodes: AStarNode[] = intersections.map(x => 
         new IntersectionNode(x, network));
     
-    let destsOnRoad = dests.filter(d => road.id == d.location.address.road.id);
+    let destsOnRoad = dests.filter(d => address.road.id == d.location.address.road.id);
     nodes = nodes.concat(destsOnRoad.map(x => 
         new DestNode(x.location)));
-
-    // TODO: fix the fact that this doesn't check for one-way streets
 
     return nodes;
 }
@@ -148,7 +147,8 @@ class IntersectionNode {
 
     getNeighbors(dests: AStarNode[]): AStarNode[] {
         return this.intersection.roads.reduce((lst, road) => {
-            return lst.concat(getNeighborsOnRoad(road, this.network, dests));
+            let addr: Address = getAddressOnRoad(road, this.intersection.location);
+            return lst.concat(getNeighborsFromAddress(addr, this.network, dests));
         }, []);
     }
 

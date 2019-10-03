@@ -1,7 +1,7 @@
 import RoadMap from "../models/road_map";
 import Intersection from "./intersection";
 import Road from "../models/road";
-import { Coord } from "../util";
+import { Coord, setIntersection } from "../util";
 import { segmentsIntersect, isPointOnLine, getSortedSignChangeIndices } from "../util";
 import { getConnectingRoad, getRoadDistance, getAddress, getCoord } from "./simulator_helpers";
 import Address from "./address";
@@ -100,14 +100,13 @@ export default class RoadNetwork {
     }
 
     getNearestIntersections(loc: Coord | Intersection): Intersection[] {
-        if((loc as Intersection).location == undefined) {
-            return this.getNearestIntOnRoad(<Coord>loc);
-        } else {
+        if((loc as Intersection).location) {
             return this.getNearestIntsFromInt(<Intersection>loc);
         }
+        return this.getNearestIntOnRoad(<Coord>loc);
     }
 
-    private getNearestIntOnRoad(location: Coord): Intersection[] {
+    private getNearestIntOnRoad(location): Intersection[] {
         let address: Address = getAddress(this, location);
         let intersections: Intersection[] = 
             Array.from(this.getIntersectionsOnRoad(address.road));
@@ -171,7 +170,18 @@ export default class RoadNetwork {
         }
     }
 
-    
+    getIntersectionsFromAddress(address: Address): Intersection[] {
+        let coord: Coord = getCoord(address);
+        let nearbyInt: Intersection = this.getNearestIntOnRoad(coord)[0];
+        let connectedInts: Intersection[] = Array.from(
+            this.getConnectedIntersections(nearbyInt));
+        let intsOnRoad: Intersection[] = Array.from(
+            this.getIntersectionsOnRoad(address.road));
+        let connectedOnRoad: Intersection[] = setIntersection(intsOnRoad, connectedInts);
+
+        return connectedOnRoad;
+    }
+
 
     getIntersectionFromAddr(addr: Address): Intersection {
         let intersections: IterableIterator<Intersection> = 

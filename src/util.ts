@@ -300,3 +300,25 @@ export class Coord {
 export function within(a: number, b: number, bound: number = 0): boolean {
     return Math.abs(a - b) <= bound;
 }
+
+interface Comparable {
+    equals(other: Comparable): boolean;
+}
+
+export function setIntersection<T extends Comparable>(firstSet: T[], secondSet: T[]): T[] {
+    return firstSet.reduce((lst: T[], el: T): T[] => {
+        if(secondSet.find(x => el.equals(x))) {
+            lst.push(el);
+        }
+        return lst;
+    }, []);
+}
+
+export function union<T extends Comparable>(firstSet: T[], secondSet: T[]): T[] {
+    return secondSet.reduce((lst: T[], el: T): T[] => {
+        if(!lst.find(x => el.equals(x))) {
+            lst.push(el);
+        }
+        return lst;
+    }, Object.assign([], firstSet));
+}
