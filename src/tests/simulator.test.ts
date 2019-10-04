@@ -929,7 +929,7 @@ test('uber finds closest passenger', () => {
 
 test('uber delivers passenger', () => {
     setAllLighsAuto();
-    
+
     let car: DrivingCar = new DrivingCar(defaultCar(), 
     new Address(map.roads[2], .11), RoadDirection.Charm);
     let passenger: Passenger = new Passenger(new Address(map.roads[3], .22),
@@ -949,6 +949,33 @@ test('uber delivers passenger', () => {
     expect(controller.passenger).toBeFalsy();
     expect(car.address.road.id).toBe(9);
     expect(car.address.distance).toBeCloseTo(.03);
+});
+
+test('uber delivers passenger then wanders', () => {
+    setAllLighsAuto();
+    makeRandomReturn([.1, .5]);
+    
+    let car: DrivingCar = new DrivingCar(defaultCar(), 
+    new Address(map.roads[2], .11), RoadDirection.Charm);
+    let passenger: Passenger = new Passenger(new Address(map.roads[3], .22),
+        new Address(map.roads[9], .03));
+
+    let world: World = new World(network);
+    world.setCars([car]);
+    world.setPassengers([passenger]);
+
+    let controller: UberController = new UberController(car, world);
+    car.setController(controller);
+
+    runSimulationToDest(car, world);
+    runSimulation(world, 1);
+    runSimulationToDest(car, world);
+    runSimulation(world, 1);
+    runSimulationToDest(car, world);
+
+    expect(controller.passenger).toBeFalsy();
+    expect(car.address.road.id).toBe(1);
+    expect(car.address.distance).toBeCloseTo(1);
 });
 
 function makeRandomReturn(lst: number[]): void {

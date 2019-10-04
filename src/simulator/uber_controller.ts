@@ -1,13 +1,12 @@
 import DrivingCar from "./driving_car";
 import CarController from "./car_controller";
 import World from "./world";
-import Address from "./address";
 import Passenger from "./passenger";
 import PathFinder from "./path_finder";
 import PathInstruction from "./path_instruction";
 import { getCoord, randomAddress } from "./simulator_helpers";
 import { Coord, last } from "../util";
-import { Random, Speed } from "../primitives";
+import { Speed } from "../primitives";
 
 enum UberState {
     LOOKING,
@@ -27,7 +26,7 @@ export default class UberController extends CarController {
     makeDecision(): void {
         if(this.state == UberState.LOOKING) {
             this.findPassenger();
-            if(!this.path) {
+            if(!this.path || this.path.length == 0) {
                 this.wanderDest();
             }
         }
