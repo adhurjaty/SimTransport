@@ -7,7 +7,7 @@ import PathFinder from "./path_finder";
 import PathInstruction from "./path_instruction";
 import { getCoord, randomAddress } from "./simulator_helpers";
 import { Coord, last } from "../util";
-import { Random } from "../primitives";
+import { Random, Speed } from "../primitives";
 
 enum UberState {
     LOOKING,
@@ -37,7 +37,7 @@ export default class UberController extends CarController {
 
     private findPassenger(): boolean {
         let passengers: Passenger[] = this.world.getLookingPassengers();
-        if(!passengers) {
+        if(!passengers || passengers.length == 0) {
             return false;
         }
 
@@ -58,12 +58,20 @@ export default class UberController extends CarController {
         this.setDestination(randomAddress(this.world.network));
     }
 
-    handleAtDest(): void {
+    protected handleAtDest(): void {
+        this.car.setSpeed(new Speed(0));
+        this.path = [];
+
         if(this.state == UberState.PICKING_UP) {
             this.passenger.pickup();
             this.setDestination(this.passenger.dest);
             this.state = UberState.WITH_PASSENGER;
+        } else if(this.state == UberState.WITH_PASSENGER) {
+            this.world.dropOffPassenger(this.passenger);
+            this.passenger = undefined;
+            this.state = UberState.LOOKING;
         }
-        super.handleAtDest();
+
+        this.car.atDest();
     }
 }

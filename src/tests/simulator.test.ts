@@ -878,16 +878,8 @@ test('uber finds passenger', () => {
     world.setPassengers([passenger]);
 
     car.setController(new UberController(car, world));
-    car.setOnAtDest(() => {
-        throw new Error("Test passed");
-    });
 
-    try {
-        runSimulation(world, 100);
-        expect(true).toBeFalsy();   // should error out before getting here
-    } catch(e) {
-        expect(e.message).toEqual("Test passed");
-    }
+    runSimulationToDest(car, world);
 
     expect(car.address.road.id).toBe(3);
     expect(car.address.distance).toBeCloseTo(.22);
@@ -904,16 +896,8 @@ test('uber wanders', () => {
     setAllLighsAuto();
 
     car.setController(new UberController(car, world));
-    car.setOnAtDest(() => {
-        throw new Error("Test passed");
-    });
 
-    try {
-        runSimulation(world, 100);
-        expect(true).toBeFalsy();   // should error out before getting here
-    } catch(e) {
-        expect(e.message).toEqual("Test passed");
-    }
+    runSimulationToDest(car, world);
 
     expect(car.address.road.id).toBe(1);
     expect(car.address.distance).toBeCloseTo(1);
@@ -937,13 +921,15 @@ test('uber finds closest passenger', () => {
 
     car.setController(new UberController(car, world));
 
-    runSimulation(world, 100);
+    runSimulationToDest(car, world);
 
     expect(car.address.road.id).toBe(2);
     expect(car.address.distance).toBeCloseTo(.22);
 });
 
 test('uber delivers passenger', () => {
+    setAllLighsAuto();
+    
     let car: DrivingCar = new DrivingCar(defaultCar(), 
     new Address(map.roads[2], .11), RoadDirection.Charm);
     let passenger: Passenger = new Passenger(new Address(map.roads[3], .22),
@@ -956,7 +942,9 @@ test('uber delivers passenger', () => {
     let controller: UberController = new UberController(car, world);
     car.setController(controller);
 
-    runSimulation(world, 200);
+    runSimulationToDest(car, world);
+    runSimulation(world, 1);
+    runSimulationToDest(car, world);
 
     expect(controller.passenger).toBeFalsy();
     expect(car.address.road.id).toBe(9);
@@ -981,6 +969,21 @@ function runSimulation(world: World, time: number): void {
     for (let _ = 0; _ < time / GlobalParams.TICK_DURATION; _++) {
         world.tick();
     }
+}
+
+function runSimulationToDest(car: DrivingCar, world: World, time: number = 200): void {
+    car.setOnAtDest(() => {
+        throw new Error("Test passed");
+    });
+
+    try {
+        runSimulation(world, time);
+        expect(true).toBeFalsy();   // should error out before getting here
+    } catch(e) {
+        expect(e.message).toEqual("Test passed");
+    }
+
+    car.setOnAtDest(() => {});
 }
 
 function setAllLightsSimple() {

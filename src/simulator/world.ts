@@ -68,4 +68,9 @@ export default class World {
     getLookingPassengers(): Passenger[] {
         return this.passengers.filter(x => x.isLooking());
     }
+
+    dropOffPassenger(passenger: Passenger): void {
+        let idx: number = this.passengers.indexOf(passenger);
+        this.passengers.splice(idx, 1);
+    }
 }
