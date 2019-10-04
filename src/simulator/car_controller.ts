@@ -14,16 +14,20 @@ import Intersection from "./intersection";
 export default class CarController {
     public path: PathInstruction[];
 
-    constructor(private car: DrivingCar, protected world: World) {
+    constructor(protected car: DrivingCar, protected world: World) {
 
     }
 
     setDestination(addr: Address): void {
         let finder: PathFinder = new PathFinder(this.world.network);
-        this.path = finder.getPath(this.car.getLocation(), getCoord(addr));
+        let path = finder.getPath(this.car.getLocation(), getCoord(addr));
 
+        this.setPath(path);
+    }
+
+    protected setPath(path: PathInstruction[]): void {
+        this.path = path;
         this.car.direction = this.path[0].direction;
-        this.makeDecision();
     }
 
     private getSpeedLimit(): Speed {
@@ -32,9 +36,7 @@ export default class CarController {
 
     makeDecision(): void {
         if(this.atDestination()) {
-            this.path = [];
-            this.car.setSpeed(new Speed(0));
-            this.car.atDest();
+            this.handleAtDest();
             return;
         }
         
@@ -45,6 +47,12 @@ export default class CarController {
         }
 
         this.setForwardSpeed(distToWaypoint);
+    }
+
+    protected handleAtDest(): void {
+        this.path = [];
+        this.car.setSpeed(new Speed(0));
+        this.car.atDest();
     }
 
     private distToWaypoint(): number {

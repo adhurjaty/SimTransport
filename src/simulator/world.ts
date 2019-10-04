@@ -18,7 +18,7 @@ export default class World {
     public map: RoadMap
     public lights: TrafficLight[];
     public cars: DrivingCar[];
-    public passengers: Passenger[];
+    public passengers: Passenger[] = [];
 
     constructor(public network: RoadNetwork) {
         this.map = network.map;
@@ -63,5 +63,9 @@ export default class World {
         for (const car of this.cars) {
             car.setDestination(randomAddress(this.network));
         }
+    }
+
+    getLookingPassengers(): Passenger[] {
+        return this.passengers.filter(x => x.isLooking());
     }
 }

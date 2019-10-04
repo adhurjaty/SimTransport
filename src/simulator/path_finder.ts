@@ -42,9 +42,6 @@ export default class PathFinder {
         while(!frontier.empty()) {
             let curState = frontier.pop();
 
-            console.log(curState.node.location.coord);
-            console.log(curState.path);
-
             if(curState.isGoal()) {
                 return curState.path;
             }

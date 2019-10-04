@@ -3,6 +3,11 @@ import CarController from "./car_controller";
 import World from "./world";
 import Address from "./address";
 import Passenger from "./passenger";
+import PathFinder from "./path_finder";
+import PathInstruction from "./path_instruction";
+import { getCoord, randomAddress } from "./simulator_helpers";
+import { Coord, last } from "../util";
+import { Random } from "../primitives";
 
 enum UberState {
     LOOKING,
@@ -12,6 +17,8 @@ enum UberState {
 
 export default class UberController extends CarController {
     private state: UberState = UberState.LOOKING;
+    
+    public passenger: Passenger;
 
     constructor(car: DrivingCar, world: World) {
         super(car, world);
@@ -19,25 +26,44 @@ export default class UberController extends CarController {
 
     makeDecision(): void {
         if(this.state == UberState.LOOKING) {
+            this.findPassenger();
             if(!this.path) {
-                let address: Address = this.findPassenger() || this.wanderDest();
-                this.setDestination(address);
+                this.wanderDest();
             }
         }
 
         super.makeDecision();
     }
 
-    private findPassenger(): Address | null {
-        let passengers: Passenger[] = this.world.passengers;
+    private findPassenger(): boolean {
+        let passengers: Passenger[] = this.world.getLookingPassengers();
         if(!passengers) {
-            return undefined;
+            return false;
         }
 
-        return ;
+        let pathFinder: PathFinder = new PathFinder(this.world.network);
+        let carCoord: Coord = getCoord(this.car.address);
+        let path: PathInstruction[] = pathFinder.getClosestPath(carCoord, 
+            passengers.map(x => getCoord(x.address)));
+
+        this.setPath(path);
+        this.passenger = passengers.find(x => getCoord(x.address).equals(last(path).location));
+        this.passenger.notifyRide();
+        this.state = UberState.PICKING_UP;
+
+        return true;
     }
 
-    private wanderDest(): Address {
-        return new Address(this.world.map.roads[0], 0);
+    private wanderDest(): void {
+        this.setDestination(randomAddress(this.world.network));
+    }
+
+    handleAtDest(): void {
+        if(this.state == UberState.PICKING_UP) {
+            this.passenger.pickup();
+            this.setDestination(this.passenger.dest);
+            this.state = UberState.WITH_PASSENGER;
+        }
+        super.handleAtDest();
     }
 }

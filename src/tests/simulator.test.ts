@@ -856,7 +856,7 @@ test('find closest path', () => {
     let dests: Coord[] = [
         new Coord(.5, .1),
         new Coord(.01, 0),
-        new Coord(1, 1),
+        new Coord(.4, 1),
         new Coord(.1, .2)
     ];
 
@@ -884,7 +884,7 @@ test('uber finds passenger', () => {
 
     try {
         runSimulation(world, 100);
-        expect(true).toBeFalsy();   // should error out
+        expect(true).toBeFalsy();   // should error out before getting here
     } catch(e) {
         expect(e.message).toEqual("Test passed");
     }
@@ -894,15 +894,73 @@ test('uber finds passenger', () => {
 });
 
 test('uber wanders', () => {
+    makeRandomReturn([.1, .5]);
+    let car: DrivingCar = new DrivingCar(defaultCar(), 
+        new Address(map.roads[2], .11), RoadDirection.Charm);
+    
+    let world: World = new World(network);
+    world.setCars([car]);
 
+    setAllLighsAuto();
+
+    car.setController(new UberController(car, world));
+    car.setOnAtDest(() => {
+        throw new Error("Test passed");
+    });
+
+    try {
+        runSimulation(world, 100);
+        expect(true).toBeFalsy();   // should error out before getting here
+    } catch(e) {
+        expect(e.message).toEqual("Test passed");
+    }
+
+    expect(car.address.road.id).toBe(1);
+    expect(car.address.distance).toBeCloseTo(1);
 });
 
 test('uber finds closest passenger', () => {
+    let car: DrivingCar = new DrivingCar(defaultCar(), 
+        new Address(map.roads[2], .11), RoadDirection.Charm);
+    let passengers: Passenger[] = [
+        new Passenger(new Address(map.roads[3], .22),
+            new Address(map.roads[9], .03)),
+        new Passenger(new Address(map.roads[2], .22),
+            new Address(map.roads[9], .03)),
+        new Passenger(new Address(map.roads[4], .22),
+            new Address(map.roads[9], .03))
+    ]
 
+    let world: World = new World(network);
+    world.setCars([car]);
+    world.setPassengers(passengers);
+
+    car.setController(new UberController(car, world));
+
+    runSimulation(world, 100);
+
+    expect(car.address.road.id).toBe(2);
+    expect(car.address.distance).toBeCloseTo(.22);
 });
 
 test('uber delivers passenger', () => {
+    let car: DrivingCar = new DrivingCar(defaultCar(), 
+    new Address(map.roads[2], .11), RoadDirection.Charm);
+    let passenger: Passenger = new Passenger(new Address(map.roads[3], .22),
+        new Address(map.roads[9], .03));
 
+    let world: World = new World(network);
+    world.setCars([car]);
+    world.setPassengers([passenger]);
+
+    let controller: UberController = new UberController(car, world);
+    car.setController(controller);
+
+    runSimulation(world, 200);
+
+    expect(controller.passenger).toBeFalsy();
+    expect(car.address.road.id).toBe(9);
+    expect(car.address.distance).toBeCloseTo(.03);
 });
 
 function makeRandomReturn(lst: number[]): void {
