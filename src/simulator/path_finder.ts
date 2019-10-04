@@ -42,12 +42,16 @@ export default class PathFinder {
         while(!frontier.empty()) {
             let curState = frontier.pop();
 
+            console.log(curState.node.location.coord);
+            console.log(curState.path);
+
             if(curState.isGoal()) {
                 return curState.path;
             }
 
-            for (const node of curState.node.getNeighbors(ends)) {
-                if(visited.find(x => x.location.coord.equals(node.location.coord))) {
+            let neighbors: AStarNode[] = curState.node.getNeighbors(ends);
+            for (const node of neighbors) {
+                if(visited.find(x => x.equals(node))) {
                     continue;
                 }
                 let newState = curState.copy();
@@ -121,6 +125,7 @@ interface AStarNode {
     location: Location;
     getNeighbors(dests: AStarNode[]): AStarNode[];
     getLinks(): Road[];
+    equals(other: AStarNode): boolean;
 }
 
 function getNeighborsFromAddress(address: Address, network: RoadNetwork, dests: AStarNode[]): 
@@ -155,6 +160,11 @@ class IntersectionNode {
     getLinks(): Road[] {
         return this.intersection.roads;
     }
+
+    equals(other: AStarNode): boolean {
+        let intersection = (other as IntersectionNode).intersection;
+        return intersection && intersection.id == this.intersection.id;
+    }
 }
 
 class DestNode {
@@ -169,6 +179,11 @@ class DestNode {
     getLinks(): Road[] {
         return [this.location.address.road];
     }
+
+    equals(other: AStarNode): boolean {
+        return other.location.coord.equals(this.location.coord) && 
+            (other instanceof DestNode);
+    }
 }
 
 class StartNode {
@@ -176,11 +191,15 @@ class StartNode {
     }
 
     getNeighbors(dests: AStarNode[]): AStarNode[] {
-        return getNeighborsOnRoad(this.location.address.road, this.network, dests);
+        return getNeighborsFromAddress(this.location.address, this.network, dests);
     }
 
     getLinks(): Road[] {
         return [this.location.address.road];
+    }
+
+    equals(other: AStarNode): boolean {
+        return false;
     }
 }
 
