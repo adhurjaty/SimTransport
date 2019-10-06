@@ -7,18 +7,11 @@ import PathInstruction from "./path_instruction";
 import { getCoord, randomAddress } from "./simulator_helpers";
 import { Coord, last } from "../util";
 import { Speed } from "../primitives";
+import { UberControllerBase, UberState } from "./uber_controller_base";
 
-enum UberState {
-    LOOKING,
-    WITH_PASSENGER,
-    PICKING_UP
-}
-
-export default class UberController extends CarController {
+export default class UberController extends UberControllerBase {
     private state: UberState = UberState.LOOKING;
     
-    public passenger: Passenger;
-
     constructor(car: DrivingCar, world: World) {
         super(car, world);
     }
@@ -51,10 +44,6 @@ export default class UberController extends CarController {
         this.state = UberState.PICKING_UP;
 
         return true;
-    }
-
-    private wanderDest(): void {
-        this.setDestination(randomAddress(this.world.network));
     }
 
     protected handleAtDest(): void {

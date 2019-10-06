@@ -978,6 +978,16 @@ test('uber delivers passenger then wanders', () => {
     expect(car.address.distance).toBeCloseTo(1);
 });
 
+test('uber pool finds route', () => {
+    setAllLighsAuto();
+
+    
+});
+
+test('passenger walks to waypont', () => {
+    expect(true).toBeFalsy();
+})
+
 function makeRandomReturn(lst: number[]): void {
     let buffer: IterableIterator<number> = circleYield(lst);
     Random.next = () => buffer.next().value;
