@@ -12,4 +12,5 @@ export class GlobalParams {
     public static CAR_COLOR = 'blue';
     public static PASSENGER_LOAD_TIME = 20; // duration of passenger loading/unloading in uber (seconds)
     public static PASSENGER_WALK_SPEED = 2; // in mph
+    public static LOAD_TIME = 30; // seconds to load and unload passenger
 }

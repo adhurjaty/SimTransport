@@ -20,6 +20,7 @@ import { Rectangle, Coord, last } from "../util";
 import { AutoSwitcher, SimpleLightSwitcher, TrippedTestSwitcher, createMap, defaultCars, defaultCar } from "./test_exports";
 import Passenger from "../simulator/passenger";
 import UberController from "../simulator/uber_controller";
+import UberPoolController from "../simulator/uber_pool_controller";
 
 let map: RoadMap = createMap();
 let network: RoadNetwork = new RoadNetwork(map);
@@ -943,7 +944,6 @@ test('uber delivers passenger', () => {
     car.setController(controller);
 
     runSimulationToDest(car, world);
-    runSimulation(world, 1);
     runSimulationToDest(car, world);
 
     expect(controller.passenger).toBeFalsy();
@@ -968,9 +968,9 @@ test('uber delivers passenger then wanders', () => {
     car.setController(controller);
 
     runSimulationToDest(car, world);
-    runSimulation(world, 1);
+    runSimulation(world, GlobalParams.LOAD_TIME + 1);
     runSimulationToDest(car, world);
-    runSimulation(world, 1);
+    runSimulation(world, GlobalParams.LOAD_TIME + 1);
     runSimulationToDest(car, world);
 
     expect(controller.passenger).toBeFalsy();
@@ -978,10 +978,44 @@ test('uber delivers passenger then wanders', () => {
     expect(car.address.distance).toBeCloseTo(1);
 });
 
-test('uber pool finds route', () => {
+test('uber pool finds simple route', () => {
     setAllLighsAuto();
 
+    let car: DrivingCar = new DrivingCar(defaultCar(), new Address(map.roads[1], .02),
+        RoadDirection.Charm);
+    let passengers: Passenger[] = [
+        new Passenger(new Address(map.roads[1], .23), new Address(map.roads[8], .53)),
+        new Passenger(new Address(map.roads[1], .33), new Address(map.roads[8], .43))
+    ];
+    let world: World = new World(network);
+    world.setCars([car]);
+    world.setPassengers(passengers);
+
+    let controller: UberPoolController = new UberPoolController(car, world);
+    car.setController(controller);
+
+    runSimulationToDest(car, world);
+    runSimulation(world, GlobalParams.LOAD_TIME + 1);
+
+    expect(controller.passengers.length).toBe(1);
+    expect(controller.passengers[0]).toEqual(passengers[0]);
+
+    runSimulationToDest(car, world);
+    runSimulation(world, GlobalParams.LOAD_TIME + 1);
+
+    expect(controller.passengers.length).toBe(2);
+    expect(controller.passengers[1]).toEqual(passengers[1]);
     
+    runSimulationToDest(car, world);
+    runSimulation(world, GlobalParams.LOAD_TIME + 1);
+
+    expect(controller.passengers.length).toBe(1);
+    expect(controller.passengers[0]).toBe(passengers[0]);
+
+    runSimulationToDest(car, world);
+    runSimulation(world, GlobalParams.LOAD_TIME + 1);
+
+    expect(controller.passengers.length[0]);
 });
 
 test('passenger walks to waypont', () => {

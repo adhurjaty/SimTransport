@@ -10,8 +10,8 @@ import { Speed } from "../primitives";
 import { UberControllerBase, UberState } from "./uber_controller_base";
 
 export default class UberController extends UberControllerBase {
-    private state: UberState = UberState.LOOKING;
-    
+    public passenger: Passenger;
+
     constructor(car: DrivingCar, world: World) {
         super(car, world);
     }
@@ -41,7 +41,7 @@ export default class UberController extends UberControllerBase {
         this.setPath(path);
         this.passenger = passengers.find(x => getCoord(x.address).equals(last(path).location));
         this.passenger.notifyRide();
-        this.state = UberState.PICKING_UP;
+        this.changeState(UberState.PICKING_UP);
 
         return true;
     }
@@ -51,13 +51,12 @@ export default class UberController extends UberControllerBase {
         this.path = [];
 
         if(this.state == UberState.PICKING_UP) {
-            this.passenger.pickup();
+            this.pickupPassenger(this.passenger);
             this.setDestination(this.passenger.dest);
-            this.state = UberState.WITH_PASSENGER;
         } else if(this.state == UberState.WITH_PASSENGER) {
             this.world.dropOffPassenger(this.passenger);
             this.passenger = undefined;
-            this.state = UberState.LOOKING;
+            this.changeState(UberState.LOOKING);
         }
 
         this.car.atDest();
