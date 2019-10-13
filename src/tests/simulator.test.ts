@@ -978,6 +978,29 @@ test('uber delivers passenger then wanders', () => {
     expect(car.address.distance).toBeCloseTo(1);
 });
 
+test('find shortest route multiple dests', () => {
+    let pathFinder: PathFinder = new PathFinder(network);
+    let src: Coord = new Coord(0, .01);
+    let dests: Coord[] = [
+        new Coord(.1, .05),
+        new Coord(.2, .15),
+        new Coord(.3, .05),
+        new Coord(.15, .1),
+    ];
+
+    let path: PathInstruction[] = pathFinder.getShortestRoute(src, dests);
+
+    let destIdxs: number[] = [0, 3, 1, 2];
+    let i: number = 0;
+    for (const inst of path) {
+        if(inst.location.equals(dests[destIdxs[i]])) {
+            i++;
+        }
+    }
+    
+    expect(i).toBe(destIdxs.length);
+});
+
 test('uber pool finds simple route', () => {
     setAllLighsAuto();
 

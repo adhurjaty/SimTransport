@@ -1,7 +1,7 @@
 import RoadNetwork from "./road_network";
-import { Coord } from "../util";
+import { Coord, remove } from "../util";
 import Address from "./address";
-import { getAddress, getRoadDistance, getConnectingRoad, getRoadDirection, getDrivingDirection, getCoord, getAddressOnRoad } from "./simulator_helpers";
+import { getAddress, getRoadDistance, getRoadDirection, getDrivingDirection, getCoord, getAddressOnRoad } from "./simulator_helpers";
 import Intersection from "./intersection";
 import { PriorityQueue, last } from "../util";
 import Road from "../models/road";
@@ -59,6 +59,18 @@ export default class PathFinder {
         }
 
         throw new Error('No path from source to destination');
+    }
+
+    getShortestRoute(source: Coord, dests: Coord[]): PathInstruction[] {
+        let path: PathInstruction[] = [];
+        let remainingDests: Coord[] = Object.assign([], dests);
+        for (let _ = 0; _ < dests.length; _++) {
+            path = path.concat(this.getClosestPath(source, remainingDests))
+            let dest: Coord = last(path).location;
+            remove(remainingDests, dest)
+        }
+
+        return path;
     }
 }
 

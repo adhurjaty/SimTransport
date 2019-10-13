@@ -166,6 +166,15 @@ export function last<T>(lst: T[]): T {
     return lst[lst.length - 1];
 }
 
+export function remove<T>(lst: T[], el: T): void {
+    let idx: number = lst.indexOf(el);
+    if(idx == -1) {
+        throw new Error("Element does not exist in list");
+    }
+
+    lst.splice(idx, 1);
+}
+
 export function flatten<T>(lst: T[][]): T[] {
     return [].concat(...lst);
 }
